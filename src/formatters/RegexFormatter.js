@@ -1,0 +1,84 @@
+/*jsl:import Formatter.js*/
+
+coherent.RegexFormatter= Class.create(coherent.Formatter, {
+
+    /** Create a new RegexFormatter. This formatter doesn't actually format the
+        value, but it uses a series of regular expressions to determine the
+        validity of the value.
+        
+        @param settings.validCharacters {regex|string} either a regular expression
+                or a string defining the valid characters for this formatter.
+        @param settings.validRegex {regex|array} either a regular expression
+                or an array of regular expressions that determine whether a
+                value is valid.
+        @param settings.invalidRegex {regex|array} either a regular expression
+                or an array of regular expressions that determine whether the
+                value is invalid.
+    */
+    constructor: function(settings)
+    {
+        this.base(settings);
+        this.typeofValidCharacters= typeof(this.validCharacters);
+        //  convert single regexes to an array with just one element
+        if (this.invalidRegex && 'exec' in this.invalidRegex)
+            this.invalidRegex= [this.invalidRegex];
+        if (this.validRegex && 'exec' in this.validRegex)
+            this.validRegex= [this.validRegex];
+    },
+    
+    /** Return true or a coherent.Error instance indicating the error that
+        should be presented to the user.
+     */
+    isStringValid: function(string)
+    {
+        var i;
+        var len;
+        var regexList;
+        var OK= true;
+        
+        if (this.invalidRegex)
+        {
+            // If ANY of the invalidRegexes match, string is invalid
+            regexList= this.invalidRegex;
+            for (i=0, len=regexList.length; i<len; ++i)
+                if (regexList[i].test(string))
+                {
+                    OK= false;
+                    break;
+                }
+        }
+        if (OK && this.validRegex)
+        {
+            // If ANY of the validRegexes match, string is valid
+            OK = false;
+            regexList= this.validRegex;
+            for (i=0, len=regexList.length; i<len; ++i)
+                if (regexList[i].test(string))
+                {
+                    OK= true;
+                    break;
+                }
+        }
+        
+        if (OK)
+            return true;
+        
+        return new coherent.Error({
+                        description: this.invalidValueMessage
+                    });
+    },
+    
+    /** Return true if the character is a valid input character.
+     */
+    isValidInputCharacter: function(c)
+    {
+        if (!this.validCharacters)
+            return true;
+            
+        if ('string'===this.typeofValidCharacters)
+            return (-1!==this.validCharacters.indexOf(c));
+        else
+            return this.validCharacters.test(c);
+    }
+
+});

@@ -1,0 +1,195 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <script src="../build/coherent-debug.js" type="text/javascript" charset="utf-8"></script>
+        <style>
+            .modal-overlay-guard
+            {
+                position: fixed;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+            }
+        
+            .modal-overlay-backdrop
+            {
+                background-color: black;
+                opacity: 0.65;
+                position: fixed;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+            }
+            .modal-overlay-backdrop.invisible
+            {
+                opacity: 0;
+            }
+            
+            .overlay
+            {
+                width: 300px;
+                height: 200px;
+                position: fixed;
+                left: 50%;
+                top: 50%;
+                margin: -100px 0 0 -150px;
+                -webkit-border-radius: 10px;
+                -moz-border-radius: 10px;
+                border: 4px solid #666;
+                -webkit-box-shadow: 0 3px 8px rgba(0,0,0,0.85);
+                -moz-box-shadow: 0 3px 8px rgba(0,0,0,0.85);
+                background: white;
+                padding: 10px;
+            }
+            
+            .overlay.invisible
+            {
+                opacity: 0.5;
+                width: 100px;
+                height: 50px;
+                margin: -25px 0 0 -50px;
+            }
+
+            .overlay-small
+            {
+                width: 400px;
+                height: 100px;
+                position: fixed;
+                left: 50%;
+                top: 50%;
+                margin: -50px 0 0 -200px;
+                -webkit-border-radius: 10px;
+                -moz-border-radius: 10px;
+                border: 4px solid #666;
+                -webkit-box-shadow: 0 3px 8px rgba(0,0,0,0.85);
+                -moz-box-shadow: 0 3px 8px rgba(0,0,0,0.85);
+                background: white;
+                padding: 10px;
+            }
+            
+            .overlay-small.invisible
+            {
+                opacity: 0.5;
+                width: 100px;
+                height: 50px;
+                margin: -25px 0 0 -50px;
+            }
+            
+            .overlay.invisible *
+            {
+                display: none;
+            }
+        </style>
+    </head>
+    
+    <body>
+        <div id="overlay" class="overlay"><h1></h1></div>
+        <div id="overlay1" class="overlay-small">
+            <h1></h1>
+        </div>
+        <script>
+            var data= coherent.KVO.adaptTree({
+                            title: "Foo",
+                            options: [
+                                {
+                                    name: "Abc"
+                                },
+                                {
+                                    name: "Def"
+                                },
+                                {
+                                    name: "Ghi"
+                                },
+                                {
+                                    name: "Jkl"
+                                },
+                                {
+                                    name: "Mno"
+                                },
+                                {
+                                    name: "Pqr"
+                                }
+                            ]
+                        });
+            coherent.registerModelWithName(data, 'data');
+
+            var v= VIEW({
+                        ':root': coherent.Overlay({
+                                modal: true,
+                                animate: {
+                                    visible: true
+                                }
+                            }),
+                        'h1': coherent.View({
+                                textBinding: 'data.title'
+                            })
+                        });
+            var overlay= v(document.getElementById('overlay'));
+            var overlay1= v(document.getElementById('overlay1'));
+            
+            function showOverlay()
+            {
+                if (overlay.visible())
+                    overlay1.setVisible(true);
+                else
+                    overlay.setVisible(true);
+            }
+
+            function hideOverlay()
+            {
+                if (overlay1.visible())
+                    overlay1.setVisible(false);
+                else
+                    overlay.setVisible(false);
+            }
+        </script>
+        
+        <p>Eros et accumsan et iusto odio dignissim, qui blandit praesent! Decima et quinta decima eodem modo typi, qui nunc nobis.</p>
+        <p>Sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat ut wisi enim. Sit amet consectetuer adipiscing elit ad minim veniam quis nostrud exerci tation ullamcorper suscipit. Commodo consequat duis autem vel eum iriure dolor in hendrerit.</p>
+        <p>Vero eros et accumsan et iusto odio dignissim. Consequat vel illum dolore eu feugiat nulla facilisis at qui blandit.</p>
+        <p class="foo">Ea commodo consequat duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie. Humanitatis per seacula quarta decima et quinta decima eodem modo typi qui nunc. Aliquip ex consequat vel illum dolore eu feugiat nulla!</p>
+        <p>Duis autem vel eum iriure dolor in hendrerit in vulputate! Option congue nihil imperdiet doming id quod mazim placerat facer possim assum typi. Et iusto odio dignissim qui blandit praesent luptatum? Claritas est etiam processus dynamicus qui sequitur mutationem consuetudium lectorum mirum est notare quam littera gothica.</p>
+        <p>Qui facit eorum claritatem Investigationes demonstraverunt lectores legere me lius quod ii legunt saepius. Decima et quinta decima eodem modo typi qui nunc nobis videntur parum clari fiant? Feugait nulla facilisi nam liber tempor cum soluta nobis eleifend option.</p>
+        <input style="position:relative;z-index:10000" onclick="showOverlay()" type="button" value="Show Overlay">
+        <input style="position:relative;z-index:10000" onclick="hideOverlay()" type="button" value="Hide Overlay">
+
+        <p>Eros et accumsan et iusto odio dignissim, qui blandit praesent! Decima et quinta decima eodem modo typi, qui nunc nobis.</p>
+        <p>Sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat ut wisi enim. Sit amet consectetuer adipiscing elit ad minim veniam quis nostrud exerci tation ullamcorper suscipit. Commodo consequat duis autem vel eum iriure dolor in hendrerit.</p>
+        <p>Vero eros et accumsan et iusto odio dignissim. Consequat vel illum dolore eu feugiat nulla facilisis at qui blandit.</p>
+        <p class="foo">Ea commodo consequat duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie. Humanitatis per seacula quarta decima et quinta decima eodem modo typi qui nunc. Aliquip ex consequat vel illum dolore eu feugiat nulla!</p>
+        <p>Duis autem vel eum iriure dolor in hendrerit in vulputate! Option congue nihil imperdiet doming id quod mazim placerat facer possim assum typi. Et iusto odio dignissim qui blandit praesent luptatum? Claritas est etiam processus dynamicus qui sequitur mutationem consuetudium lectorum mirum est notare quam littera gothica.</p>
+        <p>Qui facit eorum claritatem Investigationes demonstraverunt lectores legere me lius quod ii legunt saepius. Decima et quinta decima eodem modo typi qui nunc nobis videntur parum clari fiant? Feugait nulla facilisi nam liber tempor cum soluta nobis eleifend option.</p>
+        <p>Eros et accumsan et iusto odio dignissim, qui blandit praesent! Decima et quinta decima eodem modo typi, qui nunc nobis.</p>
+        <p>Sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat ut wisi enim. Sit amet consectetuer adipiscing elit ad minim veniam quis nostrud exerci tation ullamcorper suscipit. Commodo consequat duis autem vel eum iriure dolor in hendrerit.</p>
+        <p>Vero eros et accumsan et iusto odio dignissim. Consequat vel illum dolore eu feugiat nulla facilisis at qui blandit.</p>
+        <p class="foo">Ea commodo consequat duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie. Humanitatis per seacula quarta decima et quinta decima eodem modo typi qui nunc. Aliquip ex consequat vel illum dolore eu feugiat nulla!</p>
+        <p>Duis autem vel eum iriure dolor in hendrerit in vulputate! Option congue nihil imperdiet doming id quod mazim placerat facer possim assum typi. Et iusto odio dignissim qui blandit praesent luptatum? Claritas est etiam processus dynamicus qui sequitur mutationem consuetudium lectorum mirum est notare quam littera gothica.</p>
+        <p>Qui facit eorum claritatem Investigationes demonstraverunt lectores legere me lius quod ii legunt saepius. Decima et quinta decima eodem modo typi qui nunc nobis videntur parum clari fiant? Feugait nulla facilisi nam liber tempor cum soluta nobis eleifend option.</p>
+        <p>Eros et accumsan et iusto odio dignissim, qui blandit praesent! Decima et quinta decima eodem modo typi, qui nunc nobis.</p>
+        <p>Sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat ut wisi enim. Sit amet consectetuer adipiscing elit ad minim veniam quis nostrud exerci tation ullamcorper suscipit. Commodo consequat duis autem vel eum iriure dolor in hendrerit.</p>
+        <p>Vero eros et accumsan et iusto odio dignissim. Consequat vel illum dolore eu feugiat nulla facilisis at qui blandit.</p>
+        <p class="foo">Ea commodo consequat duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie. Humanitatis per seacula quarta decima et quinta decima eodem modo typi qui nunc. Aliquip ex consequat vel illum dolore eu feugiat nulla!</p>
+        <p>Duis autem vel eum iriure dolor in hendrerit in vulputate! Option congue nihil imperdiet doming id quod mazim placerat facer possim assum typi. Et iusto odio dignissim qui blandit praesent luptatum? Claritas est etiam processus dynamicus qui sequitur mutationem consuetudium lectorum mirum est notare quam littera gothica.</p>
+        <p>Qui facit eorum claritatem Investigationes demonstraverunt lectores legere me lius quod ii legunt saepius. Decima et quinta decima eodem modo typi qui nunc nobis videntur parum clari fiant? Feugait nulla facilisi nam liber tempor cum soluta nobis eleifend option.</p>
+        <p>Eros et accumsan et iusto odio dignissim, qui blandit praesent! Decima et quinta decima eodem modo typi, qui nunc nobis.</p>
+        <p>Sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat ut wisi enim. Sit amet consectetuer adipiscing elit ad minim veniam quis nostrud exerci tation ullamcorper suscipit. Commodo consequat duis autem vel eum iriure dolor in hendrerit.</p>
+        <p>Vero eros et accumsan et iusto odio dignissim. Consequat vel illum dolore eu feugiat nulla facilisis at qui blandit.</p>
+        <p class="foo">Ea commodo consequat duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie. Humanitatis per seacula quarta decima et quinta decima eodem modo typi qui nunc. Aliquip ex consequat vel illum dolore eu feugiat nulla!</p>
+        <p>Duis autem vel eum iriure dolor in hendrerit in vulputate! Option congue nihil imperdiet doming id quod mazim placerat facer possim assum typi. Et iusto odio dignissim qui blandit praesent luptatum? Claritas est etiam processus dynamicus qui sequitur mutationem consuetudium lectorum mirum est notare quam littera gothica.</p>
+        <p>Qui facit eorum claritatem Investigationes demonstraverunt lectores legere me lius quod ii legunt saepius. Decima et quinta decima eodem modo typi qui nunc nobis videntur parum clari fiant? Feugait nulla facilisi nam liber tempor cum soluta nobis eleifend option.</p>
+        <p>Eros et accumsan et iusto odio dignissim, qui blandit praesent! Decima et quinta decima eodem modo typi, qui nunc nobis.</p>
+        <p>Sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat ut wisi enim. Sit amet consectetuer adipiscing elit ad minim veniam quis nostrud exerci tation ullamcorper suscipit. Commodo consequat duis autem vel eum iriure dolor in hendrerit.</p>
+        <p>Vero eros et accumsan et iusto odio dignissim. Consequat vel illum dolore eu feugiat nulla facilisis at qui blandit.</p>
+        <p class="foo">Ea commodo consequat duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie. Humanitatis per seacula quarta decima et quinta decima eodem modo typi qui nunc. Aliquip ex consequat vel illum dolore eu feugiat nulla!</p>
+        <p>Duis autem vel eum iriure dolor in hendrerit in vulputate! Option congue nihil imperdiet doming id quod mazim placerat facer possim assum typi. Et iusto odio dignissim qui blandit praesent luptatum? Claritas est etiam processus dynamicus qui sequitur mutationem consuetudium lectorum mirum est notare quam littera gothica.</p>
+        <p>Qui facit eorum claritatem Investigationes demonstraverunt lectores legere me lius quod ii legunt saepius. Decima et quinta decima eodem modo typi qui nunc nobis videntur parum clari fiant? Feugait nulla facilisi nam liber tempor cum soluta nobis eleifend option.</p>
+        <p>Eros et accumsan et iusto odio dignissim, qui blandit praesent! Decima et quinta decima eodem modo typi, qui nunc nobis.</p>
+        <p>Sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat ut wisi enim. Sit amet consectetuer adipiscing elit ad minim veniam quis nostrud exerci tation ullamcorper suscipit. Commodo consequat duis autem vel eum iriure dolor in hendrerit.</p>
+        <p>Vero eros et accumsan et iusto odio dignissim. Consequat vel illum dolore eu feugiat nulla facilisis at qui blandit.</p>
+        <p class="foo">Ea commodo consequat duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie. Humanitatis per seacula quarta decima et quinta decima eodem modo typi qui nunc. Aliquip ex consequat vel illum dolore eu feugiat nulla!</p>
+        <p>Duis autem vel eum iriure dolor in hendrerit in vulputate! Option congue nihil imperdiet doming id quod mazim placerat facer possim assum typi. Et iusto odio dignissim qui blandit praesent luptatum? Claritas est etiam processus dynamicus qui sequitur mutationem consuetudium lectorum mirum est notare quam littera gothica.</p>
+        <p>Qui facit eorum claritatem Investigationes demonstraverunt lectores legere me lius quod ii legunt saepius. Decima et quinta decima eodem modo typi qui nunc nobis videntur parum clari fiant? Feugait nulla facilisi nam liber tempor cum soluta nobis eleifend option.</p>
+    </body>
+</html>

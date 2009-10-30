@@ -1,0 +1,31 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <script src="../build/coherent-debug.js" type="text/javascript" charset="utf-8"></script>
+    </head>
+    
+    <body>
+        <input tabIndex="0" id="control" type="range">
+        <span id="value"></span>
+        
+        <script>
+            var data= coherent.KVO.adaptTree({
+                            options: {
+                                min: 0,
+                                max: 5,
+                                value: 2
+                            }
+                        });
+            coherent.registerModelWithName(data, 'data');
+            var control= new coherent.Slider('control', {
+                                valueBinding: 'data.options.value',
+                                minValueBinding: 'data.options.min',
+                                maxValueBinding: 'data.options.max'
+                            });
+            var value= new coherent.View('value', {
+                                textBinding: 'data.options.value'
+                            });
+        </script>
+        
+    </body>
+</html>

@@ -1,0 +1,57 @@
+/*jsl:import ../core/startup.js*/
+/*jsl:import ../core/local.js*/
+
+/** Generic value formatting functionality.
+ */
+coherent.Formatter= Class.create({
+
+    /** Message that will be displayed when a field has an invalid value.
+        @type String
+     */    
+    invalidValueMessage: _('error.invalid_value'),
+   
+    constructor: function(settings)
+    {
+        Object.extend(this, settings);
+    },
+
+    /** Convert the value into a string.
+        @param value    the data model value
+        @returns {String} a string representation of the value.
+     */
+    stringForValue: function(value)
+    {
+        if (null===value || 'undefined'===typeof(value))
+            return "";
+        return String(value);
+    },
+    
+    /** Convert a string into a data model representation.
+        @param {String} string  the presentation value
+        @returns the data model representation of the string
+     */
+    valueForString: function(string)
+    {
+        return string;
+    },
+    
+    /** Determine whether the string represents a valid value or not.
+        @param {String} string the presentation value
+        @returns true or a {@link coherent.Error} instance indicating the error
+        that should be presented to the user.
+     */
+    isStringValid: function(string)
+    {
+        return true;
+    },
+    
+    /** Check the validity of a character before updating the field.
+        @param {String} c   the new character
+        @returns true if the character is a valid input character.
+     */
+    isValidInputCharacter: function(c)
+    {
+        return true;
+    }
+    
+});

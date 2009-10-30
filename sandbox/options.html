@@ -1,0 +1,38 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <script src="../build/coherent-debug.js" type="text/javascript" charset="utf-8"></script>
+    </head>
+    
+    <body>
+        <select id="foo" title="foo">
+        </select>
+        <span id="value"></span>
+        
+        <script>
+            var data= coherent.KVO.adaptTree({
+                            options: [
+                                {
+                                    name: "Abc"
+                                },
+                                {
+                                    name: "Def"
+                                },
+                                {
+                                    name: "Ghi"
+                                }
+                            ]
+                        });
+            coherent.registerModelWithName(data, 'data');
+            var popup= new coherent.PopupList('foo', {
+                                contentBinding: 'data.options',
+                                contentValuesBinding: 'data.options.name',
+                                selectedValueBinding: 'data.value'
+                            });
+            var value= new coherent.View('value', {
+                                textBinding: 'data.value'
+                            });
+        </script>
+        
+    </body>
+</html>
