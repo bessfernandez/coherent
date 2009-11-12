@@ -4,9 +4,6 @@
  *  fields, and textareas. A TextField can be enabled or disabled based on a
  *  binding (or automatically if the value is undefined). Additionally, a
  *  TextField is set to readonly if the value binding is not mutable.
- *  
- *  @declare coherent.TextField
- *  @extends coherent.FormControl
  */
 coherent.TextField= Class.create(coherent.FormControl, {
 
@@ -14,6 +11,9 @@ coherent.TextField= Class.create(coherent.FormControl, {
     {
         //  chain to parent init.
         this.base();
+
+        if (""===this.node.value)
+            this.showPlaceholder();
 
         this.editing= false;
         this.validationError= null;
@@ -73,7 +73,7 @@ coherent.TextField= Class.create(coherent.FormControl, {
             
         if (!this.validationError && !this.__showingPlaceholder && this.formatter)
         {
-            var view= this.viewElement();
+            var view= this.node;
             var value= this.formatter.valueForString(view.value);
             value= this.formatter.stringForValue(value);
             view.value= value;
@@ -85,7 +85,7 @@ coherent.TextField= Class.create(coherent.FormControl, {
      */
     validate: function()
     {
-        var view= this.viewElement();
+        var view= this.node;
         var value= view.value;
 
         if (this.__showingPlaceholder)
@@ -118,14 +118,14 @@ coherent.TextField= Class.create(coherent.FormControl, {
     presentError: function(error)
     {
         this.validationError= error;
-        Element.addClassName(this.viewElement(), coherent.Style.kInvalidValueClass);
+        Element.addClassName(this.node, coherent.Style.kInvalidValueClass);
         return this.base.apply(this, arguments);
     },
     
     clearAllErrors: function()
     {
         this.validationError= null;
-        Element.removeClassName(this.viewElement(), coherent.Style.kInvalidValueClass);
+        Element.removeClassName(this.node, coherent.Style.kInvalidValueClass);
         return this.base.apply(this, arguments);
     },
 
@@ -133,7 +133,7 @@ coherent.TextField= Class.create(coherent.FormControl, {
      */
     acceptsFirstResponder: function()
     {
-        var view= this.viewElement();
+        var view= this.node;
 
         if (view.disabled || view.readOnly)
             return false;
@@ -147,7 +147,7 @@ coherent.TextField= Class.create(coherent.FormControl, {
      */
     becomeFirstResponder: function()
     {
-        var view= this.viewElement();
+        var view= this.node;
 
         if (view.disabled || view.readOnly)
             return false;
@@ -166,7 +166,7 @@ coherent.TextField= Class.create(coherent.FormControl, {
      */
     resignFirstResponder: function(event)
     {
-        var view= this.viewElement();
+        var view= this.node;
         this.hasFocus= false;
         if (""===view.value)
             this.showPlaceholder();
@@ -185,7 +185,7 @@ coherent.TextField= Class.create(coherent.FormControl, {
      */
     showPlaceholder: function()
     {
-        var view= this.viewElement();
+        var view= this.node;
         
         if (this.bindings.value)
             view.value= this.bindings.value.placeholderValue();
@@ -207,7 +207,7 @@ coherent.TextField= Class.create(coherent.FormControl, {
         if (!this.__showingPlaceholder)
             return;
             
-        var view= this.viewElement();
+        var view= this.node;
         var placeholder; 
         
         if (this.bindings.value)
@@ -256,7 +256,7 @@ coherent.TextField= Class.create(coherent.FormControl, {
         if (!this.continuallyUpdatesValue)
             return;
             
-        var view= this.viewElement();
+        var view= this.node;
 
         if (this.updateTimer)
             window.clearTimeout(this.updateTimer);
@@ -310,7 +310,7 @@ coherent.TextField= Class.create(coherent.FormControl, {
      */
     observeValueChange: function(change)
     {
-        var view= this.viewElement();
+        var view= this.node;
         var newValue= change.newValue;
 
         //  determine whether this value is a marker

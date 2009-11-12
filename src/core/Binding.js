@@ -35,8 +35,6 @@ coherent.Binding= Class.create({
         @param settings.transformer The value transformer to use
         @param settings.animated    Whether changes to this binding should be
                animated. This requires support from the observer.
-        @param settings.initFromDOM Whether the value should be pulled out of
-               the DOM during initialisation.
         @param settings.nullValuePlaceholder
         @param settings.multipleValuesPlaceholder
         @param settings.noSelectionPlaceholder

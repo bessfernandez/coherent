@@ -1,8 +1,6 @@
 /*jsl:import FormControl.js*/
 
 /**
- *  @declare coherent.Slider
- *  @extends coherent.FormControl
  **/
 coherent.Slider= Class.create(coherent.FormControl, {
     
@@ -19,7 +17,7 @@ coherent.Slider= Class.create(coherent.FormControl, {
      **/
     observeValueChange: function(change)
     {
-        var view= this.viewElement();
+        var node= this.node;
         var newValue= change.newValue;
 
         //  determine whether this value is a marker
@@ -29,30 +27,29 @@ coherent.Slider= Class.create(coherent.FormControl, {
             newValue= this.formatter.stringForValue(newValue);
 
         if (coherent.NoSelectionMarkerType===markerType)
-            view.disabled= true;
+            node.disabled= true;
         else if (!this.bindings.enabled)
-            view.disabled= false;
+            node.disabled= false;
     
         if (!this.bindings.editable)
-            view.readOnly= !this.bindings.value.mutable();
+            node.readOnly= !this.bindings.value.mutable();
 
-        if (view.readOnly)
-            Element.addClassName(view, coherent.Style.kReadOnlyClass);
+        if (node.readOnly)
+            Element.addClassName(node, coherent.Style.kReadOnlyClass);
         else
-            Element.removeClassName(view, coherent.Style.kReadOnlyClass);
+            Element.removeClassName(node, coherent.Style.kReadOnlyClass);
 
-        if (view.disabled)
-            Element.addClassName(view, coherent.Style.kDisabledClass);
+        if (node.disabled)
+            Element.addClassName(node, coherent.Style.kDisabledClass);
         else
-            Element.removeClassName(view, coherent.Style.kDisabledClass);
+            Element.removeClassName(node, coherent.Style.kDisabledClass);
                 
-        view.value= newValue;
+        node.value= newValue;
     },
     
     onchange: function(event)
     {
-        var view= this.viewElement();
-        var value= parseInt(view.value,10);
+        var value= parseInt(this.node.value,10);
         
         if (this.bindings.value)
             this.bindings.value.setValue(value);
@@ -60,40 +57,40 @@ coherent.Slider= Class.create(coherent.FormControl, {
     
     minValue: function()
     {
-        return parseInt(this.viewElement().getAttribute('min'),10);
+        return parseInt(this.node.getAttribute('min'),10);
     },
 
     setMinValue: function(minValue)
     {
-        var view= this.viewElement();
+        var node= this.node;
         
-        view.setAttribute('min',minValue);
+        node.setAttribute('min',minValue);
         
         if (this.bindings.value) {
             var boundValue = this.bindings.value.value();
             
             if (boundValue > minValue)
-                view.value = boundValue;
+                node.value = boundValue;
         }
 
     },
     
     maxValue: function()
     {
-        return parseInt(this.viewElement().getAttribute('max'),10);
+        return parseInt(this.node.getAttribute('max'),10);
     },
 
     setMaxValue: function(maxValue)
     {
-        var view= this.viewElement();
+        var node= this.node;
         
-        view.setAttribute('max', maxValue);
+        node.setAttribute('max', maxValue);
         
         if (this.bindings.value) {
             var boundValue = this.bindings.value.value();
             
             if (boundValue < maxValue)
-                view.value = boundValue;
+                node.value = boundValue;
         }
     }
     

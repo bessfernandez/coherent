@@ -19,7 +19,7 @@ coherent.Bindable= Class.create(coherent.KVO, {
     constructor: function(parameters)
     {
         this.bindings={};
-        this.__parameters= parameters;
+        this.__copyParameters(parameters||{});
         this.__context= coherent.dataModel;
     },
 
@@ -200,22 +200,16 @@ coherent.Bindable= Class.create(coherent.KVO, {
         (which is the default value).
         
         This method performs the following steps:
-        1. Copy the parameters passed via the contructor (calls {@link #__copyParameters})
-        2. Setup the bindings defined in the parameters (calls {@link #setupBindings})
+        1. Setup the bindings defined in the parameters (calls {@link #setupBindings})
+        2. Call the init method
         3. Retrieve the current value of each binding (calls {@link #updateBindings})
      */
     __postConstruct: function()
     {
-        if (!this.automaticallySetupBindings)
-            return;
-            
-        this.__initialising= true;
-
-        this.__copyParameters(this.__parameters||{});
-
         this.setupBindings();
+        if (this.init)
+            this.init();
         this.updateBindings();
-        delete this.__initialising;
     },
     
     /** Copy the parameters hash to this object. This method explicitly skips
@@ -230,8 +224,12 @@ coherent.Bindable= Class.create(coherent.KVO, {
      */
     __copyParameters: function(parameters)
     {
+        if (!parameters)
+            return;
+            
         var p;
         var v;
+        var setter;
         var adaptTree= coherent.KVO.adaptTree;
         
         for (p in parameters)
@@ -241,7 +239,11 @@ coherent.Bindable= Class.create(coherent.KVO, {
             v= parameters[p];
             if ('object'===coherent.typeOf(v) && !('addObserverForKeyPath' in v))
                 adaptTree(v);
-            this[p]= v;
+            setter= 'set' + p.titleCase();
+            if (setter in this)
+                this[setter](v);
+            else
+                this[p]= v;
         }
 
         this.__parameters= parameters;

@@ -18,25 +18,25 @@ coherent.Anchor= Class.create(coherent.View, {
      */
     href: function()
     {
-        var node= this.viewElement();
+        var node= this.node;
         return node.getAttribute('href');
     },
     
     setHref: function(newHref)
     {
-        var node= this.viewElement();
+        var node= this.node;
         node.href= newHref;
     },
     
     title: function()
     {
-        var node= this.viewElement();
+        var node= this.node;
         return node.getAttribute('title');
     },
     
     setTitle: function(newTitle)
     {
-        var node= this.viewElement();
+        var node= this.node;
         node.title= newTitle;
     },
     

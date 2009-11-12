@@ -3,9 +3,6 @@
 
 /** A View for laying out videos.  This is a subclass of coherent.Video 
  *  which proxies an video wrapped in a div to a real video view"
- *  
- *  @declare coherent.VideoLayout
- *  @extends coherent.Video
  **/
 
 coherent.VideoLayout= Class.create(coherent.Video,{

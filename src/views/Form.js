@@ -16,14 +16,6 @@ coherent.Form= Class.create(coherent.FieldGroup, {
     //  Only send the action on submit of the form.
     sendActionOn: ['submit'],
     
-    init: function()
-    {
-        this.base();
-        
-        var view= this.viewElement();
-        Event.observe(view, 'submit', this.onsubmit.bind(this));
-    },
-    
     onsubmit: function(event)
     {
         if (!this.action || !this.sendActionOn.containsObject('submit'))
@@ -35,22 +27,22 @@ coherent.Form= Class.create(coherent.FieldGroup, {
     
     actionUrl: function()
     {
-        return this.viewElement().action;
+        return this.node.action;
     },
     
     setActionUrl: function(newUrl)
     {
-        this.viewElement().action= newUrl;
+        this.node.action= newUrl;
     },
     
     method: function()
     {
-        return this.viewElement().method;
+        return this.node.method;
     },
     
     setMethod: function(newMethod)
     {
-        this.viewElement().method= newMethod;
+        this.node.method= newMethod;
     }
 
 });
@@ -60,18 +52,18 @@ if (coherent.Browser.IE)
 
         onfocus: function(event)
         {
-            var view= this.viewElement();
-            Event.stopObserving(view, 'submit', this.__submitHandler);
-            Event.stopObserving(view, 'reset', this.__resetHandler);
-            this.__submitHandler= Event.observe(view, 'submit', this.onsubmit.bind(this));
-            this.__resetHandler= Event.observe(view, 'reset', this.onreset.bind(this));
+            var node= this.node;
+            Event.stopObserving(node, 'submit', this.__submitHandler);
+            Event.stopObserving(node, 'reset', this.__resetHandler);
+            this.__submitHandler= Event.observe(node, 'submit', this.onsubmit.bind(this));
+            this.__resetHandler= Event.observe(node, 'reset', this.onreset.bind(this));
         },
     
         onblur: function(event)
         {
-            var view= this.viewElement();
-            Event.stopObserving(view, 'submit', this.__submitHandler);
-            Event.stopObserving(view, 'reset', this.__resetHandler);
+            var node= this.node;
+            Event.stopObserving(node, 'submit', this.__submitHandler);
+            Event.stopObserving(node, 'reset', this.__resetHandler);
         }
     
     });

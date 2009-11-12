@@ -1,0 +1,455 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <script src="../build/coherent-debug.js" type="text/javascript" charset="utf-8"></script>
+        <style>
+            body
+            {
+                font-family: helvetica;
+                font-size: 13px;
+            }
+
+            #demo
+            {
+            }
+            
+            ul
+            {
+                list-style: none;
+                margin: 0;
+                -webkit-user-select: none;
+                xwidth: 700px;
+                height: 500px;
+                overflow-y: scroll;
+                overflow-x: hidden;
+                border: 1px solid #888;
+                padding: 3px 2px;
+            }
+            
+            li
+            {
+                margin: 3px 0;
+            }
+            
+/*            li.selected
+            {
+                background-color: Highlight;
+                color: HighlightText;
+            }
+*/            
+            .updating
+            {
+                color: rgba(0,0,0,0);
+            }
+            
+            .nullValue
+            {
+                color: #999;
+            }
+            
+            .item
+            {
+                cursor: default;
+                color: #333;
+                height: 18px;
+            }
+            
+            .item em
+            {
+                font-style: normal;
+            }
+
+            .item b
+            {
+                font-weight: normal;
+                padding: 2px 5px 2px 4px;
+                margin-left: 1px;
+                color: #999;
+            }
+
+            .item:hover b
+            {
+                background-color: #CDE1FC;
+                color: #333;
+                -webkit-border-top-right-radius: 9px;
+                -webkit-border-bottom-right-radius: 9px;
+            }
+            
+            .item .content
+            {
+                padding: 2px 4px 2px 5px;
+                -webkit-border-top-left-radius: 9px;
+                -webkit-border-bottom-left-radius: 9px;
+                position: relative;
+                padding-left: 16px;
+            }
+
+            .item.outline-leaf .content
+            {
+                margin-left: 11px;
+                padding-left: 5px;
+            }
+            
+            .item:hover .content
+            {
+                background-color: #2c72dd;
+                color: white;
+            }
+            
+            .item u
+            {
+                display: inline-block;
+                position: relative;
+                margin: 0 2px;
+                top: 2px;
+                width: 14px;
+                height: 14px;
+                background-image: url(images/propertyIconsS.png);
+                background-repeat: no-repeat;
+            }
+            
+            .item:hover u
+            {
+                background-position-x: -28px;
+            }
+            
+            .item.number u
+            {
+                background-position-y: -28px;
+            }
+
+            .item.string u
+            {
+                background-position-y: 0px;
+            }
+
+            .item.object u
+            {
+                background-position-y: -42px;
+            }
+            
+            .item.object .value,
+            .item.array .value
+            {
+                display: none;
+            }
+
+            .item.object .content,
+            .item.array .content
+            {
+                -webkit-border-top-right-radius: 9px;
+                -webkit-border-bottom-right-radius: 9px;
+                padding-right: 5px;
+            }
+            
+            .item.array u
+            {
+                background-position-y: -42px;
+                background-position-x: -14px;
+            }
+
+            .item.array:hover u
+            {
+                background-position-y: -42px;
+                background-position-x: -42px;
+            }
+            
+            .item.boolean u
+            {
+                background-position-y: -14px;
+            }
+            
+            .item .array-controls
+            {
+                -webkit-border-radius: 9px;
+                color: #666;
+                border: 1px solid #666;
+                margin-left: 5px;
+                opacity: 0.5;
+                background-color: #eee;
+            }
+
+            .item .array-controls:hover
+            {
+                opacity: 1;
+            }
+            
+            .item .array-controls em
+            {
+                display: inline-block;
+                width: 2em;
+            }
+
+            .item .array-controls em.index
+            {
+                text-align: right;
+            }
+            
+            .item .array-controls a
+            {
+                margin: 0 5px;
+                display: inline-block;
+                width: 6px;
+                height: 7px;
+                vertical-align: middle;
+                margin-top: -3px;
+                text-indent: -9999px;
+            }
+
+            .item .array-controls a.disabled
+            {
+                opacity: 0.5;
+                cursor: default;
+            }
+            
+            .item .array-controls a.prev
+            {
+                background-image: url(images/arrowLeft.png);
+                background-repeat: no-repeat;
+            }
+            .item .array-controls a.next
+            {
+                background-image: url(images/arrowRight.png);
+                background-repeat: no-repeat;
+            }
+
+            .item .array-controls a.prev:active
+            {
+                background-image: url(images/arrowLeft_pressed.png);
+            }
+            .item .array-controls a.next:active
+            {
+                background-image: url(images/arrowRight_pressed.png);
+            }
+            
+            .item .outline-disclosure-button
+            {
+                position: absolute;
+                left: 3px;
+                top: 50%;
+                margin-top: -6px;
+                display: inline-block;
+                width: 11px;
+                height: 12px;
+                text-indent: -9999px;
+                background-image: url(images/disclosureTriangleSmallRight.png);
+                background-repeat: no-repeat;
+                background-position: 0px 0px;
+            }
+
+            .outline-expanded .outline-disclosure-button
+            {
+                background-image: url(images/disclosureTriangleSmallDown.png);
+            }
+
+            .item:hover .outline-disclosure-button
+            {
+                background-image: url(images/disclosureTriangleSmallRightWhite.png);
+            }
+
+            .outline-expanded:hover .outline-disclosure-button
+            {
+                background-image: url(images/disclosureTriangleSmallDownWhite.png);
+            }
+            
+            .outline-leaf .outline-disclosure-button
+            {
+                display: none;
+            }
+
+            .item.outline-level-1
+            {
+                margin-left: 0em;
+            }
+            .item.outline-level-2
+            {
+                margin-left: 20px;
+            }
+            .item.outline-level-3
+            {
+                margin-left: 40px;
+            }
+            .item.outline-level-4
+            {
+                margin-left: 60px;
+            }
+            .item.outline-level-5
+            {
+                margin-left: 80px;
+            }
+            .item.outline-level-6
+            {
+                margin-left: 100px;
+            }
+            .item.outline-level-7
+            {
+                margin-left: 120px;
+            }
+            
+        </style>
+    </head>
+    
+    <body>
+        <div id="demo">
+            <label>JSON Data Source: <input type="text"></label>
+            <ul tabIndex="0" id="list1">
+                <li class="item"><span class="content"><a class="outline-disclosure-button" href="#">+</a><u></u><em class="name"></em></span><b class="value"></b><span class="array-controls"><a href="#" class="prev">previous</a><em class="index"></em>/<em class="count"></em><a href="#" class="next">next</a></span></li>
+            </ul>
+            
+            <div></div>
+        </div>
+        
+        <script>
+            var TestView= Class.create(coherent.View, {
+            
+                __structure__: {
+                    'input': coherent.TextField({
+                                action: 'fetchData',
+                                // sendsActionOnEndEditing: false,
+                                placeholder: 'Data Source'                            
+                            }),
+                    'ul': coherent.OutlineView({
+                                contentBinding: 'model',
+                                selectedObjectBinding: 'selectedObject',
+                                viewTemplate: VIEW({
+                                    ':root': coherent.View({
+                                                classBinding: {
+                                                    keypath: 'representedObject.type',
+                                                    transformedValue: function(value)
+                                                    {
+                                                        return 'item ' + value;
+                                                    }
+                                                }
+                                            }),
+                                    '.name': coherent.View({
+                                                textBinding: 'representedObject.name'
+                                            }),
+                                    '.value': coherent.View({
+                                                textBinding: 'representedObject.value(truncated)'
+                                            }),
+                                    '.array-controls': coherent.View({
+                                                visibleBinding: 'representedObject.toMany'
+                                            }),
+                                    '.array-controls .prev': coherent.Anchor({
+                                                enabledBinding: 'representedObject.canSelectPrevious',
+                                                target: 'representedObject',
+                                                action: 'selectPrevious'
+                                            }),
+                                    '.array-controls .next': coherent.Anchor({
+                                                enabledBinding: 'representedObject.canSelectNext',
+                                                target: 'representedObject',
+                                                action: 'selectNext'
+                                            }),
+                                    '.array-controls .index': coherent.View({
+                                                textBinding: {
+                                                    keypath: 'representedObject.index',
+                                                    transformedValue: function(value)
+                                                    {
+                                                        return value+1;
+                                                    }
+                                                }
+                                            }),
+                                    '.array-controls .count': coherent.View({
+                                                textBinding: 'representedObject.count'
+                                            })
+                                })
+                            }),
+                    'div': coherent.View({
+                                textBinding: 'selectedObject.name'
+                            })
+                },
+                
+                updateData: function(json)
+                {
+                    var node= new ModelNode('json', json);
+                    this.setValueForKey(node, 'model');
+                    return json;
+                },
+                
+                fetchData: function(sender)
+                {
+                    var url= sender.valueForKey('value');
+                    if (url===this.url)
+                        return;
+                    this.url= url;
+                    var d= XHR.get(url);
+                    d.addCallback(this.updateData.bind(this));
+                }
+                
+            });
+
+            var testview= new TestView('demo');
+            
+            var ModelNode= Class.create(coherent.KVO, {
+            
+                constructor: function(name, value)
+                {
+                    var p;
+                    this.name= name;
+                    this.type= coherent.typeOf(value);
+                    this.toMany= ('array'===this.type);
+                    this.children= [];
+                
+                    if ('object'===this.type)
+                    {
+                        for (p in value)
+                            this.children.push(new ModelNode(p, value[p]));
+                    }
+                    else if ('array'===this.type)
+                    {
+                        this.arrayValues= value;
+                        this.index= value.length?0:-1;
+                        this.count= value.length;
+                        var first= value[0];
+                        for (p in first)
+                            this.children.push(new ModelNode(p, first[p]));
+                    }
+                    else
+                        this.value= String(value);
+                },
+                
+                __updateArrayChildren: function()
+                {
+                    var children= [];
+                    var value= this.arrayValues[this.index];
+                    for (var p in value)
+                        children.push(new ModelNode(p, value[p]));
+                    this.setValueForKey(children, 'children');
+                },
+                    
+                canSelectPrevious: function()
+                {
+                    return this.index>0;
+                },
+                
+                selectPrevious: function()
+                {
+                    this.willChangeValueForKey('canSelectPrevious');
+                    this.willChangeValueForKey('canSelectNext');
+                    this.setValueForKey(Math.max(0, this.index-1), 'index');
+                    this.__updateArrayChildren();
+                    this.didChangeValueForKey('canSelectPrevious');
+                    this.didChangeValueForKey('canSelectNext');
+                },
+
+                canSelectNext: function()
+                {
+                    return (this.index+1) < this.count;
+                },
+                
+                selectNext: function()
+                {
+                    this.willChangeValueForKey('canSelectPrevious');
+                    this.willChangeValueForKey('canSelectNext');
+                    this.setValueForKey(Math.min(this.count-1, this.index+1), 'index');
+                    this.__updateArrayChildren();
+                    this.didChangeValueForKey('canSelectPrevious');
+                    this.didChangeValueForKey('canSelectNext');
+                }
+                
+            });
+
+        </script>
+        
+    </body>
+</html>

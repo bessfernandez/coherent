@@ -70,7 +70,7 @@ coherent.CalendarView= Class.create(coherent.View, {
         this._nextMonthNodes=[];
         this._monthNodes=[];
         
-        this.buildCalendar(this.viewElement());
+        this.buildCalendar(this.node);
         this.__selectedDate= new Date(0);
         this.setDate(this.today, false);
     },
@@ -98,7 +98,7 @@ coherent.CalendarView= Class.create(coherent.View, {
         };
         var caption= this.captionFormat.expand(dateInfo);
         
-        var captionNode= Element.query(this.viewElement(), 'span.cal-caption');
+        var captionNode= Element.query(this.node, 'span.cal-caption');
         captionNode.innerHTML= caption;
         
         this.updatePreviousMonthDays(animate);
@@ -311,7 +311,7 @@ coherent.CalendarView= Class.create(coherent.View, {
     onclick: function(event)
     {
         var node= event.target||event.srcElement;
-        var view= this.viewElement();
+        var view= this.node;
         
         while (node && node!=view && 'LI'!==node.tagName)
             node=node.parentNode;

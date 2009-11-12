@@ -19,8 +19,7 @@ coherent.Overlay= Class.create(coherent.View, {
     
     init: function()
     {
-        var view= this.viewElement();
-        view.style.display="none";
+        this.node.style.display="none";
     },
     
     showModalBackdrop: function(show)
@@ -38,8 +37,8 @@ coherent.Overlay= Class.create(coherent.View, {
             coherent.Overlay.modalLayer= backdrop;
         }
         
-        var view= this.viewElement();
-        view.parentNode.insertBefore(backdrop, view);
+        var node= this.node;
+        node.parentNode.insertBefore(backdrop, node);
         
         backdrop.style.display="";
         function callback()
@@ -65,9 +64,9 @@ coherent.Overlay= Class.create(coherent.View, {
             document.body.appendChild(guard);
         }
         
-        var view= this.viewElement();
+        var node= this.node;
         
-        view.parentNode.insertBefore(guard, view);
+        node.parentNode.insertBefore(guard, node);
         guard.style.display="";
         function callback()
         {
@@ -87,7 +86,7 @@ coherent.Overlay= Class.create(coherent.View, {
     
     setVisible: function(isVisible)
     {
-        document.body.appendChild(this.viewElement());
+        document.body.appendChild(this.node);
 
         if (isVisible===this.visible())
             return;
@@ -116,4 +115,3 @@ coherent.Overlay= Class.create(coherent.View, {
 });
 
 coherent.Overlay.numberOfModalOverlays=0;
-coherent.Overlay.modalOverlays=[];

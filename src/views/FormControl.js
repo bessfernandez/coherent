@@ -15,12 +15,12 @@ coherent.FormControl= Class.create(coherent.View, {
 
     value: function()
     {
-        return this.viewElement().value;
+        return this.node.value;
     },
     
     setValue: function(newValue)
     {
-        this.viewElement().value= newValue;
+        this.node.value= newValue;
     },
     
     /** Callback for tracking changes to the value binding. This updates the
@@ -30,45 +30,45 @@ coherent.FormControl= Class.create(coherent.View, {
       */
     observeValueChange: function(change)
     {
-        var view= this.viewElement();
+        var node= this.node;
 
         //  determine whether this value is a marker
         var markerType= this.bindings.value && this.bindings.value.markerType;
         
         if (coherent.NoSelectionMarkerType===markerType)
-            view.disabled= true;
+            node.disabled= true;
         else if (!this.bindings.enabled)
-            view.disabled= false;
+            node.disabled= false;
     
         if (!this.bindings.editable)
-            view.readOnly= !this.bindings.value.mutable();
+            node.readOnly= !this.bindings.value.mutable();
 
-        if (view.readOnly)
-            Element.addClassName(view, coherent.Style.kReadOnlyClass);
+        if (node.readOnly)
+            Element.addClassName(node, coherent.Style.kReadOnlyClass);
         else
-            Element.removeClassName(view, coherent.Style.kReadOnlyClass);
+            Element.removeClassName(node, coherent.Style.kReadOnlyClass);
 
-        if (view.disabled)
-            Element.addClassName(view, coherent.Style.kDisabledClass);
+        if (node.disabled)
+            Element.addClassName(node, coherent.Style.kDisabledClass);
         else
-            Element.removeClassName(view, coherent.Style.kDisabledClass);
+            Element.removeClassName(node, coherent.Style.kDisabledClass);
             
         this.setValue(change.newValue);
     },
     
     name: function()
     {
-        return this.viewElement().name;
+        return this.node.name;
     },
     
     setName: function(newName)
     {
-        this.viewElement().name= newName;
+        this.node.name= newName;
     },
     
     validate: function()
     {
-        return this.viewElement().value;
+        return this.node.value;
     }
     
 });

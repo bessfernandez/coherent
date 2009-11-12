@@ -24,6 +24,7 @@ coherent.Fieldset= Class.create(coherent.FieldGroup, {
     teardown: function()
     {
         coherent.page.removeObserverForKeyPath(this, 'firstResponder');
+        this.base();
     },
     
     presentError: function(error)
@@ -71,8 +72,8 @@ coherent.Fieldset= Class.create(coherent.FieldGroup, {
         //             classname: this.bubbleClass,
         //             error: error,
         //             position: this.bubblePosition,
-        //             target: newFirstResponder.viewElement(),
-        //             within: this.viewElement()
+        //             target: newFirstResponder.node,
+        //             within: this.node
         //         });
     }
 });

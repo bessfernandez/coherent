@@ -5,32 +5,27 @@ coherent.PopupList= Class.create(coherent.FormControl, {
     exposedBindings: ['content', 'contentObjects', 'contentValues', 'selectedIndex',
                       'selectedObject', 'selectedValue'],
 
-    constructor: function(view, parameters)
+    constructor: function(node, parameters)
     {
-        this.base(view, parameters);
+        this.base(node, parameters);
         this.__content= [];
         this.__selectedIndex= -1;
         this.__selectedValue= null;
         this.__selectedObject= null;
-        //  The onchange event handler gets installed when focusing the control
-        this.__onchangeHandler= this.onchange.bind(this);
     },
     
     /** Should the view accept being the first responder?
      */
     acceptsFirstResponder: function()
     {
-        var view= this.viewElement();
-    
-        if (view.disabled || view.readOnly)
-            return false;
-        return true;
+        var node= this.node;
+        return !(node.disabled || node.readOnly);
     },
     
     onchange: function(event)
     {
-        var view= this.viewElement();
-        var selectedIndex= view.selectedIndex;
+        var node= this.node;
+        var selectedIndex= node.selectedIndex;
      
         this.setSelectedIndex(selectedIndex);
         
@@ -162,10 +157,10 @@ coherent.PopupList= Class.create(coherent.FormControl, {
     {
         var content= this.content();
         var contentValues= this.contentValues() || content.valueForKey('description');
-        var view= this.viewElement();
+        var node= this.node;
         
         this.__selectedIndex= Math.min(content.length-1, Math.max(-1, newIndex));
-        view.selectedIndex= this.__selectedIndex;
+        node.selectedIndex= this.__selectedIndex;
         
         if (-1===this.__selectedIndex)
         {
@@ -188,12 +183,12 @@ coherent.PopupList= Class.create(coherent.FormControl, {
     {
         var content= this.content();
         var contentValues= this.contentValues() || content.valueForKey('description');
-        var view= this.viewElement;
+        var node= this.node;
         
         this.__selectedValue= newValue;
 
         var index= contentValues.indexOf(newValue);
-        view.selectedIndex= this.__selectedIndex= index;
+        node.selectedIndex= this.__selectedIndex= index;
         
         if (-1===index)
             this.__selectedObject= null;
@@ -210,12 +205,12 @@ coherent.PopupList= Class.create(coherent.FormControl, {
     {
         var content= this.content();
         var contentValues= this.contentValues() || content.valueForKey('description');
-        var view= this.viewElement;
+        var node= this.node;
         
         this.__selectedObject= newObject;
 
         var index= content.indexOf(newObject);
-        view.selectedIndex= this.__selectedIndex= index;
+        node.selectedIndex= this.__selectedIndex= index;
         
         if (-1===index)
             this.__selectedValue= null;
@@ -236,16 +231,16 @@ coherent.PopupList= Class.create(coherent.FormControl, {
         var contentValues= this.contentValues() || content.valueForKey('description');
         
         var numberOfOptions= content.length;
-        var view= this.viewElement();
+        var node= this.node;
         var o;
         
         //  clear all the old options
-        view.innerHTML="";
-        view.options.length= numberOfOptions;
+        node.innerHTML="";
+        node.options.length= numberOfOptions;
         
         for (var i=0; i<numberOfOptions; ++i)
         {
-            o= view.options[i];
+            o= node.options[i];
             if (coherent.Browser.IE)
                 o.innerText= contentValues[i];
             else
@@ -264,7 +259,7 @@ coherent.PopupList= Class.create(coherent.FormControl, {
             }
         }
         
-        view.selectedIndex= this.__selectedIndex;
+        node.selectedIndex= this.__selectedIndex;
     },
     
     __scheduleUpdate: function()
@@ -281,14 +276,14 @@ if (coherent.Browser.IE)
 
         onfocus: function(event)
         {
-            var view= this.viewElement();
-            Event.stopObserving(view, 'change', this.__onchangeHandler);
-            Event.observe(view, 'change', this.__onchangeHandler);
+            var node= this.node;
+            Event.stopObserving(node, 'change', this.__onchangeHandler);
+            this.__onchangeHandler= Event.observe(node, 'change', this.onchange.bind(this));
         },
     
         onblur: function(event)
         {
-            Event.stopObserving(this.viewElement(), 'change', this.__onchangeHandler);
+            Event.stopObserving(this.node, 'change', this.__onchangeHandler);
         }
     
     });

@@ -30,33 +30,28 @@
         var oldDataModel= coherent.dataModel;
         var model= coherent.dataModel= nibScript.model;
     
-        try
+        var v;
+        var p;
+        var ignore= coherent.KVO.typesOfKeyValuesToIgnore;
+        var ctypeof= coherent.typeOf;
+    
+        for (p in def.objects)
         {
-            var v;
-            var p;
-            var ignore= coherent.KVO.typesOfKeyValuesToIgnore;
-            var ctypeof= coherent.typeOf;
-        
-            for (p in def.objects)
-            {
-                //  Skip owner, because it's special
-                if ('owner'===p)
-                    continue;
-                
-                v= def.objects[p];
-                if (v && 'function'===typeof(v) && v.__factoryFn__)
-                    v= v.call(model);
-
-                if (!(ctypeof(v) in ignore) && !('addObserverForKeyPath' in v))
-                    coherent.KVO.adaptTree(v);
+            //  Skip owner, because it's special
+            if ('owner'===p)
+                continue;
             
-                model.setValueForKey(v, p);
-            }
+            v= def.objects[p];
+            if (v && 'function'===typeof(v) && v.__factoryFn__)
+                v= v.call(model);
+
+            if (!(ctypeof(v) in ignore) && !('addObserverForKeyPath' in v))
+                coherent.KVO.adaptTree(v);
+        
+            model.setValueForKey(v, p);
         }
-        finally
-        {
-            coherent.dataModel= oldDataModel;
-        }
+
+        coherent.dataModel= oldDataModel;
 
         if (def.setup)
             def.setup(model);

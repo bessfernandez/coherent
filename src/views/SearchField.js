@@ -10,10 +10,7 @@
  *  
  *  A SearchField will be created for any `input` element with `type=="search"`
  *  regardless of whether the browser supports native search input elements.
- *  
- *  @declare coherent.SearchField
- *  @extends coherent.TextField
- *  
+
  *  @TODO: The predicate attribute _really_ ought to be a full predicate def.
  */
 coherent.SearchField= Class.create(coherent.TextField, {
@@ -22,14 +19,14 @@ coherent.SearchField= Class.create(coherent.TextField, {
     
     onfocus: function(event)
     {
-        var view= this.viewElement();
+        var view= this.node;
         Event.stopObserving(view, 'search', this.__searchHandler);
         this.__searchHandler= Event.observe(view, 'search', this.onchange.bind(this));
     },
     
     onblur: function(event)
     {
-        Event.stopObserving(this.viewElement(), 'search', this.__searchHandler);
+        Event.stopObserving(this.node, 'search', this.__searchHandler);
     },
     
     /** Search views should send updates sooner than regular input views.
@@ -56,7 +53,7 @@ coherent.SearchField= Class.create(coherent.TextField, {
      */
     createFilterPredicate: function()
     {
-        var view= this.viewElement();
+        var view= this.node;
         var keyPath= this.predicate;
         var value= view.value.toLowerCase();
     

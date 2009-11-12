@@ -3,8 +3,7 @@ coherent.FieldGroup= Class.create(coherent.View, {
 
     validateFields: function()
     {
-        var view= this.viewElement();
-        var fields= Element.queryAll(view, 'input,textarea');
+        var fields= Element.queryAll(this.node, 'input,textarea');
         
         var len= fields.length;
         var f;

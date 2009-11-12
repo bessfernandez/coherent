@@ -1,10 +1,6 @@
 /*jsl:import FormControl.js*/
 
 /** Specialisation of View that handles radio buttons and checkboxes.
- *  
- *  @declare coherent.ToggleButton
- *  @extends coherent.FormControl
- *  
  */
 coherent.ToggleButton= Class.create(coherent.FormControl, {
 
@@ -12,7 +8,7 @@ coherent.ToggleButton= Class.create(coherent.FormControl, {
     
     onclick: function(event)
     {
-        var view= this.viewElement();
+        var view= this.node;
         var checked= view.checked;
         var value= view.value;
 
@@ -33,7 +29,7 @@ coherent.ToggleButton= Class.create(coherent.FormControl, {
     {
         this.base(change);
 
-        var view= this.viewElement();
+        var view= this.node;
         var newValue= change.newValue;
 
         view.value= newValue;
@@ -49,7 +45,7 @@ coherent.ToggleButton= Class.create(coherent.FormControl, {
     
     observeCheckedChange: function(change, keyPath, context)
     {
-        var view= this.viewElement();
+        var view= this.node;
 
         var newValue= !!change.newValue;
         view.checked= newValue;
@@ -59,7 +55,7 @@ coherent.ToggleButton= Class.create(coherent.FormControl, {
     
     observeSelectionChange: function(change, keyPath, context)
     {
-        var view= this.viewElement();
+        var view= this.node;
         
         var checked= (change.newValue==view.value);
         view.checked= checked;

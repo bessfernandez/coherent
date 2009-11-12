@@ -15,7 +15,6 @@ function VIEW(content, structure)
         if (!viewNode)
             viewNode= coherent.View.createNodeFromMarkup(content);
 
-        var factories= {};
         var v;
         var p;
 

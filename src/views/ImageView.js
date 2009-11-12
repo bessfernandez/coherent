@@ -10,9 +10,6 @@
  *  values. These placeholders should be URLs to the appropriate image to
  *  display under those circumstances. The default values are empty, so no image
  *  will be displayed.
- *  
- *  @declare coherent.ImageView
- *  @extends coherent.View
  */
 coherent.ImageView= Class.create(coherent.View, {
     
@@ -23,42 +20,51 @@ coherent.ImageView= Class.create(coherent.View, {
     {
         this.base();
         
-        var view= this.viewElement();
+        var node= this.node;
         
         // Set the original src, if any to be the default 
         // placeholder for null and no selection values 
-        if (!this.defaultPlaceholders.src && view.src)
+        if (!this.defaultPlaceholders.src && node.src)
         { 
             var srcPH = this.defaultPlaceholders.src= {}; 
-            srcPH.nullValue = srcPH.noSelection = view.src; 
+            srcPH.nullValue = srcPH.noSelection = node.src; 
         }
     },
 
+    teardown: function()
+    {
+        var node= this.node;
+        Event.stopObserving(node, 'load', this.__onloadHandler);
+        Event.stopObserving(node, 'error', this.__onerrorHandler);
+
+        this.base();
+    },
+    
     onload: function()
     {
-        var view= this.viewElement();
+        var node= this.node;
         this.setValueForKey(false, 'loading');
-        Element.removeClassName(view, coherent.Style.kLoadingClass);
+        Element.removeClassName(node, coherent.Style.kLoadingClass);
 
-        Event.stopObserving(view, 'load', this.__onloadHandler);
-        Event.stopObserving(view, 'error', this.__onerrorHandler);
+        Event.stopObserving(node, 'load', this.__onloadHandler);
+        Event.stopObserving(node, 'error', this.__onerrorHandler);
     },
     
     onerror: function()
     {
-        var view= this.viewElement();
+        var node= this.node;
         this.setValueForKey(false, 'loading');
         
-        Element.updateClass(view, coherent.Style.kInvalidValueClass,
+        Element.updateClass(node, coherent.Style.kInvalidValueClass,
                             coherent.Style.kLoadingClass);
 
-        Event.stopObserving(view, 'load', this.__onloadHandler);
-        Event.stopObserving(view, 'error', this.__onerrorHandler);
+        Event.stopObserving(node, 'load', this.__onloadHandler);
+        Event.stopObserving(node, 'error', this.__onerrorHandler);
     },
     
     src: function()
     {
-        var src= this.viewElement().src;
+        var src= this.node.src;
         return ('about:blank'===src)?null:src;
     },
     
@@ -69,80 +75,80 @@ coherent.ImageView= Class.create(coherent.View, {
             
         this.setValueForKey(true, 'loading');
         
-        var view= this.viewElement();
-        Element.updateClass(view, coherent.Style.kLoadingClass,
+        var node= this.node;
+        Element.updateClass(node, coherent.Style.kLoadingClass,
                             coherent.Style.kInvalidValueClass);
 
         if (!newSrc)
             newSrc= 'about:blank';
 
-        Event.stopObserving(view, 'load', this.__onloadHandler);
-        Event.stopObserving(view, 'error', this.__onerrorHandler);
-        this.__onloadHandler= Event.observe(view, 'load', this.onload.bind(this));
-        this.__onerrorHandler= Event.observe(view, 'error', this.onerror.bind(this));
+        Event.stopObserving(node, 'load', this.__onloadHandler);
+        Event.stopObserving(node, 'error', this.__onerrorHandler);
+        this.__onloadHandler= Event.observe(node, 'load', this.onload.bind(this));
+        this.__onerrorHandler= Event.observe(node, 'error', this.onerror.bind(this));
 
-        var originalSrc= view.src;
-        view.src= newSrc;
+        var originalSrc= node.src;
+        node.src= newSrc;
         
         //  Safari 3 & 4 don't fire the onload event if the new src is the same
         //  as the previous src. See <rdar://problem/6660795>.
-        if (coherent.Browser.Safari && view.src===originalSrc)
+        if (coherent.Browser.Safari && node.src===originalSrc)
             this.onload();
     },
     
     observeSrcChange: function(change)
     {
-        var view= this.viewElement();
+        var node= this.node;
         var markerType= this.bindings.src && this.bindings.src.markerType;
 
         if (markerType)
-            Element.addClassName(view, coherent.Style.kMarkerClass);
+            Element.addClassName(node, coherent.Style.kMarkerClass);
         else
-            Element.removeClassName(view, coherent.Style.kMarkerClass);
+            Element.removeClassName(node, coherent.Style.kMarkerClass);
         
         this.setSrc(change.newValue);
     },
     
     width: function()
     {
-        return parseInt(this.viewElement().width,10);
+        return parseInt(this.node.width,10);
     },
 
     setWidth: function(newWidth)
     {
-        var view= this.viewElement();
+        var node= this.node;
         var width= parseInt(newWidth,10);
 
         if (isNaN(width))
-            view.removeAttribute('width');
+            node.removeAttribute('width');
         else
-            view.width= width;
+            node.width= width;
     },
 
     height: function()
     {
-        return parseInt(this.viewElement().height,10);
+        return parseInt(this.node.height,10);
     },
 
     setHeight: function(newHeight)
     {
-        var view= this.viewElement();
+        var node= this.node;
         var height= parseInt(newHeight,10);
 
         if (isNaN(height))
-            view.removeAttribute('height');
+            node.removeAttribute('height');
         else
-            view.height= height;
+            node.height= height;
     },
     
     alt: function()
     {
-        return this.viewElement().alt;
+        return this.node.alt;
     },
     
     setAlt: function(newAlt)
     {
-        this.viewElement().alt= (newAlt||'');
+        this.node.alt= (newAlt||'');
     }
 
 });

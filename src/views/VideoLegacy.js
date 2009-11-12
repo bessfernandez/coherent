@@ -87,7 +87,7 @@ coherent.VideoLegacy= Class.create(coherent.View, {
     _signupForEvents: function()
     {
         var self = this;
-        var view = this.viewElement();
+        var view = this.node;
         
         this._eventsSetup = true;
 

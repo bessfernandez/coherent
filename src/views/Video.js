@@ -6,8 +6,7 @@ coherent.Video= Class.create(coherent.Media, {
 
     poster: function()
     {
-        var view= this.viewElement();
-        return view.poster;
+        return this.node.poster;
     },
     
     setPoster: function(newPoster)
@@ -15,41 +14,39 @@ coherent.Video= Class.create(coherent.Media, {
         if (this.bindings.poster)
             this.bindings.poster.setValue(newPoster);
 
-        var view= this.viewElement();
-
-        view.poster = newPoster;
+        this.node.poster = newPoster;
     },
         
     width: function()
     {
-        return parseInt(this.viewElement().width,10);
+        return parseInt(this.node.width,10);
     },
 
     setWidth: function(newWidth)
     {
-        var view= this.viewElement();
+        var node= this.node;
         var width= parseInt(newWidth,10);
 
         if (isNaN(width))
-            view.removeAttribute('width');
+            node.removeAttribute('width');
         else
-            view.width= width;
+            node.width= width;
     },
 
     height: function()
     {
-        return parseInt(this.viewElement().height,10);
+        return parseInt(this.node.height,10);
     },
 
     setHeight: function(newHeight)
     {
-        var view= this.viewElement();
+        var node= this.node;
         var height= parseInt(newHeight,10);
 
         if (isNaN(height))
-            view.removeAttribute('height');
+            node.removeAttribute('height');
         else
-            view.height= height;
+            node.height= height;
     }
     
 });

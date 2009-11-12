@@ -3,9 +3,6 @@
 
 /** A View for laying out images.  This is a subclass of coherent.ImageView 
  *  which proxies an image wrapped in a div to a real image view"
- *  
- *  @declare coherent.ImageLayout
- *  @extends coherent.ImageView
  **/
 
 coherent.ImageLayout= Class.create(coherent.ImageView,{

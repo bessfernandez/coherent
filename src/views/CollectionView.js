@@ -24,19 +24,19 @@ coherent.CollectionView= Class.create(coherent.View, {
         this.__items=[];
         this.__selectionIndexes= [];
     
-        var view= this.viewElement();
+        var node= this.node;
         var container;
         var templateNode;
         
-        if ('TABLE'===view.tagName)
+        if ('TABLE'===node.tagName)
         {
-            container= this.setContainer(view.tBodies[0]);
+            container= this.setContainer(node.tBodies[0]);
             templateNode= container.rows.length && container.rows[0];
         }
         else
         {
             container= this.container();
-            templateNode= view.children[0];
+            templateNode= node.children[0];
         }
 
         if (templateNode)
@@ -60,11 +60,8 @@ coherent.CollectionView= Class.create(coherent.View, {
      */
     acceptsFirstResponder: function()
     {
-        var view= this.viewElement();
-
-        if (view.disabled || view.readOnly)
-            return false;
-        return true;
+        var node= this.node;
+        return !(node.disabled || node.readOnly);
     },
 
     newItemForRepresentedObject: function(representedObject)
@@ -82,7 +79,7 @@ coherent.CollectionView= Class.create(coherent.View, {
         
         item.representedObject= representedObject;
         item.view= this.viewTemplate(node, null);
-        item.node= node||item.view.viewElement();
+        item.node= node||item.view.node;
 
         coherent.dataModel= oldDataModel;
         
@@ -179,7 +176,7 @@ coherent.CollectionView= Class.create(coherent.View, {
 
             case coherent.ChangeType.deletion:
                 indexes.sort(coherent.reverseCompareNumbers);
-                for (index= len-1; index>=0; --index)
+                for (index=0; index<len; ++index)
                 {
                     nodeIndex= indexes[index];
                     this.removeChild(items[nodeIndex].node);
@@ -310,8 +307,7 @@ coherent.CollectionView= Class.create(coherent.View, {
     
     onmousedown: function(event)
     {
-        var view= this.viewElement();
-        if (view.disabled)
+        if (this.node.disabled)
             return;
 
         var node= (coherent.Support.Touches && this.__touchedRow) ||
@@ -326,8 +322,7 @@ coherent.CollectionView= Class.create(coherent.View, {
 
     onmouseup: function(event)
     {
-        var view= this.viewElement();
-        if (view.disabled)
+        if (this.node.disabled)
             return;
             
         if (this.__activeNode)
@@ -337,8 +332,7 @@ coherent.CollectionView= Class.create(coherent.View, {
 
     ontouchmove: function(event)
     {
-        var view= this.viewElement();
-        if (view.disabled)
+        if (this.node.disabled)
             return;
             
         if (this.__activeNode)
@@ -352,11 +346,11 @@ coherent.CollectionView= Class.create(coherent.View, {
      */
     onclick: function(event)
     {
-        var view= this.viewElement();
+        var node= this.node;
         
         //  When the ListView is disabled, pass the click event up the Responder
         //  chain to see if anyone up above would like to handle it.
-        if (view.disabled)
+        if (node.disabled)
         {
             this.base(event);
             Event.stop(event);
@@ -425,8 +419,8 @@ coherent.CollectionView= Class.create(coherent.View, {
      **/
     onkeydown: function(event)
     {
-        var view= this.viewElement();
-        if (view.disabled)
+        var node= this.node;
+        if (node.disabled)
             return;
 
         //  Only need to trap up & down arrows
@@ -460,7 +454,7 @@ coherent.CollectionView= Class.create(coherent.View, {
         var container= this.container();
         var item= container.children[newIndex];
 
-        var scrollParent= Element.scrollParent(view);
+        var scrollParent= Element.scrollParent(node);
         var scrollParentHeight= scrollParent.offsetHeight;
 
         var scrollTop= item.offsetTop - scrollParent.scrollTop;

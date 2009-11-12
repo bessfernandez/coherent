@@ -101,7 +101,8 @@ Object.extend(Event, {
 
         if (this._domLoadedTimer)
             window.clearInterval(this._domLoadedTimer);
-    
+        Event.stopObserving(window, 'load', Event._domHasFinishedLoading);
+        
         var callbacks= Event._readyCallbacks;
         var len= callbacks.length;
         var i;

@@ -204,7 +204,7 @@ coherent.ArrayController= Class.create(coherent.ObjectController, {
 
         var selectedObjects;
 
-        var compareFn= this.createCompareFunction();
+        var compareFn= coherent.SortDescriptor.comparisonFunctionFromDescriptors(this.sortDescriptors());
 
         if (this.selectsInsertedObjects)
             selectedObjects= sorted;
@@ -269,49 +269,6 @@ coherent.ArrayController= Class.create(coherent.ObjectController, {
         return objects.filter(filterPredicate);
     },
 
-    /** Compare two objects according to the specified sort descriptors.
-        @returns -1 if obj1 appears before obj2, 1 if obj1 appears after obj2,
-                 and 0 if obj1 is equal to obj2. If no sort descriptors have
-                 been set, all objects are equal.
-     */
-    createCompareFunction: function()
-    {
-        /** A simple sort function that uses all the sort descriptors associated
-            with this coherent.ArrayController. The first descriptor that returns
-            a non-zero value (AKA not equal) terminates the comparison. Note,
-            this sort function receives the indexes from the arranged array and
-            uses those indexes to find the objects to compare in the content
-            array.
-        
-            @param index1   the index in the content array of the first object
-            @param index2   the index in the content array of the second object
-            @returns -1 if obj1 is less than obj2, 0 if the two objects are equal,
-                     1 if obj1 is greater than obj2.
-         */
-        var sortDescriptors= this.sortDescriptors();
-        var numberOfSortDescriptors= sortDescriptors.length;
-
-        if (!numberOfSortDescriptors)
-            return null;
-        else
-            return function compareObjects(obj1, obj2)
-            {
-                var s;
-                var result;
-        
-                for (s=0; s<numberOfSortDescriptors; ++s)
-                {
-                    result= sortDescriptors[s].compareObjects(obj1, obj2);
-                    if (!sortDescriptors[s].ascending)
-                        result*=-1;
-                    if (0!==result)
-                        return result>0?1:-1;
-                }
-    
-                return 0;
-            };
-    },
-    
     /** Sort an array of objects according to the sortDescriptors.
       
         @param objects - the content array to sort
@@ -320,7 +277,7 @@ coherent.ArrayController= Class.create(coherent.ObjectController, {
      */
     sortObjects: function(objects)
     {
-        var compareFunction= this.createCompareFunction();
+        var compareFunction= coherent.SortDescriptor.comparisonFunctionFromDescriptors(this.sortDescriptors());
         if (!compareFunction)
             return objects.concat();
             

@@ -74,11 +74,6 @@ coherent.View= Class.create(coherent.Responder, {
         duration: 200
     },
     
-    /** Don't automatically setup the bindings, because Views need to exist
-        first and be fully initialised.
-     */
-    automaticallySetupBindings: false,
-    
     /** Reference to a coherent.Formatter instance that should be used for
         formatting the html/text value of this view.
         
@@ -112,74 +107,38 @@ coherent.View= Class.create(coherent.Responder, {
         @param [parameters=null]    A hash containing parameters for the view
 
      */
-    constructor: function(view, parameters)
+    constructor: function(node, parameters)
     {
         this.base(parameters);
         
-        if (null===view && this.markup)
+        if (null===node && this.markup)
         {
-            this.__view= view= coherent.View.createNodeFromMarkup(this.markup);
-            this.id= Element.assignId(view);
+            this.node= coherent.View.createNodeFromMarkup(this.markup);
+            this.id= Element.assignId(this.node);
         }
-        else if ('string'===typeof(view))
+        else if ('string'===typeof(node))
         {
-            this.id= view;
-            this.__view= document.getElementById(view);
+            this.id= node;
+            this.node= document.getElementById(this.id);
+            if (!this.node)
+                throw new Error('Node not found for ID: ' + this.id);
+        }
+        else if (1===node.nodeType)
+        {
+            this.id= Element.assignId(node);
+            this.node= node;
         }
         else
-        {
-            this.id= Element.assignId(view);
-            this.__view= view;
-        }
-                      
+            throw new Error('Unexpected value for node: ', + node);
+            
         if (this.id in coherent.View.viewLookup)
         {
             throw new Error('Two views share the same ID: ' + this.id);
         }
-                      
-        this.viewElement().object = this;
+
+        this.node.object= this;
         
-        this.__updating= null;
         coherent.View.viewLookup[this.id]= this;
-    },
-
-    __postConstruct: function()
-    {
-        var self= this;
-        
-        function clearViewCache()
-        {
-            if (coherent.Browser.IE)
-            {
-                delete self.__view;
-                delete self.__container;
-            }
-        }
-        clearViewCache.delay(250);
-        
-        var view= this.viewElement();
-        if (view)
-            this.__init();
-        else
-            Event.onDomReady(this.__init.bind(this));
-    },
-
-    __init: function()
-    {
-        this.__initialising= true;
-        var view= this.viewElement();
-        if (!view)
-            throw new Error('Unable to locate node with ID: ' + this.id);
-            
-        //  short circuit lookup for view element
-        this.viewElement= function() { return view; }
-            
-        var v;
-        var p;
-        
-        //  setup parameters for this view...
-        var parameters= this.__parameters || {};
-        this.__copyParameters(parameters);
 
         //  Handle factory and constructor formatter values
         if (this.formatter && 'function'===typeof(this.formatter))
@@ -189,15 +148,27 @@ coherent.View= Class.create(coherent.Responder, {
             else
                 this.formatter= new (this.formatter)();
         }
-        
+
+        this.__createStructure();
+    },
+
+    __createStructure: function()
+    {
+        var node= this.node;
+        var v;
+        var p;
+
+
         //  generate structure if desired and there's no content in the view.
-        if (this.innerHTML && ""===String(view.innerHTML).trim())
-            view.innerHTML= this.innerHTML;
-            
+        if (this.innerHTML && ""===String(node.innerHTML).trim())
+            node.innerHTML= this.innerHTML;
+
+        
         //  re-jigger dataModel so that it points to this view
         var oldDataModel= coherent.dataModel;
         var oldContext= this.__context;
         coherent.dataModel= this.__context= this;
+
 
         //  process declarative structure and factory properties
         var structure= this.structure()||{};
@@ -212,17 +183,8 @@ coherent.View= Class.create(coherent.Responder, {
         //  restore original data model
         this.__context= oldContext;
         coherent.dataModel= oldDataModel;
-
-
-        
-        this.setupBindings();
-        this.init();
-        this.initFromDOM();
-        this.updateBindings();
-        delete this.__initialising;
-        delete this.viewElement;
     },
-
+    
     /** Remove all observers for the bound attributes. Called when this View is
         destroyed, however, because Javascript hasn't got a destructor or finalise
         method, this must be called manually -- in the case of Web pages, on the
@@ -234,14 +196,9 @@ coherent.View= Class.create(coherent.Responder, {
             this.bindings[b].unbind();
         
         // Remove the object pointer from the node
-        if (this.viewElement())
-            this.viewElement().object= null;
-        
-        if (!coherent.Browser.IE)
-        {
-            delete this.__view;
-            delete this.__container;
-        }
+        if (this.node)
+            this.node.object= null;
+        delete this.node;
         delete coherent.View.viewLookup[this.id];
     },
     
@@ -291,12 +248,13 @@ coherent.View= Class.create(coherent.Responder, {
                 return new klass(sel, parameters);
             }
             
-            var e= container||(this?this.viewElement():document);
+            var e= container||(this?this.node:document);
             var nodes= findNodes(e, selector||sel);
             if (!nodes.length)
                 return null;
                 
             Array.forEach(nodes, setupNode, this);
+            
             return coherent.View.fromNode(nodes[0]);
         };
     },
@@ -306,10 +264,6 @@ coherent.View= Class.create(coherent.Responder, {
         views always call their super class' init method.
      */
     init: function()
-    {
-    },
-
-    initFromDOM: function()
     {
     },
 
@@ -326,7 +280,7 @@ coherent.View= Class.create(coherent.Responder, {
      */
     viewElement: function()
     {
-        return this.__view || document.getElementById(this.id);
+        return this.node || document.getElementById(this.id);
     },
 
     /** Return the container element, which may be different from the view
@@ -334,7 +288,7 @@ coherent.View= Class.create(coherent.Responder, {
      */
     container: function()
     {
-        return this.__container || this.__view ||
+        return this.__container || this.node ||
                document.getElementById(this.__containerId||this.id);
     },
     
@@ -353,7 +307,7 @@ coherent.View= Class.create(coherent.Responder, {
      */
     superview: function()
     {
-        var node= this.viewElement();
+        var node= this.node;
         if (!node)
             return null;
         
@@ -378,13 +332,13 @@ coherent.View= Class.create(coherent.Responder, {
     {
         if (!parent)
             return false;
-        var parentNode= parent.viewElement();
-        
-        var node= this.viewElement();
+            
+        var parentNode= parent.node;
+        var node= this.node;
         
         while (node && node!==document.body)
         {
-            if (node.id==parentNode.id)
+            if (node.id===parentNode.id)
                 return true;
             node= node.parentNode;
         }
@@ -398,14 +352,14 @@ coherent.View= Class.create(coherent.Responder, {
     addSubview: function(subview)
     {
         var container= this.container();
-        container.appendChild(subview.viewElement());
+        container.appendChild(subview.node);
     },
 
     /** Find the first view that matches the given CSS selector.
      */
     viewWithSelector: function(selector)
     {
-        var node= Element.query(this.viewElement(), selector);
+        var node= Element.query(this.node, selector);
         var view= coherent.View.fromNode(node);
         return view;
     },
@@ -421,27 +375,25 @@ coherent.View= Class.create(coherent.Responder, {
      */
     focus: function()
     {
-        var view= this.viewElement();
-        view.focus();
+        this.node.focus();
     },
     
     /** Remove the focus from the view.
      */
     blur: function()
     {
-        var view= this.viewElement();
-        view.blur();
+        this.node.blur();
     },
     
     'class': function()
     {
-        return this.viewElement().className;
+        return this.node.className;
     },
     
     setClass: function(newClassName)
     {
-        var view= this.viewElement();
-        var oldClasses= $S(view.className.split(" "));
+        var node= this.node;
+        var oldClasses= $S(node.className.split(" "));
         var newClasses= $S((newClassName||"").split(" "));
     
         //  reset any state classes
@@ -456,34 +408,31 @@ coherent.View= Class.create(coherent.Responder, {
         
         var animationOptions= this.__animationOptionsForProperty('class');
         if (animationOptions.duration)
-            coherent.Animator.setClassName(view, newClassName, animationOptions);
+            coherent.Animator.setClassName(node, newClassName, animationOptions);
         else
-            view.className= newClassName;
+            node.className= newClassName;
     },
     
     addClassName: function(classname, animationOptions)
     {
-        var view= this.viewElement();
         if (animationOptions)
-            coherent.Animator.addClassName(view, classname, animationOptions);
+            coherent.Animator.addClassName(this.node, classname, animationOptions);
         else
-            Element.addClassName(view, classname);
+            Element.addClassName(this.node, classname);
     },
     
     removeClassName: function(classname, animationOptions)
     {
-        var view= this.viewElement();
         if (animationOptions)
-            coherent.Animator.removeClassName(view, classname, animationOptions);
+            coherent.Animator.removeClassName(this.node, classname, animationOptions);
         else
-            Element.addClassName(view, classname);
+            Element.addClassName(this.node, classname);
     },
     
     updateClassName: function(animationOptions, reverse)
     {
-        var view= this.viewElement();
         animationOptions.reverse= !!reverse;
-        coherent.Animator.updateClassName(view, animationOptions);
+        coherent.Animator.updateClassName(this.node, animationOptions);
     },
     
     /** Send the action message to the target.
@@ -494,28 +443,28 @@ coherent.View= Class.create(coherent.Responder, {
             return;
 
         var event= coherent.EventLoop.currentEvent;
+        var responder= this.target||this;
+        
+        /*  If the target is FIRST_RESPONDER (a string), then determine what is
+            the current first responder. Otherwise, the initial responder is
+            either the target or the current view if no target has been set.
+         */
+        if (FIRST_RESPONDER===responder)
+            responder= coherent.page.firstResponder;
+        else if ('string'===typeof(responder))
+            responder= this.__context.valueForKeyPath(responder);
 
         /*  When an explicit target is specified and the action is not a string,
             the action function can be invoked directly. There's no need (and no
             capactiy) to pass the action up the chain.
          */
-        if (FIRST_RESPONDER!==this.target && 'string'!==typeof(this.action))
+        if ('string'!==typeof(this.action))
         {
-            this.action.call(this.target||this.action, this, event);
+            this.action.call(responder, this, event);
             return;
         }
         
         var action= this.action;
-
-        /*  If the target is FIRST_RESPONDER (a string), then determine what is
-            the current first responder. Otherwise, the initial responder is
-            either the target or the current view if no target has been set.
-         */
-        var responder;
-        if (FIRST_RESPONDER===this.target)
-            responder= coherent.page.firstResponder;
-        else
-            responder= this.target||this;
         
         /*  Bubble the action up the responder chain. The first view that has a
             method corresponding to the action name will be the target responder.
@@ -545,16 +494,18 @@ coherent.View= Class.create(coherent.Responder, {
             Event.stop(event);
             return;
         }
+
+        if (!this.action)
+        {
+            this.base(event);
+            return;
+        }
         
         //  The view should only send the action when the sendActionOn "mask"
         //  contains the click event.
-        if (this.action && this.sendActionOn.containsObject('click'))
-        {
+        if (this.sendActionOn.containsObject('click'))
             this.sendAction();
-            Event.stop(event);
-        }
-        else
-            this.base(event);
+        Event.stop(event);
     },
 
     /** Add mouse tracking info for this view.
@@ -574,13 +525,18 @@ coherent.View= Class.create(coherent.Responder, {
     __animationOptionsForProperty: function(property)
     {
         var options= this.animate && this.animate[property];
+        var optionsType= typeof(options);
         
-        if (!options || window.dashcode)
+        if (!options)
             options= {
                 duration: 0
             };
-        else if ('boolean'===typeof(options))
+        else if ('boolean'===optionsType)
             options= {};
+        else if ('number'===optionsType)
+            options= {
+                duration: options
+            };
         else
             options= Object.clone(options);
         
@@ -596,28 +552,28 @@ coherent.View= Class.create(coherent.Responder, {
     
     __animatePropertyChange: function(property, options)
     {
-        var view= this.viewElement();
+        var node= this.node;
         var animationOptions= this.__animationOptionsForProperty(property);
         var animator= coherent.Animator;
         var _this= this;
                 
         function cleanup()
         {
-            options.cleanup.call(_this, view, animationOptions);
+            options.cleanup.call(_this, node, animationOptions);
         }
         
         function update()
         {
-            options.update.call(_this, view, animationOptions);
+            options.update.call(_this, node, animationOptions);
             animationOptions.reverse= !options.reverse;
             animationOptions.callback= options.cleanup?cleanup:null;
-            animator.updateClassName(view, animationOptions);
+            animator.updateClassName(node, animationOptions);
         }
 
         function go()
         {
             if (options.setup)
-                options.setup.call(_this, view, animationOptions);
+                options.setup.call(_this, node, animationOptions);
 
             animationOptions.reverse= !!options.reverse;
             
@@ -625,7 +581,7 @@ coherent.View= Class.create(coherent.Responder, {
                 animationOptions.callback= update;
             else
                 animationOptions.callback= options.cleanup?cleanup:null;
-            animator.updateClassName(view, animationOptions);
+            animator.updateClassName(node, animationOptions);
         }
 
         if (!animationOptions.duration)
@@ -636,29 +592,29 @@ coherent.View= Class.create(coherent.Responder, {
 
     visible: function()
     {
-        return 'none'!==Element.getStyle(this.viewElement(), 'display');
+        return 'none'!==Element.getStyle(this.node, 'display');
     },
     
     setVisible: function(isVisible)
     {
         this.__animatePropertyChange('visible', {
-                setup: function(view, options)
+                setup: function(node, options)
                 {
-                    if (!isVisible || ""===view.style.display)
+                    if (!isVisible || ""===node.style.display)
                         return;
 
                     if (options.duration)
-                        Element.addClassName(view, options.classname||options.add);
-                    view.style.display= "";
+                        Element.addClassName(node, options.classname||options.add);
+                    node.style.display= "";
                 },
-                cleanup: function(view, options)
+                cleanup: function(node, options)
                 {
                     if (isVisible)
                         return;
                         
-                    view.style.display= "none";
+                    node.style.display= "none";
                     if (options.duration)
-                        Element.removeClassName(view, options.classname||options.add);
+                        Element.removeClassName(node, options.classname||options.add);
                 },
                 reverse: isVisible
             });
@@ -666,7 +622,7 @@ coherent.View= Class.create(coherent.Responder, {
 
     enabled: function()
     {
-        return !this.viewElement().disabled;
+        return !this.node.disabled;
     },
 
     /** Enable or disable the view.
@@ -681,42 +637,42 @@ coherent.View= Class.create(coherent.Responder, {
     {
         this.__animatePropertyChange('enabled', {
                 reverse: isEnabled,
-                cleanup: function(view)
+                cleanup: function(node)
                 {
-                    view.disabled= !isEnabled;
+                    node.disabled= !isEnabled;
                 }
             });
     },
 
     editable: function()
     {
-        return !this.viewElement().readOnly;
+        return !this.node.readOnly;
     },
     
     setEditable: function(isEditable)
     {
         this.__animatePropertyChange('editable', {
                 reverse: isEditable,
-                cleanup: function(view)
+                cleanup: function(node)
                 {
-                    view.readOnly= !isEditable;
+                    node.readOnly= !isEditable;
                 }
             });
     },
 
     text: function()
     {
-        var view= this.viewElement();
-        return view.textContent||view.innerText;
+        var node= this.node;
+        return node.textContent||node.innerText;
     },
     
     setText: function(newText)
     {
         this.__animatePropertyChange('text', {
-                update: function(view)
+                update: function(node)
                 {
-                    view.innerHTML= "";
-                    view.appendChild(document.createTextNode(newText));
+                    node.innerHTML= "";
+                    node.appendChild(document.createTextNode(newText));
                 }
             });
     },
@@ -729,7 +685,7 @@ coherent.View= Class.create(coherent.Responder, {
      */
     observeTextChange: function(change, keyPath, context)
     {
-        var view= this.viewElement();
+        var view= this.node;
         var binding= this.bindings.text;
         var markerType= binding && binding.markerType;
         var newValue= change.newValue;
@@ -752,7 +708,7 @@ coherent.View= Class.create(coherent.Responder, {
     
     html: function()
     {
-        return this.viewElement().innerHTML;
+        return this.node.innerHTML;
     },
     
     setHtml: function(newHtml)
@@ -773,7 +729,7 @@ coherent.View= Class.create(coherent.Responder, {
      */
     observeHtmlChange: function(change, keyPath, context)
     {
-        var view= this.viewElement();
+        var node= this.node;
         var binding= this.bindings.html;
         var markerType= binding && binding.markerType;
         var newValue= change.newValue;
@@ -782,11 +738,11 @@ coherent.View= Class.create(coherent.Responder, {
         {
             if (null===newValue || 'undefined'===typeof(newValue))
                 newValue="";
-            Element.addClassName(view, coherent.Style.kMarkerClass);
+            Element.addClassName(node, coherent.Style.kMarkerClass);
         }
         else
         {
-            Element.removeClassName(view, coherent.Style.kMarkerClass);
+            Element.removeClassName(node, coherent.Style.kMarkerClass);
             if (this.formatter)
                 newValue= this.formatter.stringForValue(newValue);
         }
@@ -796,16 +752,16 @@ coherent.View= Class.create(coherent.Responder, {
     
     toolTip: function()
     {
-        return this.viewElement().title;
+        return this.node.title;
     },
     
     setToolTip: function(newTooltip)
     {
-        var view= this.viewElement();
+        var node= this.node;
         if (!newTooltip)
-            view.removeAttribute('title');
+            node.removeAttribute('title');
         else
-            view.title= newTooltip;
+            node.title= newTooltip;
     },
     
     /** Use this method rather than calling the DOM removeChild method directly,

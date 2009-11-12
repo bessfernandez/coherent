@@ -52,10 +52,11 @@ if (coherent.Browser.IE)
                 script.onreadystatechange = function()
                 {
                     if ("complete"===this.readyState)
-                        Event._domHasFinishedLoading(); 
+                        Event._domHasFinishedLoading();
                 };
                 script= null;
             
+                //  observe cleared when Event._domHasFinishedLoading called
                 Event.observe(window, 'load', Event._domHasFinishedLoading);
                 Event._readyCallbacks= [];
             }

@@ -64,7 +64,7 @@ coherent.ViewController= Class.create(coherent.Responder, {
      */
     viewElement: function()
     {
-        return this.view.viewElement();
+        return this.view.node;
     },
 
     viewWithSelector: function(selector)
@@ -89,8 +89,6 @@ coherent.ViewController= Class.create(coherent.Responder, {
 
     __init: function()
     {
-        this.__initialising= true;
-        
         var viewNode= document.getElementById(this.__viewId);
         if (!viewNode)
             throw new Error('Unable to locate node with ID: ' + this.__viewId);
@@ -140,7 +138,6 @@ coherent.ViewController= Class.create(coherent.Responder, {
         this.init();
         this.updateBindings();
         
-        delete this.__initialising;
         delete this.viewElement;
     },
     

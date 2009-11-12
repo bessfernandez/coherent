@@ -27,8 +27,7 @@ coherent.SegmentedControl = Class.create(coherent.View, {
     init: function()
     {
         this.__selectedIndex=-1;
-        var view= this.viewElement();
-        var segments= Element.queryAll(view, this.segmentSelector);
+        var segments= Element.queryAll(this.node, this.segmentSelector);
         var len= segments.length;
         
         for (var i=0; i<len; ++i)
@@ -49,8 +48,7 @@ coherent.SegmentedControl = Class.create(coherent.View, {
      */
     setSelectedIndex: function(newSelectedIndex)
     {
-        var view= this.viewElement();
-        var segments= Element.queryAll(view, this.segmentSelector);
+        var segments= Element.queryAll(this.node, this.segmentSelector);
         
         if ('number'!==typeof(newSelectedIndex) || newSelectedIndex<-1 || newSelectedIndex>=segments.length)
             return;
@@ -82,8 +80,7 @@ coherent.SegmentedControl = Class.create(coherent.View, {
         if (-1===this.__selectedIndex)
             return "";
 
-        var view= this.viewElement();
-        var segments= Element.queryAll(view, this.segmentSelector);
+        var segments= Element.queryAll(this.node, this.segmentSelector);
         var segment= segments[this.__selectedIndex];
         
         if (!segment)
@@ -106,13 +103,13 @@ coherent.SegmentedControl = Class.create(coherent.View, {
      */
     onclick: function(event)
     {
-        var view= this.viewElement();
+        var node= this.node;
         var target= event.target||event.srcElement;
    
-        while (target && target!=view && !('segmentIndex' in target))
+        while (target && target!=node && !('segmentIndex' in target))
             target= target.parentNode;
         
-        if (!target || target===view)
+        if (!target || target===node)
             return;
             
         this.setSelectedIndex(target.segmentIndex);

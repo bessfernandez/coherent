@@ -1,9 +1,6 @@
 /*jsl:import ../core/startup.js*/
 
 /** An object proxy for XML objects vended from an Ajax Controller 
- *  
- *  @declare coherent.ModeledXMLProxy
- *  @extends coherent.KVO
  */
 coherent.ModeledXMLProxy = Class.create(coherent.KVO, {
     

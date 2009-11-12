@@ -10,11 +10,6 @@ coherent.Page= Class.create(coherent.Responder, {
     {
         this.firstResponder= null;
         this.__hoverTrackingIds={};
-        this._delegates= {
-            click: []
-        };
-        
-        this.onclick= this._fireDelegates;
     },
     
     targetViewForEvent: function(event)
@@ -43,8 +38,7 @@ coherent.Page= Class.create(coherent.Responder, {
 
         //  Remove focus class from old firstResponder
         if (this.firstResponder)
-            Element.removeClassName(this.firstResponder.viewElement(),
-                                    coherent.Style.kFocusClass);
+            this.firstResponder.removeClassName(coherent.Style.kFocusClass);
         
         if (view && !view.becomeFirstResponder())
             return false;
@@ -56,8 +50,7 @@ coherent.Page= Class.create(coherent.Responder, {
         if (view)
         {
             view.focus();
-            Element.addClassName(view.viewElement(),
-                                 coherent.Style.kFocusClass);
+            view.addClassName(coherent.Style.kFocusClass);
         }
 
         return true;
@@ -87,51 +80,10 @@ coherent.Page= Class.create(coherent.Responder, {
         }
         doit.delay(0);
     },
-    
-    delegate: function(selector, event, fn)
-    {
-        //  e.g. coherent.page.delegate('div a', 'click', function(event) {});
-        if ('string'===typeof(event))
-            this._delegates[event].push({
-                    sel: selector,
-                    fn: fn
-                });
-        else
-        {
-            //  e.g. coherent.page.delegate('div a', {
-            //                                  click: function(event) {}
-            //                              });
-            var p;
-            for (p in event)
-            {
-                if (!(p in this._delegates))
-                    throw new Error('Invalid delegation event type: ' + p);
-                this._delegates[p].push({
-                        sel: selector,
-                        fn: event[p]
-                    });
-            }
-        }
-    },
 
     superview: function()
     {
         return null;
-    },
-    
-    _fireDelegates: function(event)
-    {
-        var element= event.target||event.srcElement;
-        var match= Element.match;
-        var handlers= this._delegates[event.type]||[];
-
-        function visitDelegate(d)
-        {
-            if (match(element, d.sel))
-                d.fn(event);
-        }
-        
-        handlers.forEach(visitDelegate);
     },
     
     _findFirstResponder: function(view)
@@ -191,7 +143,6 @@ coherent.Page= Class.create(coherent.Responder, {
         if (!this._mousedownView)
             return;
             
-        // console.log('clientX= ', event.clientX, ' clientY=', event.clientY, ' mousedown.x= ', this._mousedownPoint.x, ' mousedown.y=', this._mousedownPoint.y);
         if (!coherent.Support.DragAndDrop && !this._mousedownPoint.dragging)
         {
             var deltaX= event.clientX - this._mousedownPoint.x;
@@ -289,7 +240,8 @@ coherent.Page= Class.create(coherent.Responder, {
         if (view)
             view.onclick(event);
         else
-            this._fireDelegates(event);
+            this.onclick(event);
+            // this._fireDelegates(event);
     },
 
     _ondblclick: function(event)
@@ -335,7 +287,7 @@ coherent.Page= Class.create(coherent.Responder, {
                 this._documentFocused = true;
                 
                 if (window.dashcode && !window.dashcode.inDesign && document.body)
-                    Element.removeClassName(document.body, 'DC_windowInactive');
+                    Element.removeClassName(document.body, coherent.Style.kInactiveWindow);
             }
         }
         else
@@ -368,7 +320,7 @@ coherent.Page= Class.create(coherent.Responder, {
             this.makeFirstResponder(null);
             
             if (window.dashcode && !window.dashcode.inDesign && document.body)
-                Element.addClassName(document.body, 'DC_windowInactive');    
+                Element.addClassName(document.body, coherent.Style.kInactiveWindow);    
         }
         else
         {

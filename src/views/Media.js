@@ -11,27 +11,34 @@ coherent.Media= Class.create(coherent.View, {
         if (this.initialVolume)
             this.setVolume(this.initialVolume);
         
-        var view= this.viewElement();
+        var node= this.node;
 
-        Event.observe(view, 'ended', this.mediaDidEnd.bind(this));
-        Event.observe(view, 'play', this.mediaPlayingStateChanged.bind(this));
-        Event.observe(view, 'pause', this.mediaPlayingStateChanged.bind(this));
+        this.__onendedHandler= Event.observe(node, 'ended', this.mediaDidEnd.bind(this));
+        this.__onplayHandler= Event.observe(node, 'play', this.mediaPlayingStateChanged.bind(this));
+        this.__onpauseHandler= Event.observe(node, 'pause', this.mediaPlayingStateChanged.bind(this));
+    },
+    
+    teardown: function()
+    {
+        var node= this.node;
+
+        Event.stopObserving(node, 'ended', this.__onendedHandler);
+        Event.stopObserving(node, 'play', this.__onplayHandler);
+        Event.stopObserving(node, 'pause', this.__onpauseHandler);
+
+        this.base();
     },
     
     isSupported: function()
     {
-        var view= this.viewElement();
-        if ("paused" in view)
-            return true;
-        
-        return false;
+        return ("paused" in this.node);
     },
     
     pause: function()
     {
-        var view= this.viewElement();
-        if (!view.paused)
-            view.pause();
+        var node= this.node;
+        if (!node.paused)
+            node.pause();
     },
 
     mediaPlayingStateUpdated: function()
@@ -41,55 +48,45 @@ coherent.Media= Class.create(coherent.View, {
     
     play: function()
     {
-        var view= this.viewElement();
-        view.play();
+        this.node.play();
         this.forceChangeNotificationForKey('ended');
     },
     
     playing: function()
     {
-        var view= this.viewElement();
-        
-        return !view.paused;
+        return !this.node.paused;
     },
     
     stop: function()
     {
-        var view = this.viewElement();
-        view.currentTime = view.duration;
+        var node= this.node;
+        node.currentTime = node.duration;
     },
     
     muted: function()
     {
-        var view= this.viewElement();
-        return view.muted;
+        return this.node.muted;
     },
 
     setMuted: function(mute)
     {
-        var view= this.viewElement();
-        
         if (this.bindings.muted)
             this.bindings.muted.setValue(mute);
 
-        view.muted = mute;
+        this.node.muted = mute;
     },
     
     volume: function()
     {
-        var view= this.viewElement();
-        
-        return view.volume;
+        return this.node.volume;
     },
     
     setVolume: function(newVolume)
     {
-        var view= this.viewElement();
-        
         if (this.bindings.volume)
             this.bindings.volume.setValue(newVolume);
 
-        view.volume = Math.min(1,newVolume);
+        this.node.volume = Math.min(1,newVolume);
     },
     
     mediaDidEnd: function(event)
@@ -100,15 +97,13 @@ coherent.Media= Class.create(coherent.View, {
     
     ended: function()
     {
-        var view= this.viewElement();
-        return view.ended;
+        return this.node.ended;
     },
     
     //'autoplay', 'controls', 'loop'
     autoplay: function()
     {
-        var view= this.viewElement();
-        return view.autoplay;
+        return this.node.autoplay;
     },
     
     setAutoplay: function(newAutoplay)
@@ -116,14 +111,12 @@ coherent.Media= Class.create(coherent.View, {
         if (this.bindings.autoplay)
             this.bindings.autoplay.setValue(newAutoplay);
 
-        var view= this.viewElement();
-        view.autoplay= newAutoplay;
+        this.node.autoplay= newAutoplay;
     },
     
     controls: function()
     {
-        var view= this.viewElement();
-        return view.controls;
+        return this.node.controls;
     },
     
     setControls: function(newControls)
@@ -131,14 +124,12 @@ coherent.Media= Class.create(coherent.View, {
         if (this.bindings.controls)
             this.bindings.controls.setValue(newControls);
 
-        var view= this.viewElement();
-        view.controls= newControls;
+        this.node.controls= newControls;
     },
     
     loop: function()
     {
-        var view= this.viewElement();
-        return view.loop;
+        return this.node.loop;
     },
     
     setLoop: function(newLoop)
@@ -146,14 +137,12 @@ coherent.Media= Class.create(coherent.View, {
         if (this.bindings.loop)
             this.bindings.loop.setValue(newLoop);
 
-        var view= this.viewElement();
-        view.loop= newLoop;
+        this.node.loop= newLoop;
     },
     
     src: function()
     {
-        var view= this.viewElement();
-        return view.src;
+        return this.node.src;
     },
     
     setSrc: function(newSrc)
@@ -161,10 +150,10 @@ coherent.Media= Class.create(coherent.View, {
         if (this.bindings.src)
             this.bindings.src.setValue(newSrc);
 
-        var view= this.viewElement();
-        
-            view.src= newSrc;
-            view.load();
+        var node= this.node;
+    
+        node.src= newSrc;
+        node.load();
         this.forceChangeNotificationForKey('ended');
     }
     

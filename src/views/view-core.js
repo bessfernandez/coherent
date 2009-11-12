@@ -34,7 +34,12 @@ coherent.Style= {
     kDragAndDropCopy: "drag-and-drop-copy",
     kDragAndDropMove: "drag-and-drop-move",
     kDragAndDropLink: "drag-and-drop-link",
-    kDragAndDropNo: "drag-and-drop-no"
+    kDragAndDropNo: "drag-and-drop-no",
+    kInactiveWindow: 'coherent_windowInactive',
+    kOutlineExpanded: 'outline-expanded',
+    kOutlineLeaf: 'outline-leaf',
+    kOutlineLevelPrefix: 'outline-level-',
+    kOutlineDisclosureButton: 'outline-disclosure-button'
 };
 
 coherent.Style.__styles= (function(){

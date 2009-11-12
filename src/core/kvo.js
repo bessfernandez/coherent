@@ -312,8 +312,6 @@ coherent.ObserverEntry=Class.create({
  *  @property [__mutableKeys]   An array of keys which should be assumed to be
  *            the sum total mutable properties on the object or class,
  *            regardless of what introspection might otherwise reveal.
- *  
- *  @declare coherent.KVO
  */
 coherent.KVO= Class.create({
 
