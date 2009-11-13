@@ -5,17 +5,17 @@ coherent.Bubble= Class.create(coherent.Overlay, {
     relativePosition: 'above',
 
     arrowSelector: '.arrow',
-    
+
     constrainToView: function(constraint)
     {
-        this.__within= (constraint.node?constraint.node:constraint);
+        this.within= (constraint.node?constraint.node:constraint);
         if (this.visible())
             this.updatePosition();
     },
     
     attachToView: function(anchor)
     {
-        this.__anchor= (anchor.node?anchor.node:anchor);
+        this.anchor= (anchor.node?anchor.node:anchor);
         if (this.visible())
             this.updatePosition();
     },
@@ -27,7 +27,7 @@ coherent.Bubble= Class.create(coherent.Overlay, {
         if (!arrow)
             throw new Error('No arrow element in Bubble: selector="' + this.arrowSelector + '"');
             
-        var targetRect= Element.getRect(this.__anchor);
+        var targetRect= Element.getRect(this.anchor);
         var viewport= Element.getViewport();
         var withinRect;
         var _opacity= node.style.opacity;
@@ -36,8 +36,8 @@ coherent.Bubble= Class.create(coherent.Overlay, {
         Element.setStyle(node, 'opacity', 0);
         node.style.display='';
         
-        if (this.__within)
-            withinRect= Element.getRect(this.__within);
+        if (this.within)
+            withinRect= Element.getRect(this.within);
         else
         {
             var dimensions= Element.getDimensions(node);

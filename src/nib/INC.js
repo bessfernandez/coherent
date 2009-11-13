@@ -1,4 +1,5 @@
 /*jsl:import ../net/XHR.js*/
+/*jsl:import ../core/scripts.js*/
 
 /** Define a dynamic inclusion mechanism. The INC function pairs with the build
     process to create pre-packaged resources. For deployment, the actual content
@@ -66,6 +67,10 @@
         if (!source || !source.length)
             return;
         
+        if (source in INC.__installedContent)
+            return;
+        INC.__installedContent[source]= true;
+            
         //  eval in context of window
         var script = document.createElement('script');
         script.type = 'text/javascript';
@@ -82,11 +87,20 @@
 
     function installCss(css)
     {
+        if (css in INC.__installedContent)
+            return;
+        INC.__installedContent[css]= true;
+        
         var head= document.getElementsByTagName('head')[0];
         var style= document.createElement('style');
-        var content= document.createTextNode(css);
-        style.appendChild(content);
+        style.setAttribute('type', 'text/css');
+
         head.appendChild(style);
+
+        if (coherent.Browser.IE)
+            style.styleSheet.cssText= css;
+        else
+            style.appendChild(document.createTextNode(css));
     }
     
     function INC(relativePath, content)
@@ -98,18 +112,20 @@
             var prefix= scriptname.substring(0, lastSlash+1);
             var href= prefix + relativePath;
 
-            content= "";
-    
-            var d= XHR.get(href, null, {
-                                sync: true,
-                                responseContentType: 'text/plain'
-                            });
-            
-            function received(data)
+            content= INC.__hrefToContent[href];
+            if (!content)
             {
-                content= data;
+                var d= XHR.get(href, null, {
+                                    sync: true,
+                                    responseContentType: 'text/plain'
+                                });
+            
+                function received(data)
+                {
+                    content= data;
+                }
+                d.addCallback(received);
             }
-            d.addCallback(received);
         }
 
         var lastDot= relativePath.lastIndexOf('.');
@@ -133,6 +149,9 @@
 
         return content;
     }
+    
+    INC.__hrefToContent= {};
+    INC.__installedContent= {};
     
     window.INC= INC;
 })();

@@ -1,158 +1,40 @@
 /*jsl:import Responder.js*/
+/*jsl:import ../nib/NIB.js*/
 
 coherent.ViewController= Class.create(coherent.Responder, {
 
-    /** What view is associated with this controller? */
-    view: null,
-    
     /** When displaying the name of this view, what value should be used? */
     title: null,
     
-    /** Don't automatically setup the bindings, because Views need to exist
-        first and be fully initialised.
-     */
-    automaticallySetupBindings: false,
+    view: function()
+    {
+        return this.__view;
+    },
     
-    /** Construct a ViewController.
-        @param name     the name with which to register the view controller
-        @param view     either the ID of a node, a node, or a reference to a
-                        view object. This is the view this controller will
-                        manage.
-        @param [parameters]    a hash with initial values for the
-                        controller.
-     */
-    constructor: function(view, parameters)
+    setView: function(view)
     {
-        this.base(parameters);
+        if (this.__view)
+            this.__view.setNextResponder(null);
+        this.__view= view;
+        view.setNextResponder(this);
+    },
+
+    /** Load the NIB from the associated bundle... the view property will be
+        connected by the standard NIB loading mechanism.
         
-        if ('string'===typeof(view))
-            this.__viewId= view;
-        else if (view && 1===view.nodeType)
-            this.__viewId= Element.assignId(view);
-        else
-            this.__viewId= view.id;
-
-        var viewNode= document.getElementById(this.__viewId);
-        this.viewElement= function() { return viewNode; }
-    },
-
-    registerWithName: function(name)
+        @returns a deferred object instance
+     */
+    loadView: function()
     {
-        if (!name)
-            return;
-        this.name= name;
-        coherent.registerModelWithName(this, name);
+        var url= this.valueForKey('nibUrl');
+        if (!url)
+            throw new Error('No URL specified for ViewController NIB.');
+        return NIB.load(url, this);
     },
-
+    
     nextResponder: function()
     {
-        return this.view.superview();
-    },
-    
-    /** Return the declarative structure of the View.
-        @returns an object with keys representing CSS queries for the views to
-                 set up.
-     */
-    structure: function()
-    {
-        return this.__structure__;
-    },
-    
-    /** Helper function that makes declarative views work correctly with
-        ViewControllers. This proxies over to the view to return the node
-        associated with the controlled view.
-     */
-    viewElement: function()
-    {
-        return this.view.node;
-    },
-
-    viewWithSelector: function(selector)
-    {
-        return this.view.viewWithSelector(selector);
-    },
-    
-    addTrackingInfo: function(nodeOrId, info)
-    {
-        coherent.page.addTrackingInfo(nodeOrId, info);
-    },
-    
-    __postConstruct: function()
-    {
-        var viewNode= document.getElementById(this.__viewId);
-        
-        if (viewNode)
-            this.__init();
-        else
-            Event.onDomReady(this.__init.bind(this));
-    },
-
-    __init: function()
-    {
-        var viewNode= document.getElementById(this.__viewId);
-        if (!viewNode)
-            throw new Error('Unable to locate node with ID: ' + this.__viewId);
-        
-        //  create the view tree for this view
-        var oldContext= this.__context;
-        var oldDataModel= coherent.dataModel;
-        this.__context= coherent.dataModel= this;
-
-        //  generate structure if desired and there's no content in the view.
-        if (this.innerHTML && ""===String(viewNode.innerHTML).trim())
-            viewNode.innerHTML= this.innerHTML;
-
-        var structure= this.structure()||{};
-        var factories= {};
-        var v;
-        var p;
-    
-        this.__copyParameters(this.__parameters||{});
-    
-        var view= coherent.View.fromNode(viewNode);
-
-        for (p in structure)
-        {
-            v= structure[p];
-            if (v && 'function'==typeof(v) && (v=v.valueOf()).__factoryFn__)
-            {
-                factories[p]= v;
-                v.call(this, p, true);
-            }
-        }
-
-        for (p in factories)
-            factories[p].call(this, p, false);
-
-        this.view= view || new coherent.View(viewNode);
-        
-        //  Insert the view controller into the responder chain
-        this.view.setNextResponder(this);
-
-        //  Restore original data model
-        coherent.dataModel= oldDataModel;
-        this.__context= oldContext;
-
-        
-        this.setupBindings();
-        this.init();
-        this.updateBindings();
-        
-        delete this.viewElement;
-    },
-    
-    init: function()
-    {
+        return this.__nextResponder||this.__view.superview();
     }
-    
+        
 });
-
-coherent.ViewController.__subclassCreated__= function(subclass)
-{
-    var proto= subclass.prototype;
-    var baseproto= subclass.superclass.prototype;
-    
-    //  Allow inheritance of __structure__ definitions from base classes
-    if (proto.__structure__!==baseproto.__structure__)
-        Object.applyDefaults(proto.__structure__, baseproto.__structure__);
-}

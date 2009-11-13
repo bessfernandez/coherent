@@ -2,16 +2,16 @@
 
 
 /** A View for images. In addition to the bindings exposed by Views,
- *  coherent.ImageViews have a src binding that represents the URL of the
- *  image to display. ImageViews also have a width and height binding to
+ *  coherent.Images have a src binding that represents the URL of the
+ *  image to display. Images also have a width and height binding to
  *  reflect those properties as well.
  *  
- *  Like TextFields, coherent.ImageViews have placeholder values for invalid
+ *  Like TextFields, coherent.Images have placeholder values for invalid
  *  values. These placeholders should be URLs to the appropriate image to
  *  display under those circumstances. The default values are empty, so no image
  *  will be displayed.
  */
-coherent.ImageView= Class.create(coherent.View, {
+coherent.Image= Class.create(coherent.View, {
     
     exposedBindings: ['src', 'alt', 'width', 'height'],
     maskedBindings: ['text','html'],

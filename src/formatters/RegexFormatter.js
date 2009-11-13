@@ -34,35 +34,16 @@ coherent.RegexFormatter= Class.create(coherent.Formatter, {
         var i;
         var len;
         var regexList;
-        var OK= true;
         
-        if (this.invalidRegex)
+        function testRegex(regex)
         {
-            // If ANY of the invalidRegexes match, string is invalid
-            regexList= this.invalidRegex;
-            for (i=0, len=regexList.length; i<len; ++i)
-                if (regexList[i].test(string))
-                {
-                    OK= false;
-                    break;
-                }
-        }
-        if (OK && this.validRegex)
-        {
-            // If ANY of the validRegexes match, string is valid
-            OK = false;
-            regexList= this.validRegex;
-            for (i=0, len=regexList.length; i<len; ++i)
-                if (regexList[i].test(string))
-                {
-                    OK= true;
-                    break;
-                }
+            return regex.test(string);
         }
         
-        if (OK)
+        if (!(this.invalidRegex && this.invalidRegex.some(testRegex)) &&
+            (this.validRegex && this.validRegex.some(testRegex)))
             return true;
-        
+                    
         return new coherent.Error({
                         description: this.invalidValueMessage
                     });

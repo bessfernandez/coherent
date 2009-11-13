@@ -1,4 +1,5 @@
 /*jsl:import ../views/FieldGroup.js*/
+/*jsl:import ../views/ErrorBubble.js*/
 
 /** A specialisation of {@link coherent.FieldGroup} that implements an improved method
     of presenting errors. Errors are collected and displayed in a coherent.Bubble
@@ -17,6 +18,8 @@ coherent.Fieldset= Class.create(coherent.FieldGroup, {
     
     init: function()
     {
+        if (!this.__bubble)
+            coherent.Fieldset.prototype.__bubble= new coherent.ErrorBubble();
         coherent.page.addObserverForKeyPath(this, 'observeFirstResponderChange',
                                             'firstResponder');
     },
@@ -42,10 +45,7 @@ coherent.Fieldset= Class.create(coherent.FieldGroup, {
         if (this.__currentViewId==field.id)
         {
             this.__currentViewId= false;
-            // @TODO: Hide the bubble here...
-            // coherent.Bubble.hide({
-            //             target: document.getElementById(field.id)
-            //         });
+            this.__bubble.setVisible(false);
         }
     },
     
@@ -56,24 +56,20 @@ coherent.Fieldset= Class.create(coherent.FieldGroup, {
             
         if (!error || !newFirstResponder.isDescendantOf(this))
         {
-            if (this.__currentViewId)
-                coherent.Bubble.hide({
-                            target: document.getElementById(this.__currentViewId)
-                        });
-            this.__currentViewId= false;
+            if (this.__bubble.anchor && this.__currentViewId===this.__bubble.anchor.id)
+                this.__bubble.setVisible(false);
+            this.__currentViewId= "";
             return;
         }
         
+        if (this.__currentViewId===newFirstResponder.id)
+            return;
+
         this.__currentViewId= newFirstResponder.id;
-        
-        // @TODO: Need to display the error here...
-        
-        // coherent.Bubble.display({
-        //             classname: this.bubbleClass,
-        //             error: error,
-        //             position: this.bubblePosition,
-        //             target: newFirstResponder.node,
-        //             within: this.node
-        //         });
+
+        this.__bubble.constrainToView(this);
+        this.__bubble.attachToView(newFirstResponder);
+        this.__bubble.setError(error);
+        this.__bubble.setVisible(true);
     }
 });

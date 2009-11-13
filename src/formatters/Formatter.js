@@ -52,6 +52,23 @@ coherent.Formatter= Class.create({
     isValidInputCharacter: function(c)
     {
         return true;
-    }
+    },
+
+    __factory__: function()
+    {
+        var args= Array.from(arguments);
+        var klass= this;
+        
+        function dummyConstructor(){}
+        
+        return function()
+        {
+            dummyConstructor.prototype= klass.prototype;
+            var obj= new dummyConstructor();
+            klass.prototype.constructor.apply(obj, args);
+            return obj;
+        };
+    },
+    
     
 });

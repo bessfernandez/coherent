@@ -71,9 +71,13 @@ coherent.TextField= Class.create(coherent.FormControl, {
         if (this.sendsActionOnEndEditing && this.action)
             this.sendAction();
             
+        var view= this.node;
+
+        if (""===view.value)
+            this.showPlaceholder();
+
         if (!this.validationError && !this.__showingPlaceholder && this.formatter)
         {
-            var view= this.node;
             var value= this.formatter.valueForString(view.value);
             value= this.formatter.stringForValue(value);
             view.value= value;
@@ -168,8 +172,6 @@ coherent.TextField= Class.create(coherent.FormControl, {
     {
         var view= this.node;
         this.hasFocus= false;
-        if (""===view.value)
-            this.showPlaceholder();
         // this.onchange(event);
         this.endEditing();
         return true;

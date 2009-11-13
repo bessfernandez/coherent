@@ -1,6 +1,7 @@
 <!DOCTYPE HTML>
 <html>
     <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=8">
         <script src="../build/coherent-debug.js" type="text/javascript" charset="utf-8"></script>
         <style>
             body
@@ -369,7 +370,7 @@
                 fetchData: function(sender)
                 {
                     var url= sender.valueForKey('value');
-                    if (url===this.url)
+                    if (!url || url===this.url)
                         return;
                     this.url= url;
                     var d= XHR.get(url);

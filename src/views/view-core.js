@@ -6,6 +6,7 @@
 /*jsl:import ../controllers/Controller.js*/
 /*jsl:import ../dom/element.js*/
 /*jsl:import ../dom/event.js*/
+/*jsl:import ../nib/VIEW.js*/
 
 /** Styles used by various views. These may be redefined if you have other
  *  preferences.

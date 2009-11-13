@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>src/core/base.js</string>
+	<string>demo/nib/sample.nib</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -12,7 +12,7 @@
 			<key>name</key>
 			<string>coherent</string>
 			<key>regexFolderFilter</key>
-			<string>!.*/(\.[^/]*|build|CVS|_darcs|_MTN|\{arch\}|blib|.*~\.nib|.*\.(framework|app|pbproj|pbxproj|xcode(proj)?|bundle))$</string>
+			<string>!.*/(\.[^/]*|doc|build|CVS|_darcs|_MTN|\{arch\}|blib|.*~\.nib|.*\.(framework|app|pbproj|pbxproj|xcode(proj)?|bundle))$</string>
 			<key>sourceDirectory</key>
 			<string></string>
 		</dict>
@@ -21,44 +21,28 @@
 	<integer>270</integer>
 	<key>metaData</key>
 	<dict>
-		<key>src/core/base.js</key>
+		<key>demo/nib/sample.nib</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>34</integer>
-				<key>line</key>
 				<integer>0</integer>
+				<key>line</key>
+				<integer>40</integer>
 			</dict>
-			<key>columnSelection</key>
-			<false/>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
 			<integer>0</integer>
-			<key>selectFrom</key>
-			<dict>
-				<key>column</key>
-				<integer>18</integer>
-				<key>line</key>
-				<integer>0</integer>
-			</dict>
-			<key>selectTo</key>
-			<dict>
-				<key>column</key>
-				<integer>34</integer>
-				<key>line</key>
-				<integer>0</integer>
-			</dict>
 		</dict>
 	</dict>
 	<key>openDocuments</key>
 	<array>
-		<string>src/core/base.js</string>
+		<string>demo/nib/sample.nib</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
 	<false/>
 	<key>windowFrame</key>
-	<string>{{66, 0}, {1049, 878}}</string>
+	<string>{{312, 157}, {1262, 1421}}</string>
 </dict>
 </plist>

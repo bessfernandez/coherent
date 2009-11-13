@@ -84,30 +84,47 @@ coherent.Overlay= Class.create(coherent.View, {
     {
     },
     
+    /** This is a hook function which allows overlays to update their content
+        before being displayed.
+     */
+    updateContent: function()
+    {
+    },
+    
     setVisible: function(isVisible)
     {
         document.body.appendChild(this.node);
+        
+        isVisible= !!isVisible;
 
+        if (isVisible)
+        {
+            this.updateContent();
+            this.updatePosition();
+        }
+        
+        //  If the overlay is already visible, there's nothing more to do
         if (isVisible===this.visible())
             return;
 
-        if (isVisible)
-            this.updatePosition();
-        
         if (!this.modal)
         {
             this.base(isVisible);
             return;
         }
 
-        var hasOverlays;
-
         if (isVisible)
-            hasOverlays= coherent.Overlay.numberOfModalOverlays++;
+        {
+            if (!coherent.Overlay.numberOfModalOverlays)
+                this.showModalBackdrop(isVisible);
+            coherent.Overlay.numberOfModalOverlays++;
+        }
         else
-            hasOverlays= --coherent.Overlay.numberOfModalOverlays;
-        if (!hasOverlays)
-            this.showModalBackdrop(isVisible);
+        {
+            coherent.Overlay.numberOfModalOverlays= Math.max(0, coherent.Overlay.numberOfModalOverlays-1);
+            if (!coherent.Overlay.numberOfModalOverlays)
+                this.showModalBackdrop(isVisible);
+        }
 
         this.showGuard(isVisible);
         this.base(isVisible);

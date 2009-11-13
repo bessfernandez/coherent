@@ -343,18 +343,30 @@ coherent.ArrayController= Class.create(coherent.ObjectController, {
         selectionIndexes= selectionIndexes || [];
         selectionIndexes.sort(coherent.compareNumbers);
 
+        if (this.avoidsEmptySelection && !selectionIndexes.length && this.__content.length)
+            selectionIndexes= [0];
+            
         //  If the selected indexes are the same, then don't bother changing them
         if (!this.__selectionIndexes.compare(selectionIndexes))
             return false;
 
         this.willChangeValueForKey('selectionIndex');
         this.willChangeValueForKey('selectedObjects');
+        this.willChangeValueForKey('hasSelection');
+        this.willChangeValueForKey('canSelectNext');
+        this.willChangeValueForKey('canSelectPrevious');
+        this.willChangeValueForKey('canRemove');
+        
         this.__selectionIndexes= selectionIndexes.concat();
         this.__selectedObjects= this.__arrangedObjects.objectsAtIndexes(selectionIndexes);
         
         if (this.bindings.selectionIndexes)
             this.bindings.selectionIndexes.setValue(selectionIndexes);
 
+        this.didChangeValueForKey('canRemove');
+        this.didChangeValueForKey('canSelectNext');
+        this.didChangeValueForKey('canSelectPrevious');
+        this.didChangeValueForKey('hasSelection');
         this.didChangeValueForKey('selectedObjects');
         this.didChangeValueForKey('selectionIndex');
         this.forceChangeNotificationForKey('selection');

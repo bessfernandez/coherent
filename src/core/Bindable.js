@@ -92,14 +92,6 @@ coherent.Bindable= Class.create(coherent.KVO, {
      */
     defaultPlaceholders: {},
     
-    /** Should bindings be setup by the framework automatically? When `true`,
-        the Bindable#__postContruct method will automatically establish the
-        bindings present in the `parameters` hash passed to the contructor.
-        @type Boolean
-        @default true
-     */
-    automaticallySetupBindings: true,
-    
     /** Return the default placeholder value for the given marker value.
     
         @param {String} marker - The marker type. May be one of 'nullValue',

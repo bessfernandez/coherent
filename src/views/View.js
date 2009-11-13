@@ -111,7 +111,7 @@ coherent.View= Class.create(coherent.Responder, {
     {
         this.base(parameters);
         
-        if (null===node && this.markup)
+        if ((null===node || 'undefined'===typeof(node)) && this.markup)
         {
             this.node= coherent.View.createNodeFromMarkup(this.markup);
             this.id= Element.assignId(this.node);
@@ -288,8 +288,7 @@ coherent.View= Class.create(coherent.Responder, {
      */
     container: function()
     {
-        return this.__container || this.node ||
-               document.getElementById(this.__containerId||this.id);
+        return this.__container || this.node;
     },
     
     /** Set the container for the view.
@@ -297,9 +296,7 @@ coherent.View= Class.create(coherent.Responder, {
      */
     setContainer: function(newContainer)
     {
-        if (this.__view)
-            this.__container= newContainer;
-        this.__containerId= Element.assignId(newContainer);
+        this.__container= newContainer;
         return newContainer;
     },
     
@@ -595,12 +592,12 @@ coherent.View= Class.create(coherent.Responder, {
         return 'none'!==Element.getStyle(this.node, 'display');
     },
     
-    setVisible: function(isVisible)
+    setVisible: function(visible)
     {
         this.__animatePropertyChange('visible', {
                 setup: function(node, options)
                 {
-                    if (!isVisible || ""===node.style.display)
+                    if (!visible)
                         return;
 
                     if (options.duration)
@@ -609,14 +606,15 @@ coherent.View= Class.create(coherent.Responder, {
                 },
                 cleanup: function(node, options)
                 {
-                    if (isVisible)
+                    node.style.display= visible?"":"none";
+
+                    if (visible)
                         return;
                         
-                    node.style.display= "none";
                     if (options.duration)
                         Element.removeClassName(node, options.classname||options.add);
                 },
-                reverse: isVisible
+                reverse: visible
             });
     },
 
@@ -979,6 +977,7 @@ coherent.View.addToHoldingArea= function(node)
         holdingArea.style.width='0';
         holdingArea.style.height='0';
         holdingArea.style.overflow='hidden';
+        holdingArea.id="coherent_holding_area";
         document.body.appendChild(holdingArea);
     }
 
@@ -1002,6 +1001,7 @@ coherent.View.createNodeFromMarkup= function(markup)
         incubator.style.width='0';
         incubator.style.height='0';
         incubator.style.overflow='hidden';
+        incubator.id="coherent_incubator";
         document.body.appendChild(incubator);
     }
     
