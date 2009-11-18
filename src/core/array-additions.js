@@ -1,19 +1,7 @@
 /*jsl:import base.js*/
 
-/** Fix Prototype's habit of stomping on native Array methods */
-if ('undefined'!==typeof(window.Prototype))
-{
-    (function()
-    {
-        var methods= ['indexOf', 'lastIndexOf', 'forEach', 'filter', 'map', 'some',
-                      'every', 'reduce', 'reduceRight'];
-
-        for (var i=0; i<methods.length; ++i)
-            delete Array.prototype[methods[i]];
-    })();
-}
-
 /** Return an array containing the distinct elements from this array.
+    @type Array
  */
 Array.prototype.distinct= function()
 {
@@ -36,9 +24,9 @@ Array.prototype.distinct= function()
 
 /** Compare an array with another array.
 
-    @param a    the other array
-    @returns -1 if this array precedes a, 0 if the two arrays are equal, and 1
-             if this array follows a.
+    @param {Array} a - the other array
+    @returns {Number} -1 if this array precedes a, 0 if the two arrays are equal,
+        and 1 if this array follows a.
  */
 Array.prototype.compare= function(a)
 {
@@ -61,8 +49,8 @@ Array.prototype.compare= function(a)
 
 
 /** Create an array from an array-like object.
-    @param obj an array-like object.
-    @param {Number} [startIndex=0] The starting index for copying values.
+    @param {Object} obj - an array-like object.
+    @param {Number} [startIndex=0] - The starting index for copying values.
     @returns {Array} a new array containing all the values from the parameter.
  */
 Array.from= function(obj, startIndex)
@@ -75,9 +63,9 @@ Array.from= function(obj, startIndex)
     with only one parameter, the parameter should be an array, and IndexRange
     will return another array with each index of the array.
     
-    @param {Number|Array} begin    the first value or an array
-    @param [end]      the final value
-    @returns an array containing numbers between begin and end.
+    @param {Number|Array} begin - the first value or an array
+    @param {Number} [end] - the final value
+    @returns {Array} an array containing numbers between begin and end.
  */
 function IndexRange(begin, end)
 {

@@ -1,5 +1,6 @@
 /*jsl:declare Sizzle*/
 /*jsl:ignore*/
+/**#nocode+*/
 
 /*!
  * Sizzle CSS Selector Engine - v1.0
@@ -968,3 +969,4 @@ window.Sizzle = Sizzle;
 })();
 
 /*jsl:end*/
+/**#nocode-*/

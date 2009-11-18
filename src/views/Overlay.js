@@ -47,7 +47,7 @@ coherent.Overlay= Class.create(coherent.View, {
         }
         animationOptions.callback= callback;
         animationOptions.reverse= show;
-        coherent.Animator.updateClassName(backdrop, animationOptions);
+        coherent.Animator.animateClassName(backdrop, animationOptions);
     },
 
     showGuard: function(show)
@@ -74,7 +74,7 @@ coherent.Overlay= Class.create(coherent.View, {
         }
         animationOptions.callback= callback;
         animationOptions.reverse= show;
-        coherent.Animator.updateClassName(guard, animationOptions);
+        coherent.Animator.animateClassName(guard, animationOptions);
     },
 
     /** This is a hook function which allows overlays to set their position

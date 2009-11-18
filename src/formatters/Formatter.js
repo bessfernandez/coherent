@@ -10,6 +10,10 @@ coherent.Formatter= Class.create({
      */    
     invalidValueMessage: _('error.invalid_value'),
    
+    /** Initialise a Formatter instance. This method simply copies the settings
+        onto instance variables with the same name.
+        @param {Object} settings - The default values to copy
+     */
     constructor: function(settings)
     {
         Object.extend(this, settings);
@@ -37,8 +41,8 @@ coherent.Formatter= Class.create({
     
     /** Determine whether the string represents a valid value or not.
         @param {String} string the presentation value
-        @returns true or a {@link coherent.Error} instance indicating the error
-        that should be presented to the user.
+        @returns `true` or a {@link coherent.Error} instance indicating the
+            error that should be presented to the user.
      */
     isStringValid: function(string)
     {
@@ -46,14 +50,15 @@ coherent.Formatter= Class.create({
     },
     
     /** Check the validity of a character before updating the field.
-        @param {String} c   the new character
-        @returns true if the character is a valid input character.
+        @param {String} c - the new character
+        @returns `true` if the character is a valid input character.
      */
     isValidInputCharacter: function(c)
     {
         return true;
     },
 
+    /** Factory method that allows Formatters to be declaratively created. */
     __factory__: function()
     {
         var args= Array.from(arguments);
@@ -68,7 +73,6 @@ coherent.Formatter= Class.create({
             klass.prototype.constructor.apply(obj, args);
             return obj;
         };
-    },
-    
+    }
     
 });

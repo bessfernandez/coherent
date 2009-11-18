@@ -1,5 +1,22 @@
 /*jsl:import ObjectController.js*/
 
+/** A controller for managing arrays of objects.
+
+    @binding {Number[]} selectionIndexes
+        The indexes of the selected items.
+    
+    @binding {coherent.SortDescriptor[]} sortDescriptors 
+        An array of sort descriptors which define how the content should be
+        ordered before display.
+        
+    @binding {Function} filterPredicate
+        A function that returns `true` if an object should be included in the
+        {@link #arrangedObjects} collection.
+        
+    @binding {Object[]} content
+        The ArrayController expects the value of the countent binding to be an
+        array of objects that it should manage.
+ */
 coherent.ArrayController= Class.create(coherent.ObjectController, { 
 
     /** Create a new ArrayController instance.
@@ -17,20 +34,44 @@ coherent.ArrayController= Class.create(coherent.ObjectController, {
         this.__selectionIndexes= [];
         this.__selectedObjects= [];
         this.__content= [];
-        this.objectClass= coherent.KVO;
     },
 
     exposedBindings: ["selectionIndexes", "sortDescriptors", "filterPredicate"],
     
+    /** Should the ArrayController attempt to preserve its original selection
+        when the content changes?
+        @type Boolean
+        @default true
+     */
     preservesSelection: true,
+    
+    /** When set, the ArrayController will avoid an empty selection. If there
+        is no other selection, the first element will be selected.
+        @type Boolean
+        @default true
+     */
     avoidsEmptySelection: true,
+    
+    /** Should the ArrayController select inserted objects? This makes it easier
+        to edit newly inserted objects.
+        @type Boolean
+        @default true
+     */
     selectsInsertedObjects: true,
     
+    /** Retrieve the content managed by this controller.
+        @type Object[]
+     */
     content: function()
     {
         return this.__content;
     },
     
+    /** Set the content managed by this controller. This method **always** makes
+        a copy of the `newContent` parameter.
+        @param {Object[]} newContent - The new content to be managed by this
+            controller.
+     */
     setContent: function(newContent)
     {
         //  create a copy of the content
@@ -41,6 +82,10 @@ coherent.ArrayController= Class.create(coherent.ObjectController, {
             this.setSelectionIndexes([]);
     },
     
+    /** Observe changes to the content binding. This method is **only** invoked
+        when the bound value for content changes.
+        @param {coherent.ChangeNotification} change - the change notification
+     */
     observeContentChange: function(change)
     {
         if (coherent.ChangeType.setting===change.changeType)
@@ -75,8 +120,7 @@ coherent.ArrayController= Class.create(coherent.ObjectController, {
     },
     
     /** Retrieve the sort descriptors for this ArrayController.
-        @returns {coherent.SortDescriptor[]} an array of sort descriptors or an empty array if there are no
-                 sort descriptors defined.
+        @type coherent.SortDescriptor[]
      */
     sortDescriptors: function()
     {
@@ -101,6 +145,9 @@ coherent.ArrayController= Class.create(coherent.ObjectController, {
         this.rearrangeObjects();
     },
     
+    /** Observe changes to the **bound** sort descriptors.
+        @param {coherent.ChangeNotification} change - the change notification
+     */
     observeSortDescriptorsChange: function(change)
     {
         if (coherent.ChangeType.setting===change.changeType)
@@ -131,9 +178,9 @@ coherent.ArrayController= Class.create(coherent.ObjectController, {
         this.rearrangeObjects();
     },
     
-    /** Retrieve the filter predicate function.
-        @returns {Function} the function used to filter the content or null if no predicate
-                 has been specified.
+    /** Retrieve the function used to filter the content or null if no predicate
+        has been specified.
+        @type Function
      */
     filterPredicate: function()
     {
@@ -154,6 +201,9 @@ coherent.ArrayController= Class.create(coherent.ObjectController, {
         this.rearrangeObjects();
     },
     
+    /** Rearranged the content objects. Only objects that match the filter
+        predicate will be included in the arranged objects.
+     */
     rearrangeObjects: function()
     {
         var selectedObjects;
@@ -173,11 +223,19 @@ coherent.ArrayController= Class.create(coherent.ObjectController, {
         }
     },
     
+    /** Retrieve the arranged objects.
+        @type Object[]
+     */
     arrangedObjects: function()
     {
         return this.__arrangedObjects;
     },
 
+    /** Arrange an array of objects according to the filter predicate and sort
+        descriptors.
+        @param {Object[]} objects - the objects to filter and sort
+        @type Object[]
+     */
     arrangeObjects: function(objects)
     {
         var filteredObjects= this.filterObjects(objects);
@@ -186,6 +244,8 @@ coherent.ArrayController= Class.create(coherent.ObjectController, {
     },
 
     /** Find the correct position within the arranged objects and insert it.
+        @param {Object[]} objects - the objects to insert into the arranged
+            objects collection.
      */
     __insertObjectsIntoArrangedObjects: function(objects)
     {
@@ -246,6 +306,9 @@ coherent.ArrayController= Class.create(coherent.ObjectController, {
             this.setSelectedObjects(selectedObjects);
     },
     
+    /** Remove the specified objects from the arranged object collection.
+        @param {Object[]} objects - the objects to remove
+     */
     __removeObjectsFromArrangedObjects: function(objects)
     {
         var selectedObjects= this.selectedObjects();
@@ -254,10 +317,8 @@ coherent.ArrayController= Class.create(coherent.ObjectController, {
     },
     
     /** Filter an array of objects according to the filterPredicate.
-      
         @param {Object[]} objects - the array of objects to filter
-      
-        @returns {Object[]} the objects that pass the filter predicate.
+        @type Object[]
      */
     filterObjects: function(objects)
     {
@@ -270,10 +331,8 @@ coherent.ArrayController= Class.create(coherent.ObjectController, {
     },
 
     /** Sort an array of objects according to the sortDescriptors.
-      
-        @param objects - the content array to sort
-      
-        @returns the objects sorted according to the sort descriptors
+        @param {Object[]} objects - the content array to sort
+        @type Object[]
      */
     sortObjects: function(objects)
     {
@@ -284,13 +343,18 @@ coherent.ArrayController= Class.create(coherent.ObjectController, {
         return objects.sort(compareFunction);
     },
 
-    /** Retrieve the selected objects.
+    /** Retrieve the collection of selected objects.
+        @type Object[]
      */
     selectedObjects: function()
     {
         return this.__selectedObjects;
     },
     
+    /** Set the selected objects. This actually finds the indexes of the objects
+        and sets the selectionIndexes property.
+        @param {Object[]} selectedObjects - the new selected objects
+     */
     setSelectedObjects: function(selectedObjects)
     {
         var indexes= this.__arrangedObjects.indexesOfObjects(selectedObjects);
@@ -298,8 +362,8 @@ coherent.ArrayController= Class.create(coherent.ObjectController, {
     },
 
     /** Retrieve the selection index -- the first element in the selection
-        indexes.
-        @returns the first element in the selectionIndexes array.
+        indexes or -1 if there is no selection.
+        @type Number
      */
     selectionIndex: function()
     {
@@ -312,30 +376,43 @@ coherent.ArrayController= Class.create(coherent.ObjectController, {
     
     /** Set the single selection index -- for single-select controls.
       
-        @param selectedIndex    the index of the object to select.
-        @returns true if the selection changed
+        @param {Number} selectedIndex - the index of the object to select or -1
+            to clear the selection.
+        @returns {Boolean} `true` if the selection changed
      */
     setSelectionIndex: function(selectionIndex)
     {
+        if (-1===selectionIndex)
+            return this.setSelectionIndexes([]);
         return this.setSelectionIndexes([selectionIndex]);
     },
     
     /** Helper method to determine whether the controller has a selection. This
         is often used in bindings rather than the more arcane method of checking
         for a non-zero length of the selectionIndexes property.
-        
-        @returns {Boolean} whether there's a selection
+        @type Boolean
      */
     hasSelection: function()
     {
         return this.__selectionIndexes.length;
     },
 
+    /** Retrieve the array of selected indexes. This is the canonical selection
+        for the ArrayController.
+        @type Number[]
+     */
     selectionIndexes: function()
     {
         return this.__selectionIndexes;
     },
     
+    /** Set the selection indexes. If the selectionIndexes array is empty, and
+        {@link #avoidsEmptySelection} is `true`, then the selection will be set
+        to the first item in the content.
+    
+        @param {Number[]} selectionIndexes - the new selection
+        @returns {Boolean} `true` if the selection changed.
+     */
     setSelectionIndexes: function(selectionIndexes)
     {
         //  First I need to sort the selectionIndexes, otherwise I can't compare them
@@ -374,6 +451,9 @@ coherent.ArrayController= Class.create(coherent.ObjectController, {
         return true;
     },
     
+    /** Observe changes to the **bound** selection property.
+        @param {coherent.ChangeNotification} change - the change notification
+     */
     observeSelectionIndexesChange: function(change)
     {
         if (coherent.ChangeType.setting===change.changeType)
@@ -409,30 +489,48 @@ coherent.ArrayController= Class.create(coherent.ObjectController, {
         this.forceChangeNotificationForKey('selection');
     },
     
+    /** Add an object to the content managed by this controller. The specified
+        object is added at the end of the content.
+        @param {Object} object - the object to add
+     */
     addObject: function(object)
     {
         this.__content.addObject(object);
         this.__insertObjectsIntoArrangedObjects([object]);
     },
     
+    /** Add an array of objects to the content managed by this controller. The
+        objects are appended to the content.
+        @param {Object[]} objects - the objects to add
+     */
     addObjects: function(objects)
     {
         this.__content.addObjects(objects);
         this.__insertObjectsIntoArrangedObjects(objects);
     },
     
+    /** Remove a specific object from the array managed by the controller.
+        @param {Object} object - the object to remove
+     */
     removeObject: function(object)
     {
         this.__content.removeObject(object);
         this.__removeObjectsFromArrangedObjects([object]);
     },
 
+    /** Remove an array of objects from the controller.
+        @param {Object[]} objects - the objects to remove
+     */
     removeObjects: function(objects)
     {
         this.__content.removeObjects(objects);
         this.__removeObjectsFromArrangedObjects(objects);
     },
 
+    /** Create a new instance of the {@link #objectClass}
+        class. This method is used by the {@link #add} method.
+        @type Object
+     */
     newObject: function()
     {
         return new (this.objectClass)();
@@ -441,14 +539,15 @@ coherent.ArrayController= Class.create(coherent.ObjectController, {
     /** Determine whether new items may be added to the array managed by this
         controller.
         
-        @returns {Boolean} true when this controller is editable.
+        @returns {Boolean} `true` when this controller is editable.
      */
     canAdd: function()
     {
         return this.editable();
     },
 
-    /** Add a new instance of the class managed by this controller {@link objectClass}.
+    /** Add a new instance of the class managed by this controller
+        {@link coherent.ObjectController#objectClass}.
      */
     add: function()
     {
@@ -474,7 +573,7 @@ coherent.ArrayController= Class.create(coherent.ObjectController, {
     },
     
     /** Can the next item be selected?
-        @returns false when the last item is selected.
+        @returns {Boolean} `false` when the last item is selected.
     */
     canSelectNext: function()
     {
@@ -484,7 +583,8 @@ coherent.ArrayController= Class.create(coherent.ObjectController, {
         return len && index<len-1;
     },
     
-    /** Select the next element in the content array. */
+    /** Select the next element in the content array.
+     */
     selectNext: function()
     {
         var index= this.selectionIndex();
@@ -496,7 +596,8 @@ coherent.ArrayController= Class.create(coherent.ObjectController, {
     },
     
     /** Can the previous item be selected?
-        @returns false when there is no selection or the first item is selected.
+        @returns {Boolean} `false` when there is no selection or the first item
+            is selected.
      */
     canSelectPrevious: function()
     {
@@ -513,7 +614,7 @@ coherent.ArrayController= Class.create(coherent.ObjectController, {
         var index= this.selectionIndex();
         var len= this.__arrangedObjects.length;
         
-        if (!len || !index)
+        if (!len || index<1)
             return;
         this.setSelectionIndexes([index-1]);
     }

@@ -1,16 +1,17 @@
 /*jsl:import startup.js*/
 
 /**
- *  @namespace
+    @namespace
  */
 var Class= (function(){
 
     /** Wrap a constructor function so that it may invoke the base constructor.
-     *  @param construct    the original constructor function
-     *  @param superclass   the superclass' constructor function
-     *  @returns a wrapped function which sets up the base method correctly.
-     *
-     *  @inner
+        @param {Function} construct - the original constructor function
+        @param {Function} [superclass] - the superclass' constructor function
+        @returns {Function} a wrapped function which sets up the base method
+            correctly.
+
+        @inner
      */
     function wrapConstructorForBase(construct, superclass)
     {
@@ -86,9 +87,9 @@ var Class= (function(){
                 foo: AnotherClass({ parameter: value })
             });
             
-        Assuming that AnotherClass declared a __factory__ method, the `foo`
+        Assuming that AnotherClass declared a `__factory__` method, the `foo`
         property is defined as a factory function. When a new instance of
-        MyClass is created, each of the factory functions will be called to 
+        `MyClass` is created, each of the factory functions will be called to 
         create proper values for the instance variables.
         
         If a class declares a `__createFactoryObjects` method, creation of its
@@ -124,11 +125,11 @@ var Class= (function(){
         is invoked first.
         
         @inner
-        @param construct - The actual constructor for the new class.
-        @param [superclass] - The constructor for the superclass, if there is
-               a superclass.
+        @param {Function} construct - The actual constructor for the new class.
+        @param {Function} [superclass] - The constructor for the superclass, if
+            there is a superclass.
         @returns {Function} a wrapped function which calls the `__postConstruct`
-                 hook if the class defines one.
+            hook if the class defines one.
      */
     function makeConstructor(construct, superclass)
     {
@@ -202,7 +203,7 @@ var Class= (function(){
     /** Create a prototype with the minimum amount of closure baggage.
         @inner
         @param {Class} superclass - The constructor of the superclass which
-               should be created as the prototype.
+            should be created as the prototype.
         @returns {Object} A new prototype based on the superclass.
      */
     function makePrototype(superclass)
@@ -371,18 +372,18 @@ var Class= (function(){
             DOM node is available or schedules the `init` method if the DOM has
             not finished loading.
             
-            @param {Class} [superclass] A reference to the super class for this
-                   class. If no superclass is specified, the new class will
-                   inherit from Object.
+            @param {Class} [superclass] - A reference to the super class for
+                this class. If no superclass is specified, the new class will
+                inherit from Object.
             @param {Object} decl - An object literal declaring the instance
-                   members for the class. These members will be created on the
-                   prototype for the class. So be careful about using object
-                   literals within this declaration, because they may not work
-                   as you might be expecting -- they will be shared among all
-                   instances.
+                members for the class. These members will be created on the
+                prototype for the class. So be careful about using object
+                literals within this declaration, because they may not work as
+                you might be expecting -- they will be shared among all
+                instances.
             
             @returns {Class} A reference to a constructor function that will be
-                     used to initialise instances of this class.
+                used to initialise instances of this class.
          */
         create: function(superclass, decl)
         {

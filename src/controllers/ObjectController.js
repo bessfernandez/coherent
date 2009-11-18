@@ -13,7 +13,7 @@
     @binding {Boolean} editable
         Should the value exposed by this controller be editable? In addition to
         the option of setting this value via a call to {@link
-        coherent.ObjectController#setEditable), the value of the `editable`
+        coherent.ObjectController#setEditable}, the value of the `editable`
         binding reflects the mutable status of the `content` binding.
     
     @binding {Object} content
@@ -39,16 +39,16 @@ coherent.ObjectController= Class.create(coherent.Controller, {
         this.__selection= new coherent.SelectionProxy(this);
     },
     
-    /** Perform magic to correctly reflect changes to the selectedObjects as a
-        change to the selection. This could probably be a bit cleaner...
+    /** Perform magic to correctly reflect changes to the {@link #selectedObjects}
+        as a change to the {@link #selection}. This could probably be a bit cleaner...
         
         @private
         
-        @param {coherent.ChangeNotification} change the property change
-                notification
-        @param {String} keyPath the keypath relative to the child object not
-                this object
-        @param {String} context the name of the child object that is changing
+        @param {coherent.ChangeNotification} change - the property change
+            notification
+        @param {String} keyPath - the keypath relative to the child object not
+            this object
+        @param {String} context - the name of the child object that is changing
      */
     observeChildObjectChangeForKeyPath: function(change, keyPath, context)
     {
@@ -69,7 +69,7 @@ coherent.ObjectController= Class.create(coherent.Controller, {
         is editable if it was set directly (not via a binding) or if the bound
         content keyPath is editable.
       
-        @returns true if the content of the controller is editable, false if not
+        @type Boolean
      */
     editable: function()
     {
@@ -81,11 +81,11 @@ coherent.ObjectController= Class.create(coherent.Controller, {
         return editable;
     },
 
-    /** Set the editable flag for this controller. Changes to this value are
-        ignored if the content is set via a binding. Note, if the content is
-        bound and isn't mutable, setting editable will have no real effect.
+    /** Set the editable flag for this controller. Note, if the content is
+        bound and isn't mutable, setting editable will have no real effect if
+        the bound content isn't editable.
         
-        @param {Boolean} editable   the new value for the editable property
+        @param {Boolean} editable - the new value for the editable property
      */
     setEditable: function(editable)
     {
@@ -102,16 +102,17 @@ coherent.ObjectController= Class.create(coherent.Controller, {
         just a single object. For subclasses, this may be an array or other
         data.
         
-        @returns the content this Controller is managing.
+        @type Object
       */
     content: function()
     {
         return this.__content;
     },
 
-    /** Set the content for this controller.
+    /** Set the content for this controller. The new content is automatically
+        selected.
         
-        @param newContent   the object for this Controller.
+        @param newContent - the object for this Controller.
       */
     setContent: function(newContent)
     {
@@ -120,7 +121,7 @@ coherent.ObjectController= Class.create(coherent.Controller, {
 
         this.__content= newContent;
         
-        this.willChangeValueForKey('selectedObjects');    
+        this.willChangeValueForKey('selectedObjects');
         if (!newContent)
             this.__selectedObjects= [];
         else
@@ -133,18 +134,19 @@ coherent.ObjectController= Class.create(coherent.Controller, {
 
     /** Retrieve the selected objects. For an ObjectController, this is always
         the single object being managed.
-        
-        @returns {Object} the managed object
+        @type Object[]
       */
     selectedObjects: function()
     {
         return this.__selectedObjects;
     },
 
-    /** Retrieve a proxy for the selection.
+    /** Retrieve a proxy for the selection. The selection proxy transforms
+        multiple selections into a single object. When the selected objects have
+        the same value for a key, the selection proxy will report that value.
+        Otherwise, the selection proxy returns a special marker value.
         
-        @returns {coherent.SelectionProxy} a proxy to the selection for this
-                 controller.
+        @type coherent.SelectionProxy
       */
     selection: function()
     {

@@ -1,5 +1,6 @@
 /*jsl:import View.js*/
 
+/** An outline view */
 coherent.OutlineView= Class.create(coherent.View, {
 
     animationOptions: {
@@ -349,14 +350,14 @@ coherent.OutlineView= Class.create(coherent.View, {
         {
             var item= this.__objectToItemMap[object.__uid];
             item.selected= false;
-            item.view.updateClassName(animationOptions, !item.selected);
+            item.view.animateClassName(animationOptions, !item.selected);
         }
         
         function selectViewForObject(object)
         {
             var item= this.__objectToItemMap[object.__uid];
             item.selected= true;
-            item.view.updateClassName(animationOptions, !item.selected);
+            item.view.animateClassName(animationOptions, !item.selected);
         }
         
         if (newSelectedObjects)

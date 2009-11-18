@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>demo/nib/sample.nib</string>
+	<string>demo/photobrowser/Carousel.js</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -21,28 +21,103 @@
 	<integer>270</integer>
 	<key>metaData</key>
 	<dict>
-		<key>demo/nib/sample.nib</key>
+		<key>demo/photobrowser/Carousel.js</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
 				<integer>0</integer>
 				<key>line</key>
-				<integer>40</integer>
+				<integer>0</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
 			<integer>0</integer>
 		</dict>
+		<key>demo/photobrowser/PhotoBrowserController.js</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>60</integer>
+				<key>line</key>
+				<integer>50</integer>
+			</dict>
+			<key>columnSelection</key>
+			<false/>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>49</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>55</integer>
+				<key>line</key>
+				<integer>50</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>60</integer>
+				<key>line</key>
+				<integer>50</integer>
+			</dict>
+		</dict>
+		<key>demo/photobrowser/flickr.js</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>0</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
+		</dict>
+		<key>demo/photobrowser/index.html</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>0</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
+		</dict>
+		<key>src/fx/Animator.js</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>0</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>817</integer>
+		</dict>
 	</dict>
 	<key>openDocuments</key>
 	<array>
-		<string>demo/nib/sample.nib</string>
+		<string>demo/photobrowser/PhotoBrowserController.js</string>
+		<string>demo/photobrowser/flickr.js</string>
+		<string>demo/photobrowser/Carousel.js</string>
+		<string>demo/photobrowser/index.html</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
 	<false/>
 	<key>windowFrame</key>
-	<string>{{312, 157}, {1262, 1421}}</string>
+	<string>{{234, 108}, {998, 1470}}</string>
 </dict>
 </plist>

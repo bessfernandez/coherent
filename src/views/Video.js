@@ -1,5 +1,6 @@
 /*jsl:import Media.js*/
 
+/** HTML5 video element */
 coherent.Video= Class.create(coherent.Media, {
 
     exposedBindings: ['poster', 'height', 'width' ],

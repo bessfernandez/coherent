@@ -1,5 +1,8 @@
 /*jsl:import Overlay.js*/
 
+/** An overlay view that is associated with another view. The Bubble will
+    position itself either above or below the target view.
+ */
 coherent.Bubble= Class.create(coherent.Overlay, {
 
     relativePosition: 'above',

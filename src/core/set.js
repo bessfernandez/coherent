@@ -35,9 +35,9 @@ function Set()
     then it would show up as a member of the set. Note: this function will work
     on regular objects with somewhat unpredictable results.
     
-    @param s1   first set
-    @param s2   second set
-    @returns a new Set object that contains all the elements from s1 & s2
+    @param {Set} s1 - first set
+    @param {Set} s2 - second set
+    @returns {Set} a new Set object that contains all the elements from s1 & s2
  */
 Set.union= function( s1, s2 )
 {
@@ -52,9 +52,9 @@ Set.union= function( s1, s2 )
 
 /** Intersect two sets.
     
-    @param s1   first set
-    @param s2   second set
-    @returns the intersection of sets 1 and 2.
+    @param {Set} s1 - first set
+    @param {Set} s2 - second set
+    @returns {Set} the intersection of sets 1 and 2.
  */
 Set.intersect= function(s1, s2) {
     var s3= new Set();
@@ -69,9 +69,9 @@ Set.intersect= function(s1, s2) {
 /** Add an entry to a set. This is implemented as a non-member method because
     otherwise the method name would appear as a member of the set.
 
-    @param set  the set to modify
-    @param key  the key to add to the set.
-    @returns the original set.
+    @param {Set} set - the set to modify
+    @param {String} key - the key to add to the set.
+    @returns {Set} the original set.
  */
 Set.add= function( set, key )
 {
@@ -82,9 +82,9 @@ Set.add= function( set, key )
 /** Remove an entry from a set. Like add, this is implemented as a non-member
     method to prevent it from appearing in the set itself.
 
-    @param set  the set to modify
-    @param key  the key to remove from the set.
-    @returns the original set.
+    @param {Set} set - the set to modify
+    @param {String} key - the key to remove from the set.
+    @returns {Set} the original set.
  */
 Set.remove= function( set, key )
 {
@@ -95,8 +95,8 @@ Set.remove= function( set, key )
 /** Convert a set to an array. See add & remove for why this is implemented as
     a non-member method.
     
-    @param set  the set to convert to an array
-    @returns an array containing the elements in the set
+    @param {Set} set - the set to convert to an array
+    @returns {Array} an array containing the elements in the set
  */
 Set.toArray= function( set )
 {
@@ -109,9 +109,9 @@ Set.toArray= function( set )
 
 /** Iterate over the contents of the set.
   
-    @param set      the set to iterate
-    @param fn       the function to call for each value in the set
-    @param scope    (optional) an object to pass as the scope for fn
+    @param {Set} set - the set to iterate
+    @param {Function} fn - the function to call for each value in the set
+    @param {Object} [scope=null] - an object to pass as the scope for fn
  */
 Set.forEach= function(set, fn, scope)
 {
@@ -123,9 +123,9 @@ Set.forEach= function(set, fn, scope)
 
 /** Create a string with the keys of a Set.
   
-    @param set      the set
-    @param joinstr  the string to use as the separator for the string
-    @returns a string with the keys of set separated by joinstr.
+    @param {Set} set - the set
+    @param {String} joinstr - the string to use as the separator for the string
+    @returns {String} a string with the keys of set separated by joinstr.
  */
 Set.join= function(set, joinstr)
 {
@@ -137,5 +137,6 @@ Set.join= function(set, joinstr)
 }
 
 /** Create a helpful alias for making a Set.
+    @function
  */
 var $S= Set;

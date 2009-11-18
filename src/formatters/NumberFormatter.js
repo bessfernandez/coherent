@@ -1,22 +1,55 @@
 /*jsl:import Formatter.js*/
 
+/** A formatter for numbers.
+ */
 coherent.NumberFormatter= Class.create(coherent.Formatter, {
 
     invalidValueMessage: _('error.invalid_number'),
     
+    /** The valid characters for floating point numbers.
+        @type String
+        @default '0123456789.-'
+     */
     validFloatCharacters: '0123456789.-',
+    
+    /** The valid characters for integer numbers.
+        @type String
+        @default '0123456789-'
+     */
     validIntCharacters: '0123456789-',
     
+    /** Should the field allow floating point numbers?
+        @type Boolean
+        @default true
+     */
     allowsFloats: true,
+    
+    /** Should the field allow empty strings?
+        @type Boolean
+        @default false
+     */
     allowEmptyString: false,
     
+    /** Return the string representation of the value. If floating point values
+        are not permitted, this method will round the number to the nearest
+        integer.
+        
+        @param [Number] value - the number to convert to a string
+        @returns {String} the string representation.
+     */
     stringForValue: function(value)
     {
         if (null===value || 'undefined'===typeof(value))
             return "";
+        if (!this.allowFloats)
+            value= Math.round(value);
         return String(value);
     },
-    
+
+    /** Return the number value of the string.
+        @param {String} string - the string to convert into a number
+        @returns {Number} the numeric value
+     */
     valueForString: function(string)
     {
         string= string.trim();
@@ -26,8 +59,11 @@ coherent.NumberFormatter= Class.create(coherent.Formatter, {
             return parseInt(string, 10);
     },
     
-    /** Return true or a coherent.Error instance indicating the error that
-        should be presented to the user.
+    /** Return true or a {@link coherent.Error} instance indicating the error
+        that should be presented to the user.
+        @param {String} string - the string to validate
+        @return {Boolean} `true` if the string is a valid value
+        @return {coherent.Error} An error when the string is not a number
      */
     isStringValid: function(string)
     {
@@ -54,6 +90,8 @@ coherent.NumberFormatter= Class.create(coherent.Formatter, {
     },
     
     /** Return true if the character is a valid input character.
+        @param {String} c - the character to test
+        @type Boolean
      */
     isValidInputCharacter: function(c)
     {

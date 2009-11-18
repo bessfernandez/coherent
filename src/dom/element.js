@@ -11,10 +11,14 @@
 /*jsl:declare Element*/
 
 /**
- *  @scope Element
+    @name Element
+    @namespace
  */
 Object.extend(Element, {
 
+    /** Generate an unique ID which can be used to identify an element.
+        @returns {String} an unique ID
+     */
     uniqueId: function()
     {
         return 'coherent_id_' + Element.assignId.uniqueId++;
@@ -23,7 +27,8 @@ Object.extend(Element, {
     /** Make certain an element has an ID. If it doesn't have one, assign an
         unique ID to it.
         
-        @returns the element's ID
+        @param {Element} element - a DOM element
+        @returns {String} the element's ID
      */
     assignId: function(element)
     {
@@ -32,6 +37,9 @@ Object.extend(Element, {
     },
 
     /** Create a regular expression that will match a particular class name
+        @param {String} className - The classname that the regular expression
+            should match
+        @type RegExp
      */
     regexForClassName: function(className)
     {
@@ -44,6 +52,10 @@ Object.extend(Element, {
     },
     
     /** Determine whether an element has the specified class name
+    
+        @type Boolean
+        @param {Element} element - The DOM element to test.
+        @param {String} className - The class name to test for.
      */
     hasClassName: function(element, className)
     {
@@ -57,6 +69,8 @@ Object.extend(Element, {
     },
 
     /** Add the specified class name to the element.
+        @param {Element} element - The DOM element to add the class name to.
+        @param {String} className - The class name to add to the element.
      */
     addClassName: function(element, className)
     {
@@ -69,6 +83,8 @@ Object.extend(Element, {
     },
 
     /** Remove the specified class name from the element.
+        @param {Element} element - The DOM element to remove the class name from.
+        @param {String} className - The class name to remove from the element.
      */
     removeClassName: function(element, className)
     {
@@ -80,6 +96,10 @@ Object.extend(Element, {
     },
     
     /** Remove the specified class name from the element.
+        @param {Element} element - The DOM element which will have its class name
+            altered
+        @param {String} className - The original class name that will be replaced.
+        @param {String} newClassName - The new class name that will be added.
      */
     replaceClassName: function(element, className, newClassName)
     {
@@ -96,6 +116,9 @@ Object.extend(Element, {
     },
     
     /** If the element has the class name, remove it, otherwise add it.
+        @param {Element} element - The DOM element which will have its class
+            name changed.
+        @param {String} className - The class name to add or remove.
      */
     toggleClassName: function(element, className)
     {
@@ -115,11 +138,11 @@ Object.extend(Element, {
         and only adds the class if it doesn't already exist and only removes classes
         that do exist.
     
-        @param addClasses       either a single class name or an array of classes to
-                                add to the element
-        @param removeClasses    either a single class name or an array of classes to
-                                remove from the element
-        @param element          the element to modify
+        @param {Element} element - the DOM element to modify
+        @param {String|String[]} classesToAdd - either a single class name or an
+            array of classes to add to the element.
+        @param {String|String[]} classesToRemove - either a single class name or
+            an array of classes to remove from the element
      */
     updateClass: function(element, classesToAdd, classesToRemove)
     {
@@ -145,8 +168,9 @@ Object.extend(Element, {
         element.className= Set.join(classes, ' ');
     },
 
-    /** The list of CSS properties that will be returned from getStyles when the
-        propsToGet parameter is missing.
+    /** The list of CSS properties that will be returned from {@link #getStyles}
+        when the `propsToGet` parameter is missing.
+        @type String[]
      */
     PROPERTIES: ['backgroundColor', 'backgroundPosition', 'borderTopColor', 
                  'borderRightColor', 'borderBottomColor', 'borderLeftColor', 
@@ -158,9 +182,13 @@ Object.extend(Element, {
                  'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft'],
     
     /** Retrieve the styles for an element.
-        @param element  the DOM node for which to fetch styles
-        @param [propsToGet] an array of the properties to fetch, if not
-               specified, the value of Element.PROPERTIES is used.
+        @param {Element} element - the DOM node for which to fetch styles
+        @param {String|String[]} [propsToGet] - the property or properties to
+            fetch, if not specified, the value of {@link Element.PROPERTIES} is
+            used.
+        @returns {String} The property value, when `propsToGet` is a string.
+        @returns {Object} A dictionary of property values, when `propsToGet` is
+            missing or an array.
      */
     getStyles: function(element, propsToGet)
     {
@@ -184,11 +212,34 @@ Object.extend(Element, {
         return styles;
     },
 
+    /** Set a single style on an element. This function requires Javascript
+        identifiers rather than CSS rule names. For example: `backgroundColor`
+        instead of `background-color`.
+        
+        @param {Element} element - the DOM element to update.
+        @param {String} style - the style rule identifier
+        @param {String|Number} value - the value for the style
+     */
     setStyle: function(element, style, value)
     {
         element.style[style]= value;
     },
     
+    /** Set multiple styles on an element. Like {@link #setStyle}, this function
+        requires Javascript identifiers rather than CSS rule names. For example,
+        it expects `marginLeftWidth` instead of `margin-left-width`.
+        
+        An example of using `setStyles`:
+        
+            Element.setStyles(node, {
+                opacity: 0.5,
+                backgroundColor: '#666',
+                color: 'white'
+            });
+            
+        @param {Element} element - the DOM element to update.
+        @param {Object} styles - a dictionary containing name value pairs
+     */
     setStyles: function(element, styles)
     {
         var elementStyle= element.style;
@@ -196,6 +247,14 @@ Object.extend(Element, {
             elementStyle[p]= styles[p];
     },
     
+    /** Retrieve the dimensions of the DOM node. This method takes care of
+        adjusting hidden nodes (via display=none) because otherwise, they report
+        0 x 0 dimensions.
+        @param {Element} node - The DOM element for which dimensions should be
+            fetched.
+        @returns {Object} a dictionary with the top, left, width, and height of
+            the element.
+     */
     getDimensions: function(node)
     {
         var display = Element.getStyle(node, 'display');
@@ -285,6 +344,8 @@ Object.extend(Element, {
     },
     
     /** IE has problems with cloneNode, so a wrapper is necessary.
+        @param {Element} node - the DOM element to clone
+        @type Element
      */
     clone: function(node)
     {
@@ -295,9 +356,10 @@ Object.extend(Element, {
         the visitor function returns false (and exactly false, not a false-y
         value like null or undefined), the traversal will abort.
     
-        @param e    the DOM node tree root element
-        @param visitor  a function to call for each element
-        @param scope    the scope to use for the visitor function
+        @param {Element} node - the root of the DOM tree to traverse
+        @param {Function} visitor - A function to call for each element. This
+            function receives the node as its only argument.
+        @param {Object} [scope] - the scope to use for the visitor function
      */
     depthFirstTraversal: function(node, visitor, scope)
     {
@@ -335,9 +397,9 @@ Object.extend(Element, {
     /** Wrapper method for querySelector. This wrapper enables using a helper
         library for browsers that don't support the W3C query API.
         
-        @param node the root node from which to begin the query
-        @param selector a CSS selector to find
-        @returns one node that matches the selector or null
+        @param {Element} node - the root node from which to begin the query
+        @param {String} selector - a CSS selector to find
+        @returns {Element} one node that matches the selector or null
      */
     query: function(node, selector)
     {
@@ -353,9 +415,9 @@ Object.extend(Element, {
     /** Wrapper method for querySelectorAll. This wrapper enables using a helper
         library for browsers that don't support the W3C query API.
         
-        @param node the root node from which to begin the query
-        @param selector a CSS selector to find
-        @returns a list of nodes that match the selector (may be empty)
+        @param {Element} node - the root node from which to begin the query
+        @param {String} selector - a CSS selector to find
+        @returns {Element[]} a list of nodes that match the selector (may be empty)
      */
     queryAll: function(node, selector)
     {
@@ -367,18 +429,10 @@ Object.extend(Element, {
         }
         return Array.from(node.querySelectorAll(selector));
     },
-    
-    /** Determine whether the node matches a specific selector.
-    
-        @param node
-        @param selector
-        @returns true if the node matches the selector or false if not
+
+    /** Retrieve the dimensions and position of the viewport.
+        @returns {Object} a dictionary with left, top, width, and height
      */
-    match: function(node, selector)
-    {
-        return Sizzle.matches(selector, [node]).length==1;
-    },
-    
     getViewport: function()
     {
         var docElement= document.documentElement;
@@ -393,8 +447,9 @@ Object.extend(Element, {
     },
     
     /** Determine the parentNode that controls scrolling.
-        @param e    the element that is scrolled
-        @returns a node that has overflow set to scroll or auto with a height.
+        @param {Element} node - the element that is scrolled
+        @returns {Element} a node that has `overflow` style set to `scroll` or
+            `auto` with a height.
      */
     scrollParent: function(node)
     {
@@ -405,12 +460,12 @@ Object.extend(Element, {
         while (node && node!=body)
         {
             styles= getStyles(node, ['overflow', 'overflowX', 'overflowY']);
-            for(var styleKey in styles){
+            for (var styleKey in styles)
+            {
                 var style = styles[styleKey];
                 
-                if ('auto' == style || 'scroll' == style) {
+                if ('auto' == style || 'scroll' == style)
                     return node;
-                }
             }
             node= node.parentNode;
         }
@@ -420,11 +475,11 @@ Object.extend(Element, {
     
     /** Determine the client rectangle of an element.
     
-        @param node the node to find
-        @param [relativeToViewport] optional boolean value. When true, position is 
-               relative to the viewport instead of the page
-        @returns an object with top, left, bottom, right, width, and height
-                 properties containing the px-based values for the node.
+        @param {Element} node - The DOM element to measure
+        @param {Boolean} [relativeToViewport=false] When `true`, position is 
+            relative to the viewport instead of the page.
+        @returns {Object} an object with top, left, bottom, right, width, and
+            height properties containing the px-based values for the node.
      */
     getRect: function(node, relativeToViewport)
     {
@@ -563,6 +618,11 @@ Object.extend(Element, {
 		};
     },
     
+    /** Return the DOM element based on a position in the client area.
+        @param {Number} clientX - the x coordinate relative to the viewport
+        @param {Number} clientY - the y coordinate relative to the viewport
+        @type Element
+     */
     fromPoint: function(clientX, clientY)
     {
         if (coherent.Browser.Safari)
@@ -582,8 +642,11 @@ Object.extend(Element, {
 
 
 
-//  alias Element.getStyle to Element.getStyles
+/** Alias for {@link Element.getStyle}.
+    @function
+ */
 Element.getStyle= Element.getStyles;
+
 Element.assignId.uniqueId= 1;
 
 

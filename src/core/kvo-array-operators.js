@@ -8,16 +8,29 @@
  */
 coherent.ArrayOperator= {
 
+    /** Determine the average value of all the values in the array. This assumes
+        the array is entirely composed of Numbers.
+        @param {Number[]} - the array of numbers to average
+        @returns {Number} the average value
+     */
     avg: function(values)
     {
         return this.sum(values) / values.length;
     },
     
+    /** This method is implemented elsewhere.
+     */
     count: function(values)
     {
         throw new InvalidArgumentError( "@count operator must end the keyPath" );
     },
     
+    /** Return an array comprised the unique objects from the union of a set
+        of arrays.
+        @param {Array[]} values - the array of arrays to combine
+        @returns {Array} a single array containing only the distinct objects
+            from all the other arrays
+     */
     distinctUnionOfArrays: function(values)
     {
         //  Return the distinct elements from the big flat array.

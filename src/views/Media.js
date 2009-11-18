@@ -1,5 +1,6 @@
 /*jsl:import View.js*/
 
+/** Base class for HTML5 media elements */
 coherent.Media= Class.create(coherent.View, {
 
     exposedBindings: ['src', 'currentTime', 'volume', 'muted', 'autoplay', 'controls', 'loop', 'playing'],

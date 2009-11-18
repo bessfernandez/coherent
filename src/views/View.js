@@ -102,9 +102,9 @@ coherent.View= Class.create(coherent.Responder, {
     /** Construct a new View. Most view subclasses actually inherit this
         constructor.
         
-        @param view Either the ID of the node or the node itself or `null` if the
-                    view should create all its own markup
-        @param [parameters=null]    A hash containing parameters for the view
+        @param view - Either the ID of the node, the node itself, or `null` if
+            the view should create all its own markup.
+        @param [parameters=null] - A hash containing parameters for the view.
 
      */
     constructor: function(node, parameters)
@@ -426,10 +426,10 @@ coherent.View= Class.create(coherent.Responder, {
             Element.addClassName(this.node, classname);
     },
     
-    updateClassName: function(animationOptions, reverse)
+    animateClassName: function(animationOptions, reverse)
     {
         animationOptions.reverse= !!reverse;
-        coherent.Animator.updateClassName(this.node, animationOptions);
+        coherent.Animator.animateClassName(this.node, animationOptions);
     },
     
     /** Send the action message to the target.
@@ -505,14 +505,21 @@ coherent.View= Class.create(coherent.Responder, {
         Event.stop(event);
     },
 
-    /** Add mouse tracking info for this view.
-        @param trackingInfo.owner           The owner of the callbacks provided.
-        @param trackingInfo.onmouseenter    Callback to invoke when the mouse
-                                            enters this view.
-        @param trackingInfo.onmouseleave    Callback to invoke when the mouse
-                                            leaves this view.
+    /** @name TrackingInfo
+        @class This is an adhoc structure expected by {@link coherent.View#addTrackingInfo}.
+        @memberOf coherent
+        @property {Element} owner - The scope in which to invoke the callbacks
+        @property {Function} onmouseenter - The callback to invoke when the mouse
+            enters the view.
+        @property {Function} onmouseleave - The callback to invoke when the mouse
+            exits the view.
+     */
+     
+    /** Add mouse tracking info for this view. The callbacks in trackingInfo are
+        always called as methods on the owner.
 
-        The callbacks in trackingInfo are always called as methods on the owner.
+        @param {coherent.TrackingInfo} trackingInfo - A structure containing
+            information about the callbacks for mouse tracking.
      */
     addTrackingInfo: function(trackingInfo)
     {
@@ -564,7 +571,7 @@ coherent.View= Class.create(coherent.Responder, {
             options.update.call(_this, node, animationOptions);
             animationOptions.reverse= !options.reverse;
             animationOptions.callback= options.cleanup?cleanup:null;
-            animator.updateClassName(node, animationOptions);
+            animator.animateClassName(node, animationOptions);
         }
 
         function go()
@@ -578,7 +585,7 @@ coherent.View= Class.create(coherent.Responder, {
                 animationOptions.callback= update;
             else
                 animationOptions.callback= options.cleanup?cleanup:null;
-            animator.updateClassName(node, animationOptions);
+            animator.animateClassName(node, animationOptions);
         }
 
         if (!animationOptions.duration)

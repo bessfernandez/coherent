@@ -27,17 +27,19 @@ coherent.Binding= Class.create({
     /** Create a new Binding and associate it with a keypath on a specific
         object.
 
-        @param settings.name        The name of the binding
-        @param settings.object      The observed object
-        @param settings.observer    The object doing the observing
-        @param settings.observerFn  The method to call when the value changes
-        @param settings.keyPath     The path to the value that should be observed
-        @param settings.transformer The value transformer to use
-        @param settings.animated    Whether changes to this binding should be
-               animated. This requires support from the observer.
-        @param settings.nullValuePlaceholder
-        @param settings.multipleValuesPlaceholder
-        @param settings.noSelectionPlaceholder
+        @param settings.name - The name of the binding
+        @param settings.object - The observed object
+        @param settings.observer - The object doing the observing
+        @param settings.observerFn - The method to call when the value changes
+        @param settings.keyPath - The path to the value that should be observed
+        @param settings.transformer - The value transformer to use
+        @param settings.nullValuePlaceholder - The value used when the bound
+            value is null or undefined.
+        @param settings.multipleValuesPlaceholder - The value used when the
+            bound value is part of a multiple selection where the values are
+            not the same.
+        @param settings.noSelectionPlaceholder - The value used when the
+            bound value represents an empty selection.
      */
     constructor: function(settings)
     {
@@ -81,11 +83,6 @@ coherent.Binding= Class.create({
         var newValue= this.object.valueForKeyPath(this.keypath);
         this.cachedModelValue= newValue;
 
-        /** Changing to call transformedValue before determining whether the
-            value represents a marker value. This allows the transformer to
-            modify the value and determine the marker based on that value.
-            -- jeff@metrocat.org (2009-06-15)
-         */
         newValue= this.transformedValue(newValue);
         
         this.markerType= this.markerTypeFromValue(newValue);
@@ -139,8 +136,8 @@ coherent.Binding= Class.create({
         value, this will return the new value. Otherwise, it will return an
         instance of {@link coherent.Error}.
         
-        @param newValue the proposed new value that needs validation
-        @returns Either a valid value or an instance of coherent.Error
+        @param newValue - the proposed new value that needs validation
+        @returns Either a valid value or an instance of {@link coherent.Error}
      */
     validateProposedValue: function(newValue)
     {
@@ -183,7 +180,7 @@ coherent.Binding= Class.create({
 
         var oldUpdating= this.updating;
         this.updating= true;
-        this.object.setValueForKeyPath(newValue, this.keypath);
+        this.object.setValueForKeyPath(modelValue, this.keypath);
         this.updating= oldUpdating;
     },
     
@@ -191,8 +188,8 @@ coherent.Binding= Class.create({
         immutable if the target object implements a getter for the specified
         key but no setter.
         
-        @returns true if the value of the binding may be changed and false if
-                 if the binding may not be changed.
+        @returns {Boolean} `true` if the value of the binding may be changed and
+            `false` if the binding may not be changed.
      */
     mutable: function()
     {
@@ -223,22 +220,22 @@ coherent.Binding= Class.create({
                                                     newValue);
         this.updating= true;
        
-        // try {
+        try {
             this.observerFn.call(this.observer, change, this.keypath);
-        // } catch (e) {
-            // console.error('Exception while bindng "' + this.name + '" to keypath "' + this.keypath + ' ": ' + e);
-        // }
+        } catch (e) {
+            console.error('Exception while bindng "' + this.name + '" to keypath "' + this.keypath + ' ": ' + e);
+        }
         
         this.updating= false;
     },
     
     /** A callback function that should be set by clients of the Binding.
-     *  This is here simply to prevent failures.
-     *
-     *  @param change   a {@link coherent.ChangeNotification} with information
-     *                  about the change
-     *  @param keypath  the path to the value that has changed
-     *  @param context  a client-specified value
+        This is here simply to prevent failures.
+      
+        @param change - a {@link coherent.ChangeNotification} with information
+            about the change
+        @param keypath - the path to the value that has changed
+        @param context - a client-specified value
      */
     observerFn: function(change, keypath, context)
     {},
@@ -260,6 +257,18 @@ coherent.Binding= Class.create({
         return null;
     },
     
+    /** Return the appropriate placeholder value for the marker type. If no
+        value is specified for the markerType parameter, the current markerType
+        is used.
+        
+        If the placeholder value is a function, this will invoke the function
+        to retrieve the correct value. The placeholder function is invoked in
+        the scope of the observed object. This gives placeholder functions some
+        pretty powerful functionality. Don't abuse it.
+        
+        @param [markerType] - The specific marker type to use
+        @returns the correct placeholder value.
+     */
     placeholderValue: function(markerType)
     {
         var placeholder;
@@ -278,14 +287,13 @@ coherent.Binding= Class.create({
     },
     
     /** The Binding's change observer method. This method makes a clone of the
-     *  change notification before transforming the new value and old value (if
-     *  present). This change notification is passed to the observerFn callback
-     *  method.
-     *
-     *  @param change   a {@link coherent.ChangeNotification} with information
-     *                  about the change
-     *  @param keypath  the path to the value that has changed
-     *  @param context  a client-specified value
+        change notification before transforming the new value and old value (if
+        present). This change notification is passed to the observerFn callback
+        method.
+      
+        @param {coherent.ChangeNotification} change - a change notification object
+        @param {String} keypath - the path to the value that has changed
+        @param {String} context - a client-specified value
      */    
     observeChangeForKeyPath: function(change, keypath, context)
     {
@@ -295,10 +303,6 @@ coherent.Binding= Class.create({
         if (coherent.ChangeType.setting===change.changeType)
             this.cachedModelValue= change.newValue;
 
-        /** Changing to call transformedValue before determining whether the
-            value represents a marker value.
-            -- jeff@metrocat.org (2009-06-15)
-         */
         var newValue= this.transformedValue(change.newValue);
         
         //  Check for marker values
@@ -309,8 +313,10 @@ coherent.Binding= Class.create({
         var transformedChange= Object.clone(change);
         transformedChange.newValue= newValue;
         
-        //  TODO: Need to do something clever about transforming the inserted
-        //  values, and removing transformed values.
+        //  Only cache the value when setting, since the Binding keeps a
+        //  reference to arrays, the array will automatically get updated when
+        //  changed in place. Clients should usually consider keeping a copy of
+        //  the array for just this reason.
         if (coherent.ChangeType.setting===change.changeType)
             this.cachedValue= newValue;
 
@@ -318,26 +324,33 @@ coherent.Binding= Class.create({
 
         this.updating= true;
         
-        // try {
+        try {
             this.observerFn.call(this.observer, transformedChange, keypath,context);                             
-        // } catch (e) {
-            // console.error('Exception while bindng "' + this.name + '" to keypath "' + this.keypath + ' ": ' + e);
-        // }
+        } catch (e) {
+            console.error('Exception while bindng "' + this.name + '" to keypath "' + this.keypath + ' ": ' + e);
+        }
 
         this.updating= oldUpdating;
     }
     
 });
 
+/** The regular expression used to pull out transformer information from a
+    string keypath. The name of the transformer appears in parenthesis after the
+    keypath: e.g. "some.value.on.an.object(TransformerName)".
+ */
 coherent.Binding.bindingRegex= /^(.*?)(?:\((.*)\))?$/;
+/** The regular expression used to match compound binding keypaths. This isn't
+    supported at the moment.
+ */
 coherent.Binding.compoundRegex= /^\s*([^&|].*?)\s*(\&\&|\|\|)\s*(\S.+)\s*$/;
 
 /** Create a new Binding for a target object based on a string
- *  representation of the binding. This uses the `Binding.bindingRegex`
- *  regular expression to parse the binding string.
- *  
- *  @param bindingString    the string representation of the binding.
- *  @returns a structure containing the keypath and the transformer
+    representation of the binding. This uses the `Binding.bindingRegex`
+    regular expression to parse the binding string.
+    
+    @param {String} bindingString - the string representation of the binding.
+    @returns {Object} a structure containing the keypath and the transformer
  */
 coherent.Binding.bindingInfoFromString= function(bindingString)
 {

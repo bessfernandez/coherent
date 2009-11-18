@@ -7,14 +7,14 @@ coherent.Slider= Class.create(coherent.FormControl, {
     exposedBindings: ['minValue', 'maxValue'],
         
     /** Callback for tracking changes to the value binding. This method will
-     *  disable the control if the value is undefined (meaning one of the
-     *  objects along the key path doesn't exist). Additionally, the control
-     *  will be set to readonly if the value binding isn't mutable or if the new
-     *  value is one of the marker values (MultipleValuesMarker or
-     *  NoSelectionMarker).
-     *
-     *  @param change   a ChangeNotification with the new value for the slider
-     **/
+        disable the control if the value is undefined (meaning one of the
+        objects along the key path doesn't exist). Additionally, the control
+        will be set to readonly if the value binding isn't mutable or if the new
+        value is one of the marker values (MultipleValuesMarker or
+        NoSelectionMarker).
+      
+        @param change   a ChangeNotification with the new value for the slider
+      */
     observeValueChange: function(change)
     {
         var node= this.node;

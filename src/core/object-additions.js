@@ -39,7 +39,7 @@ Object.applyDefaults = function(obj, defaults)
 }
 
 /** Extend an object by copying values from another object. Unlike
-    {@link #applyDefaults}, this function will overwrite properties that are
+    {@link Object.applyDefaults}, this function will overwrite properties that are
     already present.
     
     @param {Object} obj - The object to extend. If this happens to be null or

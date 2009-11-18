@@ -10,7 +10,10 @@
 }).call(window);
 
 
-/*  Event stuff for all browsers
+/**
+    @name Event
+    @namespace
+    Event handling helpers
  */
 Object.extend(Event, {
 
@@ -74,25 +77,8 @@ Object.extend(Event, {
 	KEY_NUM_LOCK: 144,
 	KEY_SCROLL_LOCK: 145,
 
-    isNumpadNumKey: function(keyCode)
-    {
-        return keyCode >= 96 && keyCode <= 111;
-    },
-
-    isAlphaNumKey: function(keyCode)
-    {
-        if (!this._reverseKeys)
-            this._reverseKeys= (function() {
-                    var keys= {};
-                    var originalKeys = Event.KEYS;
-                    
-                    for (var key in originalKeys)
-                        keys[originalKeys[key]] = key;
-                    return keys;
-                })();
-        return this.isNumpadNumKey(keyCode) || !this._reverseKeys[keyCode];
-    },
-    
+    /** Trigger the event handlers for DOM ready.
+     */
     _domHasFinishedLoading: function()
     {
         if (arguments.callee.done)
@@ -112,7 +98,25 @@ Object.extend(Event, {
 
         Event._readyCallbacks = null;
     },
-    
+
+    /** Establish an event observer method. This method handles the differences
+        between Standards Compliant browsers and Internet Explorer. The handler
+        method will receive the event as an argument. If the `handlerMethod`
+        should be called in a particular scope, the {@link Function#bind} method
+        may be helpful.
+        
+            this.__handlerMethod= Event.observe(this.extraNode, "click", 
+                                            this.onclickExtraNode.bind(this));
+
+        @param {Element} node - The DOM node on which to observe the event
+        @param {String} eventName - The name of the event to observe. This may
+            include the 'on' prefix necessary for Internet Explorer, but it
+            isn't required.
+        @param {Function} handlerMethod - The event handler method
+        @returns {Function} The handlerMethod is returned. This makes the code a
+            bit less complex if you wish to remember a synthetic event handler
+            method.
+     */
     observe: function(node, eventName, handlerMethod)
     {
         if ('on'==eventName.slice(0,2))
@@ -123,6 +127,17 @@ Object.extend(Event, {
         return handlerMethod;
     },
 
+    /** Stop observing event notifications for a DOM node. This method will
+        handle the differences between Standards Compliant browsers and Internet
+        Explorer.
+        
+        @param {Element} node - The DOM node on which to observe the event
+        @param {String} eventName - The name of the event to observe. This may
+            include the 'on' prefix necessary for Internet Explorer, but it
+            isn't required.
+        @param {Function} handlerMethod - The event handler method
+        @returns {Function} The handlerMethod is returned.
+     */
     stopObserving: function(node, eventName, handlerMethod)
     {
         if (!node || !eventName || !handlerMethod)
@@ -133,17 +148,39 @@ Object.extend(Event, {
         return handlerMethod;
     },
 
+    /** Stop both the default behaviour and event bubbling for the specified
+        event. This method will handle the differences between Standards
+        Compliant browsers and Internet Explorer.
+        @param {Event} event - A standard event object
+     */
 	stop: function(event)
 	{
 		event.preventDefault();
 		event.stopPropagation();
 	},
     	
+    /** Stop only the default behaviour for the specified event. This method
+        will handle the differences between Standards Compliant browsers and
+        Internet Explorer.
+        @param {Event} event - A standard event object
+     */
 	preventDefault: function(event)
 	{
 	    event.preventDefault();
 	},
-	
+
+	/** Register a callback method to be invoked when the DOM has finished
+	    loading. This handles the various methods that browsers use to signal
+	    this state.
+
+	    Note: The callback function is guaranteed to be called after this
+	    method. If the DOM has already been loaded, the callback will be invoked
+	    using a timeout scheduled for 0 milliseconds (essentially as soon as
+	    possible).
+	    
+	    @param {Function} f - The callback function. This function does not
+	        receive any arguments and is not called in any particular scope.
+	 */
 	onDomReady: function(f)
     {
         //  If the DOM has already loaded, fire off the callback as soon as

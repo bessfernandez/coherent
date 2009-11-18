@@ -8,11 +8,12 @@
     }
 
 
+    /** @constructor */
     coherent.DragAndDropHelper= function()
     {
     }
     
-    coherent.DragAndDropHelper.prototype= {
+    coherent.DragAndDropHelper.prototype= /** @scope coherent.DragAndDropHelper */ {
 
         initFakeDragAndDrop: function(node, event)
         {

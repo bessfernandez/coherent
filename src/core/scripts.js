@@ -4,10 +4,11 @@
     @namespace
 */
 coherent.Scripts = {
+
     /** Extract scripts from an HTML string.
     
         @returns {String} a string object stripped of scripts with a property
-                 `scripts` which contains the stripped scripts
+            `scripts` which contains the stripped scripts
     */
     extract: function(input) 
     {
@@ -27,7 +28,7 @@ coherent.Scripts = {
     /** Installs a script in the global scope.
     
         @param {String|String[]} script - The script or an array of scripts to
-               install in the global scope.
+            install in the global scope.
      */
     install: function(script)
     {

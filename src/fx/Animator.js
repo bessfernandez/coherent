@@ -3,8 +3,10 @@
 /*jsl:import ../dom/element.js*/
 /*jsl:import ../dom/element-ie.js*/
 
-/** @namespace The animator */
-coherent.Animator = (function() {
+/** @name coherent.Animator
+    @namespace The animator
+*/
+(function() {
 
     var DEFAULTS = {
         duration: 500,
@@ -761,7 +763,8 @@ coherent.Animator = (function() {
     
     // Return Object
     
-    return /** @scope coherent.Animator */ {
+    coherent.Animator = /** @scope coherent.Animator */ {
+    
         addClassName: function(element, className, options)
         {
             if (!className)
@@ -785,6 +788,7 @@ coherent.Animator = (function() {
 
             animateClassName(element, elementClassName, options);
         },
+        
         removeClassName: function(element, className, options)
         {
             var elementClasses= element.className;
@@ -813,6 +817,7 @@ coherent.Animator = (function() {
             
             animateClassName(element, elementClasses.join(" "), options);
         },
+        
         setClassName: function(element, className, options)
         {
             var elementClassName= element.className;
@@ -821,6 +826,7 @@ coherent.Animator = (function() {
                 
             animateClassName(element, className, options);
         },
+        
         replaceClassName: function(element, oldClassName, newClassName, options) 
         {
             //if (oldClassName===newClassName)
@@ -834,7 +840,8 @@ coherent.Animator = (function() {
             }
             animateClassName(element, newClassName, options);
         },
-        updateClassName: function(element, options)
+        
+        animateClassName: function(element, options)
         {
             var elementClasses= (element.className||"").split(" ");
             var reverse= options.reverse;
@@ -865,7 +872,16 @@ coherent.Animator = (function() {
                     options.callback(element);
             }
         },
+        
+        /**
+            @function
+
+            @param {Element} element
+            @param {Object} properties
+            @param {Object} [options]
+         */
         setStyles: animateProperties,
+        
         abort: function()
         {
             actors = {};
@@ -879,78 +895,3 @@ coherent.Animator.FADE_IN_NODE  = "fade_in";
 coherent.Animator.FADE_OUT_NODE = "fade_out";
 coherent.Animator.IGNORE_NODE   = "ignore";
 coherent.Animator.MORPH_NODE    = "morph";
-
-/* Special Animations */
-coherent.Animator.innerHTML = function(element, html, duration/*optional*/)
-{
-    duration = duration || 500;
-    
-    function stepOne()
-    {
-        var oldHTML = element.innerHTML;
-        var oldHeight = Element.getStyles(element, 'height');
-        element.innerHTML = html;
-        
-        var newHeight = Element.getStyles(element, 'height');
-        element.innerHTML = oldHTML;
-        
-        element.style.height = oldHeight;
-        element.style.overflow = 'hidden';
-        
-        coherent.Animator.setStyles(element, {
-            opacity: {value:0, callback:stepTwo}
-        }, {
-            duration: duration/2
-        });
-        coherent.Animator.setStyles(element, {
-            height: {
-                value: newHeight,
-                curve: coherent.easing.inOutSine
-            }
-        }, {
-            duration: duration,
-            cleanup: true
-        });
-    }
-
-    function stepTwo()
-    {
-        element.innerHTML = html;
-        coherent.Animator.setStyles(element, { opacity: 1 }, {
-            duration: duration/2,
-            callback: stepThree,
-            cleanup:true
-        });
-    }
-    function stepThree()
-    {
-        element.style.overflow = '';
-    }
-    
-    if (element.style.display != 'none')
-        stepOne();
-    else
-        element.innerHTML = html;
-};
-        
-coherent.Animator.innerText = function(element, text, duration/*optional*/)
-{
-    duration = duration || 500;
-
-    function setText(text)
-    {
-        var textNode = document.createTextNode(text);
-        element.innerHTML = '';
-        element.appendChild(textNode);
-    }
-    function stepTwo()
-    {
-        setText(text);
-        coherent.Animator.setStyles(element, {opacity: 1}, {duration: duration/2, cleanup: true});
-    }
-
-    if (element.style.display != 'none')
-        coherent.Animator.setStyles(element, {opacity: 0}, {duration: duration/2, callback: stepTwo});
-    else
-        setText(text);
-};

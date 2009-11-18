@@ -3,6 +3,13 @@
 
 /** SortDescriptors are a helper class that is used to sort groups of 
     KVO-compliant objects by a specific keypath.
+    
+    @property {String} keyPath - The path to the property that is used for comparisons
+    @property {Boolean} ascending - When `true`, values are compared in ascending
+        order. When `false`, values are compared in descending order.
+    @property {Function} [comparisonFn] - A function to use when comparing values.
+        If no comparison function is specified, the default is
+        {@link coherent.compareValues}.
  */
 coherent.SortDescriptor= Class.create({
 

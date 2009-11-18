@@ -1,6 +1,10 @@
 /*jsl:import Bubble.js*/
 /*jsl:import CollectionView.js*/
 
+/** A specialisation of the {@link coherent.Bubble} view that displays the
+    contents of a {@link coherent.Error} object and offers buttons to attempt
+    recovery form the error.
+ */
 coherent.ErrorBubble= Class.create(coherent.Bubble, {
 
     contentSelector: '.content',

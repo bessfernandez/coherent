@@ -1,4 +1,6 @@
 /** A function to escape strings for creating regular expressions.
+    @param {String} text - the text to convert into a valid regular expression
+    @type String
  */
 RegExp.escape = function(text)
 {

@@ -12,13 +12,17 @@
                         {
                             ...
                         }
+                    })
     
     There's really no need to ever sub-class an Error, since you can add extra
     properties via the object literal used to construct it.
  */
 coherent.Error= Class.create({
 
-    /** Construct the error instance from an object literal. */
+    /** Construct the error instance from an object literal.
+        @param {Object} details - an arbitrary hash of key/value pairs that will
+            be copied to the Error instance.
+     */
     constructor: function(details)
     {
         Object.extend(this, details);

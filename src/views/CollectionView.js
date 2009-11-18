@@ -1,6 +1,7 @@
 /*jsl:import View.js*/
 /*jsl:import ../controllers/ArrayController.js*/
 
+/** Collection view... */
 coherent.CollectionView= Class.create(coherent.View, {
 
     animationOptions: {
@@ -229,7 +230,7 @@ coherent.CollectionView= Class.create(coherent.View, {
             if ((item.selected= (index===nextSelected)))
                 nextSelected= selection.shift();
 
-            item.view.updateClassName(animationOptions, !item.selected);
+            item.view.animateClassName(animationOptions, !item.selected);
         }
     },
 
@@ -252,7 +253,7 @@ coherent.CollectionView= Class.create(coherent.View, {
                 change.newValue.forEach(function(i) {
                                     item= items[i];
                                     item.selected= true;
-                                    item.view.updateClassName(animationOptions);
+                                    item.view.animateClassName(animationOptions);
                                 });
                 break;
             case coherent.ChangeType.deletion:
@@ -260,7 +261,7 @@ coherent.CollectionView= Class.create(coherent.View, {
                 change.oldValue.forEach(function(i) {
                                     item= items[i];
                                     item.selected= false;
-                                    item.view.updateClassName(animationOptions, true);
+                                    item.view.animateClassName(animationOptions, true);
                                 });
                 break;
             case coherent.ChangeType.replacement:
@@ -268,12 +269,12 @@ coherent.CollectionView= Class.create(coherent.View, {
                 change.oldValue.forEach(function(i) {
                                     item= items[i];
                                     item.selected= false;
-                                    item.view.updateClassName(animationOptions, true);
+                                    item.view.animateClassName(animationOptions, true);
                                 });
                 change.newValue.forEach(function(i) {
                                     item= items[i];
                                     item.selected= true;
-                                    item.view.updateClassName(animationOptions);
+                                    item.view.animateClassName(animationOptions);
                                 });
                 break;
             default:

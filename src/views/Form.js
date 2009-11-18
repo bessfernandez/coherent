@@ -1,6 +1,8 @@
 /*jsl:import FieldGroup.js*/
 
-/** Support for HTML forms.
+/** Support for HTML forms.  Before submitting data from a form, it would be a
+    good idea to call {@link coherent.FieldGroup#validateFields} to check
+    whether all fields have valid values.
 
     @binding {String} actionUrl
         This is the url to which the form data should be submitted.

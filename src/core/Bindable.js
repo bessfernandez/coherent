@@ -6,7 +6,7 @@
     Controllers are subclasses of Bindable.
     
     @property {Object} bindings - A map of the bindings that have been
-              established for this object.
+        established for this object.
  */
 coherent.Bindable= Class.create(coherent.KVO, {
 
@@ -57,11 +57,13 @@ coherent.Bindable= Class.create(coherent.KVO, {
     /** This is a declarative way of specifying what bindings the object exposes.
         Subclasses should declare their own `exposedBindings` property, which
         will be merged with their superclass' value.
+        @type String[]
      */
     exposedBindings: [],
     
     /** Sometimes a subclass doesn't want to expose all the bindings available
         from its superclasses.
+        @type String[]
      */
     maskedBindings: [],
     
@@ -110,13 +112,16 @@ coherent.Bindable= Class.create(coherent.KVO, {
         return placeholders[marker]||null;
     },
     
-    /** Create an observer method that simple calls {@link #setValueForKey} to
+    /** Create an observer method that simply calls {@link #setValueForKey} to
         note the change. This allows simple bindings to be implemented with only
         a getter and setter pair.
         
+        Note: this isn't really a good choice for Array oriented bindings,
+        because it ignores change notifications other than setting.
+        
         @param {String} name - The name of the binding, which is also the name
                of the property to set.
-        @returns {Function} an observer method
+        @type Function
      */
     __createObserverMethod: function(name)
     {
@@ -133,11 +138,12 @@ coherent.Bindable= Class.create(coherent.KVO, {
     /** Bind an exposed binding name to a given key path. The instance must
         implement an observer method for the exposed binding. The observer
         method must be named `observe<Binding>Change` where <Binding> is the
-        titlecase version of `name`.
+        titlecase version of `name`. If the observer doesn't implement this
+        method, a default implementation is created.
                 
-        @param {String} name        the name of the binding exposed via exposedBindings
-        @param {Object} object      the model object to be bound to this object
-        @param {String} keyPath     the path to the value used for this binding
+        @param {String} name - the name of the binding exposed via exposedBindings
+        @param {Object} object - the model object to be bound to this object
+        @param {String} keyPath - the path to the value used for this binding
      */
     bindNameToObjectWithKeyPath: function(name, object, keyPath)
     {
@@ -186,10 +192,7 @@ coherent.Bindable= Class.create(coherent.KVO, {
         this.bindings[name]= binding;
     },
     
-    /** After all contructors execute, the Oop framework calls this method. For
-        Bindable objects, this method only executes if the
-        {@link #automaticallySetupBindings} property has been set to `true`
-        (which is the default value).
+    /** After all contructors execute, the Oop framework calls this method.
         
         This method performs the following steps:
         1. Setup the bindings defined in the parameters (calls {@link #setupBindings})
@@ -211,8 +214,12 @@ coherent.Bindable= Class.create(coherent.KVO, {
         The values in the `parameters` hash will be adapted to be KVO-compliant
         if they are not already.
         
+        If there is a setter method for the parameter value, it will be invoked
+        rather than directly setting the value on this object. However, this
+        doesn't call {@link #setValueForKey}.
+        
         @param {Object} parameters - A hash of name/value pairs that should be
-               copied to this object.
+            copied to this object.
      */
     __copyParameters: function(parameters)
     {
@@ -244,13 +251,13 @@ coherent.Bindable= Class.create(coherent.KVO, {
     /** Return the binding declaration originally passed as `parameters` to the
         constructor.
         
-        @param {Stirng} bindingName - The name of the binding for which the
-               binding declaration should be retrieved.
+        @param {String} bindingName - The name of the binding for which the
+            binding declaration should be retrieved.
                
         @returns {String} A string value should be considered to be the keypath
-                 that the binding should reference.
+            that the binding should reference.
         @returns {Object} A binding declaration object that specifies the keypath,
-                 transformer methods, and placeholder values.
+            transformer methods, and placeholder values.
      */
     bindingInfoForName: function(bindingName)
     {
@@ -259,43 +266,8 @@ coherent.Bindable= Class.create(coherent.KVO, {
         return this.__parameters[bindingName+"Binding"];
     },
     
-    /** Create an observer function for a specific binding. This function will
-        not execute if a binding has been established for the specified name.
-        
-        @TODO: Figure out why this is the way it is. I vaguely remember the need
-               was to have observeContentChange called when during a call to
-               setValueForKey(value, 'content') on an ArrayController. But I
-               don't recall why this shouldn't execute when the binding has
-               been established (does it get called twice?) and I don't know
-               why this skips the notification when the change type is `setting`.
-        
-        @param {Function} fn - The function to call when the binding changes
-               value.
-        @param {String} bindingName - The name of the binding property to observe.
-        
-        @returns {Function} An observer function that will invoke the `fn`
-                 parameter when the binding changes value.
-     */
-    __createAutoObserver: function(fn, bindingName)
-    {
-        var setting= coherent.ChangeType.setting;
-        
-        return function(change)
-        {
-            if (this.bindings[bindingName] || setting==change.changeType)
-                return;
-            fn.apply(this, arguments);
-        };
-    },
-        
-    /** Establish all the exposed bindings. This is performed in two parts:
-        
-        1. Setup each binding with updates deferred.
-        2. Loop through each binding and call update.
-        
-        This allows all bindings to be established before invoking the change
-        notification handlers for them, because the handlers might require the
-        values of other bindings to complete properly.
+    /** Establish all the exposed bindings. This merely sets up the binding. No
+        update notification will occur for the initial value.
      */
     setupBindings: function()
     {
@@ -350,7 +322,7 @@ coherent.Bindable= Class.create(coherent.KVO, {
 /** Handler for creation of subclasses of Bindable: this fixes up the exposed
     bindings silliness by adding all the base class exposed bindings to the
     prototype value. Any bindings listed in the {@link #maskedBindings} will be
-    removed fromt he final list of available bindings.
+    removed fromt the final list of available bindings.
     
     @function
     @param {Class} subclass - a reference to the constructor of the new class

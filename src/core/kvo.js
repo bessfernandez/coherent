@@ -27,9 +27,9 @@
 coherent.KeyInfo= Class.create({
 
     /** Create a new KeyInfo object.
-     *  
-     *  @param {Object} obj the object on which the key is defined
-     *  @param {String} key the name of the key to manage
+        
+        @param {Object} obj - the object on which the key is defined
+        @param {String} key - the name of the key to manage
      */
     constructor: function(obj, key)
     {
@@ -73,7 +73,7 @@ coherent.KeyInfo= Class.create({
     /** Retrieve the value of this key for a given object. If the value can have
         a parent link, this method will create it.
         
-        @param {coherent.KVO} obj   the KVO instance from which to fetch the
+        @param {coherent.KVO} obj - the KVO instance from which to fetch the
                value.
         @returns the current value of the key for the specified object
      */
@@ -104,11 +104,11 @@ coherent.KeyInfo= Class.create({
     },
     
     /** Store a new value for a given object. This method will call a mutator
-     *  method if one exists, or otherwise will call `willChangeValueForKey`,
-     *  update the field directly, and then call `didChangeValueForKey`.
-     *  
-     *  @param obj  the object to modify
-     *  @param newValue the new value that will replace the old value.
+        method if one exists, or otherwise will call `willChangeValueForKey`,
+        update the field directly, and then call `didChangeValueForKey`.
+        
+        @param obj  the object to modify
+        @param newValue the new value that will replace the old value.
      */
     set: function(obj, newValue)
     {
@@ -136,9 +136,9 @@ coherent.KeyInfo= Class.create({
     },
     
     /** Remove the parent link for this KeyInfo object. Child object reference
-     *  the parentLink rather than the owner object directly. This gives the
-     *  owner a method to disconnect from the child without maintaining a
-     *  reference to the child.
+        the parentLink rather than the owner object directly. This gives the
+        owner a method to disconnect from the child without maintaining a
+        reference to the child.
      */
     unlinkParentLink: function()
     {
@@ -155,31 +155,31 @@ coherent.KeyInfo= Class.create({
 
 
 /** Enumerations for the types of changes.
- *  
- *  @property setting       a key's value has changed, the newValue property of
- *                          the change notification will contain the new value.
- *                          If the key represents an array, the newValue is the
- *                          new array.
- *  @property insertion     an element or elements have been inserted into an
- *                          array. The newValue property of the change
- *                          notification will contain the new elements. The
- *                          indexes property of the change notification will
- *                          contain the index at which each element was inserted.
- *                          The oldValue property will be null.
- *  @property deletion      an element or elements have been removed from an
- *                          array. The newValue property of the change
- *                          notification will be null. The oldValue property
- *                          will contain the elements removed from the array.
- *                          And the indexes property will contain the index of
- *                          each element that was removed.
- *  @property replacement   an element or elements have been replace in an array.
- *                          The newValue property of the change notification
- *                          contains the new values for each element.
- *                          The oldValue property contains the previous values
- *                          for each element. And the indexes property will
- *                          contain the index of each element replaced.
- *  
- *  @namespace
+    
+    @property setting       a key's value has changed, the newValue property of
+                            the change notification will contain the new value.
+                            If the key represents an array, the newValue is the
+                            new array.
+    @property insertion     an element or elements have been inserted into an
+                            array. The newValue property of the change
+                            notification will contain the new elements. The
+                            indexes property of the change notification will
+                            contain the index at which each element was inserted.
+                            The oldValue property will be null.
+    @property deletion      an element or elements have been removed from an
+                            array. The newValue property of the change
+                            notification will be null. The oldValue property
+                            will contain the elements removed from the array.
+                            And the indexes property will contain the index of
+                            each element that was removed.
+    @property replacement   an element or elements have been replace in an array.
+                            The newValue property of the change notification
+                            contains the new values for each element.
+                            The oldValue property contains the previous values
+                            for each element. And the indexes property will
+                            contain the index of each element replaced.
+    
+    @namespace
  */
 coherent.ChangeType=
 {
@@ -193,6 +193,7 @@ coherent.ChangeType=
 
     
 /** Change notifications are the root of all updates.
+    @constructor
     
     @property {Object} object - The object for which this update is being sent
     @property {coherent.ChangeType} changeType - The type of change this
@@ -206,60 +207,15 @@ coherent.ChangeType=
     @property {Set} notifiedObserverUids - this is the set UIDs from of observers
               that have already received notifications for this change.
  */
-coherent.ChangeNotification= Class.create({
-
-    /** Initialise a new ChangeNotification instance.
-        
-        @param {Object} object - a reference to the object that has changed
-        @param {coherent.ChangeType} changeType - the type of change
-        @param newValue - the new value of the key
-        @param oldValue - the old value of the key
-        @param {Number[]} [indexes] - If `object` is an array, this should be an
-               ordered list of the updated indexes.
-     */
-    constructor: function(object, changeType, newValue, oldValue, indexes)
-    {
-        this.object= object;
-        this.changeType= changeType;
-        this.newValue= newValue;
-        this.oldValue= oldValue;
-        this.indexes= indexes;
-        this.notifiedObserverUids= {};
-    },
-    
-    toString: function()
-    {
-        var str= "[ChangeNotification changeType: ";
-        switch (this.changeType)
-        {
-            case coherent.ChangeType.setting:
-                str+= "setting";
-                break;
-            
-            case coherent.ChangeType.insertion:
-                str+= "insertion";
-                break;
-        
-            case coherent.ChangeType.deletion:
-                str+= "deletion";
-                break;
-            
-            case coherent.ChangeType.replacement:
-                str+= "replacement";
-                break;
-            
-            default:
-                str+= "<<unknown>>";
-                break;
-        }
-    
-        str+= " newValue=" + this.newValue +
-              " oldValue=" + this.oldValue +
-              (this.indexes?" indexes=" + this.indexes.join(", "):"") + "]";
-    
-        return str;
-    }
-});
+coherent.ChangeNotification= function(object, changeType, newValue, oldValue, indexes)
+{
+    this.object= object;
+    this.changeType= changeType;
+    this.newValue= newValue;
+    this.oldValue= oldValue;
+    this.indexes= indexes;
+    this.notifiedObserverUids= {};
+}
 
 
 
@@ -306,21 +262,21 @@ coherent.ObserverEntry=Class.create({
 
 
 /** KVO is the base of all key value observing compliant classes. Classes which
- *  intend to participate in binding and change notifications should (probably)
- *  be subclasses of KVO.
- *  
- *  @property [__mutableKeys]   An array of keys which should be assumed to be
- *            the sum total mutable properties on the object or class,
- *            regardless of what introspection might otherwise reveal.
+    intend to participate in binding and change notifications should (probably)
+    be subclasses of KVO.
+    
+    @property __mutableKeys - An array of keys which should be assumed to be
+      the sum total mutable properties on the object or class, regardless of
+      what introspection might otherwise reveal.
  */
 coherent.KVO= Class.create({
 
     /** Initialiser for the KVO class. This doesn't actually do anything
-     *  specific. Most initialisation is defered to exactly when it's needed.
-     *  This is a practical decision rather than an optimisation decision,
-     *  because objects which are not directly derived from coherent.KVO may be
-     *  adapted for key value compliance. Therefore, the KVO constructor would
-     *  not have executed for those objects.
+        specific. Most initialisation is defered to exactly when it's needed.
+        This is a practical decision rather than an optimisation decision,
+        because objects which are not directly derived from coherent.KVO may be
+        adapted for key value compliance. Therefore, the KVO constructor would
+        not have executed for those objects.
      */
     constructor: function(hash)
     {
@@ -329,6 +285,9 @@ coherent.KVO= Class.create({
                 this.setValueForKey(hash[p], p);
     },
 
+    /** The factory method for KVO and any derived classes. This factory method
+        simply passes along the parameters to the constructor.
+     */
     __factory__: function()
     {
         var args= Array.from(arguments);
@@ -347,10 +306,10 @@ coherent.KVO= Class.create({
     
     /** Set a value for a particular key path on the given object.
 
-        @param value    the value to assign
-        @param keyPath  where to store the value
+        @param value - the value to assign
+        @param {String} keyPath - where to store the value
     
-        @throws InvalidArgumentError if the keyPath is null
+        @throws `InvalidArgumentError` if the keyPath is null
      */
     setValueForKeyPath: function(value, keyPath)
     {
@@ -390,10 +349,10 @@ coherent.KVO= Class.create({
     /** Set a value for a particular key on the given object. A key is a leaf
         attribute.
     
-        @param value    the value to assign
-        @param key      the name of the attribute to assign
+        @param value - the value to assign
+        @param {String} key - the name of the attribute to assign
     
-        @throws InvalidArgumentError if a null key is used
+        @throws `InvalidArgumentError` if a null key is used
      */
     setValueForKey: function(value, key)
     {
@@ -409,13 +368,13 @@ coherent.KVO= Class.create({
     },
 
     /** Retrieve the value for a particular key path on the given object.
-     *
-     *  @param keyPath  where to find the value
-     *
-     *  @returns the value of the given key or undefined if an object in the
-     *           keypath chain was missing.
-     *  
-     *  @throws InvalidArgumentError if the keyPath is empty
+      
+        @param {String} keyPath - where to find the value
+      
+        @returns the value of the given key or `undefined` if an object in the
+             keypath chain was missing.
+        
+        @throws `InvalidArgumentError` if the keyPath is empty
      */
     valueForKeyPath: function(keyPath)
     {
@@ -455,10 +414,10 @@ coherent.KVO= Class.create({
 
     /** Retrieve the value of a particular key for this object.
 
-        @param key  the name of the attribute to retrieve.
+        @param {String} key  the name of the attribute to retrieve.
     
         @returns the value of the key
-        @throws InvalidArgumentError if the key is null
+        @throws `InvalidArgumentError` if the key is null
      */
     valueForKey: function(key)
     {
@@ -474,15 +433,15 @@ coherent.KVO= Class.create({
     },
 
     /** Determine whether the value may be assigned to the property represented
-     *  by keyPath.
-     *
-     *  @param value    the value to validate
-     *  @param keyPath  where to find the value
-     *
-     *  @returns a valid value or an instance of coherent.Error if the value
-     *           could not be coerced into a valid value.
-     *  
-     *  @throws InvalidArgumentError if the keyPath is empty
+        by keyPath.
+      
+        @param value - the value to validate
+        @param {String} keyPath - where to find the value
+      
+        @returns a valid value or an instance of {@link coherent.Error} if the
+            value could not be coerced into a valid value.
+        
+        @throws `InvalidArgumentError` if the keyPath is empty
      */
     validateValueForKeyPath: function(value, keyPath)
     {
@@ -515,14 +474,14 @@ coherent.KVO= Class.create({
 
 
     /** Validate the value to be assigned to a key.
-     *  
-     *  @param value    the value to check
-     *  @param key      the key to check
-     *  
-     *  @returns A valid value or an instance of coherent.Error to signify
-     *           that the value could not be coerced into a valid value.
-     *  
-     *  @throws InvalidArgumentError if the key is null or empty.
+        
+        @param value - the value to check
+        @param {String} key - the key to check
+        
+        @returns A valid value or an instance of {@link coherent.Error} to
+            signify that the value could not be coerced into a valid value.
+        
+        @throws `InvalidArgumentError` if the key is null or empty.
      */
     validateValueForKey: function(value, key)
     {
@@ -534,13 +493,13 @@ coherent.KVO= Class.create({
     },
     
     /** Change notification handler for property values. This handler receives a
-     *  notification for changes to the key values of contained objects.
-     *
-     *  @private
-     *
-     *  @param change   a ChangeNotification object
-     *  @param keyPath  the key path that has changed
-     *  @param context  the context information original specified for this key
+        notification for changes to the key values of contained objects.
+      
+        @private
+      
+        @param {coherent.ChangeNotification} change - a ChangeNotification object
+        @param {String} keyPath - the key path that has changed
+        @param context - the context information original specified for this key
      */
     observeChildObjectChangeForKeyPath: function(change, keyPath, context)
     {
@@ -556,12 +515,10 @@ coherent.KVO= Class.create({
     },
 
     /** Discover information about the specified key.
-     *
-     *  @param keyPath  path to the attribute
-     *
-     *  @returns an instance of KeyInfo for the specified keyPath
-     *
-     *  @throws InvalidArgumentError if the keyPath is null
+      
+        @param {String} keyPath - path to the attribute
+        @returns {coherent.KeyInfo} an instance of KeyInfo for the specified keyPath
+        @throws `InvalidArgumentError` if the keyPath is null
      */
     infoForKeyPath: function(keyPath)
     {
@@ -603,12 +560,10 @@ coherent.KVO= Class.create({
     },
 
     /** Discover information about the specified key.
-     *
-     *  @param keyPath  path to the attribute
-     *
-     *  @returns an instance of KeyInfo for the specified key
-     *
-     *  @throws InvalidArgumentError if the keyPath is null
+      
+        @param {String} keyPath - path to the attribute
+        @returns {coherent.KeyInfo} an instance of KeyInfo for the specified key
+        @throws `InvalidArgumentError` if the keyPath is null
      */
     infoForKey: function(key)
     {
@@ -632,19 +587,17 @@ coherent.KVO= Class.create({
     },
     
     /** Register dependent key for a set of keys. When any one of the set of
-     *  keys changes, observers of the dependent key will be notified of a
-     *  change to the dependent key. This is useful for a (read-only) composite
-     *  value or similar.
-     *  
-     *  Consider declaring key dependencies via the keyDependencies prototype
-     *  member instead of calling this method directly.
-     *
-     *  @param keys         an array of keys which will trigger a change
-     *                      notification to the dependent key.
-     *  
-     *  @param dependentKey the name of a dependent key
-     *  
-     *  @throws InvalidArgumentError if either the keys or dependentKey is null.
+        keys changes, observers of the dependent key will be notified of a
+        change to the dependent key. This is useful for a (read-only) composite
+        value or similar.
+        
+        Consider declaring key dependencies via the keyDependencies prototype
+        member instead of calling this method directly.
+      
+        @param {String[]} keys - an array of keys which will trigger a change
+            notification to the dependent key.
+        @param {String} dependentKey - the name of a dependent key
+        @throws `InvalidArgumentError` if either the keys or dependentKey is null.
      */
     setKeysTriggerChangeNotificationsForDependentKey: function(keys, dependentKey)
     {
@@ -689,7 +642,7 @@ coherent.KVO= Class.create({
     },
 
     /** Determine the list of mutable keys.
-        @returns an array of the names of the mutable keys.
+        @returns {String[]} an array of the names of the mutable keys.
      */
     mutableKeys: function()
     {
@@ -797,17 +750,17 @@ coherent.KVO= Class.create({
     },
     
     /** Register for changes to a particular key path.
-     *
-     *  @param observer     the object interested in changes to the value of key
-     *                      path
-     *  @param callback     (optional) the function to call when the key changes,
-     *                      defaults to "observeChangesForKeyPath"
-     *  @param keyPath      the key path of interest
-     *  @param context      a value passed back to the callback -- meaningful only
-     *                      to the observer
-     *  
-     *  @throws InvalidArgumentError when the keypath is empty, observer is null,
-     *          callback is null.
+      
+        @param observer     the object interested in changes to the value of key
+                            path
+        @param callback     (optional) the function to call when the key changes,
+                            defaults to "observeChangesForKeyPath"
+        @param keyPath      the key path of interest
+        @param context      a value passed back to the callback -- meaningful only
+                            to the observer
+        
+        @throws `InvalidArgumentError` when the keypath is empty, observer is null,
+                callback is null.
      */
     addObserverForKeyPath: function(observer, callback, keyPath, context)
     {
@@ -847,10 +800,10 @@ coherent.KVO= Class.create({
     },
 
     /** Remove an observer for a keyPath.
-     *
-     *  @param keyPath          the key path of interest
-     *  @param observer         the object interested in changes to the value of key
-     *                          path
+      
+        @param {Object} observer - the object interested in changes to the value
+            of key path
+        @param {String} keyPath - the key path of interest
      */
     removeObserverForKeyPath: function(observer, keyPath)
     {
@@ -882,11 +835,11 @@ coherent.KVO= Class.create({
     },
 
     /** Prepares for a later invocation of didChangeValueForKey by caching the
-     *  previous value in the key's KeyInfo structure. Should be called for manual
-     *  KVO implementation.
-     *
-     *  @param key  the key that has changed
-     *  @throws InvalidArgumentError if the key is null
+        previous value in the key's KeyInfo structure. Should be called for
+        manual KVO implementation.
+      
+        @param {String} key - the key that has changed
+        @throws `InvalidArgumentError` if the key is null
      */
     willChangeValueForKey: function(key, keyInfo)
     {
@@ -926,8 +879,9 @@ coherent.KVO= Class.create({
     },
     
     /** Invoked to notify observers that the value has changed.
-     *
-     *  @param key  the key that has changed
+      
+        @param {String} key - the key that has changed
+        @throws `InvalidArgumentError` if the key is null
      */
     didChangeValueForKey: function(key, keyInfo)
     {
@@ -970,13 +924,14 @@ coherent.KVO= Class.create({
     },
 
     /** Notify all observers that the specified keyPath has changed. Not usually
-     *  called by external code.
-     *
-     *  @param change   An instance of {@link coherent.ChangeNotification}
-     *  @param change.newValue     new value of the key
-     *  @param change.oldValue     original value of the key
-     *  @param change.changeType   what kind of change is this
-     *  @param keyPath      path to the key that has changed
+        called by external code.
+        
+        @private
+        @param {coherent.ChangeNotification} change - The change notification object
+        @param change.newValue - new value of the key
+        @param change.oldValue - original value of the key
+        @param change.changeType - what kind of change is this
+        @param {String} keyPath - path to the key that has changed
      */
     notifyObserversOfChangeForKeyPath: function(change, keyPath)
     {

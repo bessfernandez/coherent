@@ -515,20 +515,31 @@ coherent.Page= Class.create(coherent.Responder, {
         this._draggingView= null;
     },
     
+    /** @name coherent.DragInfo
+        @class This is an adhoc object passed to drag and drop methods.
+        @property {Point} location - The x & y viewport coordinates of the mouse
+            at the time of the event.
+        @property {Element} target - The DOM node below the mouse (accounts for
+            the helper nodes needed for IE & Firefox)
+        @property {String[]} types - Mime types of the content being dragged.
+            MSIE only supports text/plain and text/uri-list (AKA Text & URL).
+        @property {String} operation - The drag operation being performed.
+     */
+     
+    /** @name coherent.DragInfo#getData
+        @description Retrieve the data associated with the drag operation.
+        @function
+        @type String
+     */
+     
     /** Create the drag info object from an event. This method is specialised
         based on whether the browser explicitly supports drag & drop or not,
         as well as the level of browser support for drag & drop.
         
-        DragInfo objects contain the following members:
-            location - client coordinates of the mouse at the time of the event
-            target - the DOM node below the mouse (accounts for the helper nodes
-                     needed for IE & Firefox)
-            types - mime types of the content being dragged. MSIE only supports
-                    text/plain and text/uri-list (AKA Text & URL).
-            operation - the drag operation being performed
-            getData - method that will return the data being dragged. This data
-                      may not be available before a drop because of security
-                      concerns.
+        @function
+        @param {Event} event - the dragging event
+        @returns {coherent.DragInfo} An object with information about the
+            dragging event.
      */
     _dragInfoFromEvent: (function(){
     
@@ -754,9 +765,13 @@ coherent.Page= Class.create(coherent.Responder, {
     
 });
 
-
+/** @private */
 (function(){
 
+    /** The single page instance.
+        @type coherent.Page
+        @public
+     */
     coherent.page= new coherent.Page();
     
     window._setTimeout= window.setTimeout;
@@ -816,6 +831,7 @@ coherent.Page= Class.create(coherent.Responder, {
     
     if (coherent.Browser.IE)
     {
+        /** @ignore */
         wrapEventHandler=function(fn)
         {
             return function()
@@ -855,6 +871,7 @@ coherent.Page= Class.create(coherent.Responder, {
     }
     else
     {
+        /** @ignore */
         wrapEventHandler=function(fn)
         {
             return function(event)

@@ -1,24 +1,28 @@
 /*jsl:import Formatter.js*/
 
+/** A formatter that matches input against regular expressions.
+ */
 coherent.RegexFormatter= Class.create(coherent.Formatter, {
 
     /** Create a new RegexFormatter. This formatter doesn't actually format the
         value, but it uses a series of regular expressions to determine the
         validity of the value.
         
-        @param settings.validCharacters {regex|string} either a regular expression
-                or a string defining the valid characters for this formatter.
-        @param settings.validRegex {regex|array} either a regular expression
-                or an array of regular expressions that determine whether a
-                value is valid.
-        @param settings.invalidRegex {regex|array} either a regular expression
-                or an array of regular expressions that determine whether the
-                value is invalid.
+        @param {RegExp|String} settings.validCharacters - either a regular
+            expression or a string defining the valid characters for this
+            formatter.
+        @param {RegExp|RegExp[]} settings.validRegex - either a regular
+            expression or an array of regular expressions that determine whether
+            a value is valid.
+        @param {RegExp|RegExp[]} settings.invalidRegex - either a regular
+            expression or an array of regular expressions that determine whether
+            the value is invalid.
     */
     constructor: function(settings)
     {
         this.base(settings);
         this.typeofValidCharacters= typeof(this.validCharacters);
+        
         //  convert single regexes to an array with just one element
         if (this.invalidRegex && 'exec' in this.invalidRegex)
             this.invalidRegex= [this.invalidRegex];

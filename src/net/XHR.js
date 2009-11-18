@@ -3,8 +3,15 @@
 /*jsl:declare XMLHttpRequest*/
 /*jsl:declare ActiveXObject*/
 
-window.XHR= (function(){
+/** @name XHR
+    @namespace
+ */
+(function(){
 
+    /** Retrieve an XMLHttpRequest object for each browser.
+        @inner
+        @type XMLHttpRequest
+     */
     var getTransport= function()
                       {
                           throw new Error('XMLHttpRequest not available.');
@@ -45,7 +52,14 @@ window.XHR= (function(){
             }
         }
     }
-    
+
+    /** Send a XHR request.
+        @inner
+        @param {String} url - The URL of the endpoint
+        @param {String} method - The HTTP method to use
+        @param {Object} options - Options...
+        @type coherent.Deferred
+     */
     function send(url, method, options)
     {
         var timeout;
@@ -215,7 +229,8 @@ window.XHR= (function(){
         return deferred;
     }
 
-    return {
+    
+    window.XHR= /** @lends XHR */ {
     
         numberOfActiveRequests: 0,
         

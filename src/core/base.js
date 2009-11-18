@@ -11,6 +11,7 @@ var coherent= {
         increasing value. It's not really unique outside of the page, so you
         shouldn't use this value for synchronising components across pages or
         communicating with servers.
+        @type Number
      */
     generateUid: (function(){
             var uid= 0;
@@ -48,6 +49,7 @@ coherent.Browser= {
               navigator.userAgent.indexOf('KHTML') == -1,
     /** Is the browser Mobile Safari (iPhone or iPod Touch) */
     MobileSafari: !!navigator.userAgent.match(/Apple.*Mobile.*Safari/),
+    /** Is the application running under Selenium tests? */
     SeleniumActive: (-1!==window.name.indexOf('selenium'))
 };
 
@@ -96,7 +98,8 @@ coherent.Support= {
 if (coherent.Support.Properties)
 {
     /*  Define a getter function that will determine whether the CSS3 Color Model
-        is available. When invoked, this function will replace itself with the correct value.
+        is available. When invoked, this function will replace itself with the
+        correct value.
      */    
     coherent.Support.__defineGetter__('CSS3ColorModel', function()
         {
@@ -110,8 +113,8 @@ if (coherent.Support.Properties)
          });
 
     /*  Define a getter function that will determine whether CSSTransitions are
-        available only when actually asked. When invoked, this function will replace
-        itself with the correct value.
+        available only when actually asked. When invoked, this function will
+        replace itself with the correct value.
      */
     coherent.Support.__defineGetter__('CSSTransitions', function()
         {
@@ -124,9 +127,9 @@ if (coherent.Support.Properties)
             return (this.CSSTransitions=false);
         });
         
-    /*  Define a getter function that will determine whether CSS3 Border Images are
-        available only when actually asked. When invoked, this function will replace
-        itself with the correct value.
+    /*  Define a getter function that will determine whether CSS3 Border Images
+        are available only when actually asked. When invoked, this function will
+        replace itself with the correct value.
      */
     coherent.Support.__defineGetter__('BorderImage', function()
         {
@@ -166,11 +169,11 @@ coherent.typeOf=function(o)
     types don't match, the values are first converted to strings and then
     compared with a locale sensitive method.
     
-    @param v1   first value
-    @param v2   second value
+    @param v1 - first value
+    @param v2 - second value
     @returns {Number} -1 if v1 < v2, 0 if v1==v2, and 1 if v1>v2
  */
-coherent.compareValues= function( v1, v2 )
+coherent.compareValues= function(v1, v2)
 {
     var v1_type= coherent.typeOf(v1);
     

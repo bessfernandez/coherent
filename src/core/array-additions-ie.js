@@ -1,5 +1,7 @@
 /*jsl:import array-additions.js*/
 
+/** Create an array from an array-like object.
+ */
 Array.from= function(obj, startIndex)
 {
     var len= obj.length;

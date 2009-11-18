@@ -1,7 +1,7 @@
 /*jsl:import ../views/Button.js*/
 
 /** A date selection view that presents a calendar. Ultimately, it should be
-    possible to have this attached to a {@link coherent.TextField} and have it pop
+    possible to attach to a {@link coherent.TextField} and have the calendar pop
     up when the TextField becomes the first responder.
  */
 coherent.CalendarView= Class.create(coherent.View, {
@@ -11,20 +11,24 @@ coherent.CalendarView= Class.create(coherent.View, {
     /** The format that will be used for the caption of the Calendar. The
         available fields are: month, monthName, monthShortName, and year. At the
         moment, these values aren't localised.
+        @type String
      */
     captionFormat: "${monthShortName} ${year}",
 
-    /** The class to apply to nodes from the previous month. */
+    /** The class to apply to nodes from the previous month.
+        @type String
+     */
     previousMonthClass: "cal-previous-month",
-    /** The class to apply to nodes belonging to the next month. */
-    nextMonthClass: "cal-next-month",
-    /** The class to apply to the current day. */
-    todayClass: "cal-today",
     
-    /** The duration of the month change animation in milliseconds. */
-    animationDuration: 100,
-    /** Should month changes be animated? */
-    animated: false,
+    /** The class to apply to nodes belonging to the next month.
+        @type String
+     */
+    nextMonthClass: "cal-next-month",
+    
+    /** The class to apply to the current day.
+        @type String
+     */
+    todayClass: "cal-today",
     
     /** Full month names. These should be localised. */
     monthNames: ["January", "February", "March", "April", "May", "June",
@@ -44,13 +48,32 @@ coherent.CalendarView= Class.create(coherent.View, {
 
     /** Quick access to the current date. @TODO Setup a single timer to update
         the value of today when the clock rolls over.
+        @type Date
      */
     today: new Date(),
     
-    /** The structural markup for this calendar if none was provided by the page. */
+    /** The structural markup for this calendar if none was provided by the page.
+        The present mark up is:
+        
+            <div class="calendar"></div>
+            
+        @type String
+     */
     markup: '<div class="calendar"></div>',
     
-    /** The inner HTML that will be used if the page doesn't supply custom mark up. */
+    /** The inner HTML that will be used if the page doesn't supply custom mark up.
+        The current mark up is:
+        
+            <div class="cal-caption">
+                <button class="cal-previous-month">Previous</button>
+                <span class="cal-caption"></span>
+                <button class="cal-next-month">Next</button>
+            </div>
+
+        The mark up for the days of the month is automatically generated and
+        isn't represented in the mark up.
+        @type String
+     */
     innerHTML: '<div class="cal-caption"><button class="cal-previous-month">Previous</button><span class="cal-caption"></span><button class="cal-next-month">Next</button></div>',
     
     __structure__: {
@@ -64,27 +87,37 @@ coherent.CalendarView= Class.create(coherent.View, {
 
     },
     
+    /** Initialise the calendar view. This will build all the child nodes that
+        represent the calendar.
+     */
     init: function()
     {
-        this._previousMonthNodes=[];
-        this._nextMonthNodes=[];
-        this._monthNodes=[];
+        this.__previousMonthNodes=[];
+        this.__nextMonthNodes=[];
+        this.__monthNodes=[];
         
-        this.buildCalendar(this.node);
+        this.buildCalendar();
         this.__selectedDate= new Date(0);
         this.setDate(this.today, false);
     },
 
+    /** Property accessor for the date associated with the calendar. The calendar
+        will display the month that includes this date.
+        
+        @type Date
+     */
     date: function()
     {
         return this.__date;
     },
     
-    setDate: function(newDate, animate)
+    /** Change the date of the calendar. The calendar will show the full month
+        that contains this date.
+        
+        @param {Date} newDate - the date to show
+     */
+    setDate: function(newDate)
     {
-        if (1===arguments.length)
-            animate= this.animated;
-            
         this.__date= new Date(newDate.getTime());
         
         var month= this.__date.getMonth();
@@ -101,11 +134,14 @@ coherent.CalendarView= Class.create(coherent.View, {
         var captionNode= Element.query(this.node, 'span.cal-caption');
         captionNode.innerHTML= caption;
         
-        this.updatePreviousMonthDays(animate);
-        this.updateMonthDays(animate);
-        this.updateNextMonthDays(animate);
+        this.updatePreviousMonthDays();
+        this.updateMonthDays();
+        this.updateNextMonthDays();
     },
     
+    /** The date that has been selected by the user.
+        @type Date
+     */
     selectedDate: function()
     {
         if (0===this.__selectedDate.getTime())
@@ -113,6 +149,11 @@ coherent.CalendarView= Class.create(coherent.View, {
         return this.__selectedDate;
     },
     
+    /** Select a specific date on the calendar. This will change the calendar
+        to display the month containing the selected date.
+
+        @param {Date} newDate - the date that should be selected
+     */
     setSelectedDate: function(newDate)
     {
         if ('date'!==coherent.typeOf(newDate))
@@ -121,12 +162,11 @@ coherent.CalendarView= Class.create(coherent.View, {
         this.__selectedDate= new Date(newDate.getTime());
         //  Show this date
         this.setDate(this.__selectedDate);
-        
-        if (this.bindings.selectedDate)
-            this.bindings.selectedDate.setValue(this.__selectedDate);
     },
     
-    buildCalendar: function(container)
+    /** Build the nodes that are associated with the calendar.
+     */
+    buildCalendar: function()
     {
         /*  Total number of items needed is 1 for each possible day in
             the month + max number of previous month days to show (6) +
@@ -134,7 +174,8 @@ coherent.CalendarView= Class.create(coherent.View, {
          */
         var totalItems= 31 + 12;
         var template= document.createElement('li');
-        
+
+        var container= this.node;
         var frag= document.createDocumentFragment();
         var list= document.createElement('ol');
         frag.appendChild(list);
@@ -148,7 +189,7 @@ coherent.CalendarView= Class.create(coherent.View, {
             node= template.cloneNode(true);
             node.innerHTML="P";
             list.appendChild(node);
-            this._previousMonthNodes.push(node);
+            this.__previousMonthNodes.push(node);
         }
         
         template.className='cal-current-month day';
@@ -157,7 +198,7 @@ coherent.CalendarView= Class.create(coherent.View, {
             node= template.cloneNode(true);
             node.innerHTML= (i+1);
             list.appendChild(node);
-            this._monthNodes.push(node);
+            this.__monthNodes.push(node);
         }
 
         template.className='cal-next-month day';
@@ -166,7 +207,7 @@ coherent.CalendarView= Class.create(coherent.View, {
             node= template.cloneNode(true);
             node.innerHTML="N";
             list.appendChild(node);
-            this._nextMonthNodes.push(node);
+            this.__nextMonthNodes.push(node);
         }
         
         container.appendChild(frag);
@@ -186,7 +227,7 @@ coherent.CalendarView= Class.create(coherent.View, {
         
         for (var i=0; i<6; ++i)
         {
-            var dayNode= this._previousMonthNodes[5-i];
+            var dayNode= this.__previousMonthNodes[5-i];
             var show= i<numberOfPreviousDays;
             var visible= ('none'!==dayNode.style.display);
             
@@ -195,6 +236,8 @@ coherent.CalendarView= Class.create(coherent.View, {
         }
     },
 
+    /** Determine the number of days from the following month to show.
+     */
     updateNextMonthDays: function()
     {
         var nextMonth= this.nextMonth(this.__date);
@@ -209,7 +252,7 @@ coherent.CalendarView= Class.create(coherent.View, {
         
         for (var i=0; i<13; ++i)
         {
-            var dayNode= this._nextMonthNodes[i];
+            var dayNode= this.__nextMonthNodes[i];
             var show= i<numberOfNextDays;
             var visible= ('none'!==dayNode.style.display);
             
@@ -218,7 +261,7 @@ coherent.CalendarView= Class.create(coherent.View, {
         }
     },
 
-    /** Determine what days from the previous month to show.
+    /** Update the current month nodes only showing the correct number.
      */
     updateMonthDays: function()
     {
@@ -232,7 +275,7 @@ coherent.CalendarView= Class.create(coherent.View, {
                                
         for (var i=0; i<31; ++i)
         {
-            var dayNode= this._monthNodes[i];
+            var dayNode= this.__monthNodes[i];
             var show= i<daysInMonth;
             var visible= ('none'!==dayNode.style.display);
             
@@ -252,6 +295,9 @@ coherent.CalendarView= Class.create(coherent.View, {
         }
     },
     
+    /** Return the first day of the month containing the specified date.
+        @type Date
+     */
     firstDayOfMonth: function(date)
     {
         date= new Date(date.getTime());
@@ -259,6 +305,9 @@ coherent.CalendarView= Class.create(coherent.View, {
         return date;
     },
 
+    /** Return the number of days in the month containing the specified date.
+        @type Number
+     */
     daysInMonth: function(date)
     {
         var month= date.getMonth();
@@ -284,6 +333,10 @@ coherent.CalendarView= Class.create(coherent.View, {
         return days;
     },
     
+    /** Return the first day of the month before the month containing the date
+        specified.
+        @type Date
+     */
     previousMonth: function(date)
     {
         var newDate= new Date(date.getTime());
@@ -299,6 +352,10 @@ coherent.CalendarView= Class.create(coherent.View, {
         return newDate;
     },
 
+    /** Return the first day of the month after the month containing the date
+        specified.
+        @type Date
+     */
     nextMonth: function(date)
     {
         var newDate= new Date(date.getTime());
@@ -308,6 +365,12 @@ coherent.CalendarView= Class.create(coherent.View, {
         return newDate;
     },
     
+    /** Handle clicks on a day within the calendar. If the visitor clicks on a
+        day in the previous or next month, the calendar is changed to display
+        that month. The actual date clicked on is selected.
+        
+        @param {Event} event - A standard click event.
+     */
     onclick: function(event)
     {
         var node= event.target||event.srcElement;
@@ -322,16 +385,16 @@ coherent.CalendarView= Class.create(coherent.View, {
         var index;
 
         //  Check where the click occurred
-        if (-1!==(index=this._previousMonthNodes.indexOf(node)))
+        if (-1!==(index=this.__previousMonthNodes.indexOf(node)))
         {
             date= this.previousMonth(date);
             date.setDate(26+index);
         }
-        else if (-1!==(index=this._monthNodes.indexOf(node)))
+        else if (-1!==(index=this.__monthNodes.indexOf(node)))
         {
             date.setDate(index+1);
         }
-        else if (-1!==(index=this._nextMonthNodes.indexOf(node)))
+        else if (-1!==(index=this.__nextMonthNodes.indexOf(node)))
         {
             date= this.nextMonth(date);
             date.setDate(index+1);
@@ -340,14 +403,25 @@ coherent.CalendarView= Class.create(coherent.View, {
         Event.preventDefault(event);
         
         this.setSelectedDate(date);
+        
+        if (this.bindings.selectedDate)
+            this.bindings.selectedDate.setValue(this.__selectedDate);
     },
     
+    /** Show the previous month.
+        @param {coherent.View} sender - this is the view that is invoking the
+                action (usually filled in by the framework)
+     */
     showPreviousMonth: function(sender)
     {
         var date= this.previousMonth(this.__date);
         this.setDate(date);
     },
     
+    /** Show the next month.
+        @param {coherent.View} sender - this is the view that is invoking the
+                action (usually filled in by the framework)
+     */
     showNextMonth: function(sender)
     {
         var date= this.nextMonth(this.__date);

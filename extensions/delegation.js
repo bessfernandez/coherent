@@ -65,3 +65,18 @@ Class.extend(coherent.Page, {
     }
 
 });
+
+Object.extend(Element, {
+
+    /** Determine whether the node matches a specific selector.
+    
+        @param {Element} node
+        @param selector
+        @returns true if the node matches the selector or false if not
+     */
+    match: function(node, selector)
+    {
+        return Sizzle.matches(selector, [node]).length==1;
+    }
+    
+});
