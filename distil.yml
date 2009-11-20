@@ -22,6 +22,7 @@ all:
         - tests/kvo-test.js
         - tests/url-test.js
         - tests/oop-test.js
+        - tests/kvo-array-test.js
 
 # sample:
 #     - sample.js

@@ -66,6 +66,39 @@ Class.extend(Array, {
             this[index].setValueForKey(value, key);
     },
 
+    /** Retrieve information about the specified key. This **doesn't** actually
+        return a {@link coherent.KeyInfo} object like {@link coherent.KVO#infoForKey}
+        will, because it turns out the KeyInfo object is never used for Arrays.
+        However, this method does get used to add the parent link when adding
+        an observer...
+        
+        @param {String} key - The name of the key to retrieve information about.
+        @returns {Object} This method **always** returns `null`.
+     */
+    infoForKey: function(key)
+    {
+        var keyInfo;
+
+        if (!this.__keys)
+            this.__keys= {};
+            
+        if (coherent.KVO.kAllPropertiesKey==key)
+            return null;
+            
+        keyInfo= this.__keys[key];
+    
+        if (keyInfo)
+            return keyInfo;
+
+        var value= new Array(this.length);
+        var index;
+        var len= this.length;
+        for (index=0; index<len; ++index)
+            value[index]= this[index].infoForKey(key);
+
+        return null;
+    },
+    
     /** Find the indexes of the specified objects. Begins searching from the
         beginning of the array. Returns an empty array if none of the objects
         appear in this array.

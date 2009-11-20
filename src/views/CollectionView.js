@@ -194,6 +194,13 @@ coherent.CollectionView= Class.create(coherent.View, {
                 this.__content.replaceObjectsAtIndexes(change.newValue, indexes);
                 break;
 
+            case coherent.ChangeType.validationError:
+                /*  @TODO: Is there something I should do when an item in the
+                    content is not valid? Possibly apply a class name to the 
+                    item.
+                 */
+                break;
+                    
             default:
                 console.log("Unknown change type: "+change.changeType);
                 break;
@@ -256,6 +263,7 @@ coherent.CollectionView= Class.create(coherent.View, {
                                     item.view.animateClassName(animationOptions);
                                 });
                 break;
+
             case coherent.ChangeType.deletion:
                 this.__selectionIndexes.removeObjectsAtIndexes(change.indexes);
                 change.oldValue.forEach(function(i) {
@@ -264,6 +272,7 @@ coherent.CollectionView= Class.create(coherent.View, {
                                     item.view.animateClassName(animationOptions, true);
                                 });
                 break;
+
             case coherent.ChangeType.replacement:
                 this.__selectionIndexes.replaceObjectsAtIndexes(change.newValue, change.indexes);
                 change.oldValue.forEach(function(i) {
@@ -277,6 +286,13 @@ coherent.CollectionView= Class.create(coherent.View, {
                                     item.view.animateClassName(animationOptions);
                                 });
                 break;
+
+            case coherent.ChangeType.validationError:
+                /*  Don't need to worry about this, because validationError
+                    notifications shouldn't occur for the selection indexes.
+                 */
+                break;
+
             default:
                 console.log("Unknown change type: "+change.changeType);
                 break;

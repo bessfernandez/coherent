@@ -51,7 +51,8 @@ coherent.SelectionProxy= Class.create(coherent.KVO, {
     {
         var selectedObjects= this.controller.selectedObjects();
         var keyInfo= selectedObjects.infoForKey(key);
-        keyInfo.mutable &= this.mutable;
+        if (keyInfo)
+            keyInfo.mutable &= this.mutable;
         return keyInfo;
     },
 
@@ -66,7 +67,8 @@ coherent.SelectionProxy= Class.create(coherent.KVO, {
     {
         var selectedObjects= this.controller.selectedObjects();
         var keyInfo= selectedObjects.infoForKeyPath(keyPath);
-        keyInfo.mutable &= this.mutable;
+        if (keyInfo)
+            keyInfo.mutable &= this.mutable;
         return keyInfo;
     },
     

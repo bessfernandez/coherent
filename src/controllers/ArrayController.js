@@ -111,6 +111,15 @@ coherent.ArrayController= Class.create(coherent.ObjectController, {
                 this.__content.removeObjectsAtIndexes(change.indexes);
                 this.__removeObjectsFromArrangedObjects(change.oldValue);
                 break;
+            
+            case coherent.ChangeType.validationError:
+                /*  @TODO: I don't think there's anything that needs to be done
+                    for a validationError here. Although, it might be desirable
+                    to translate this into a validationError notification for
+                    the appropriate arranged objects, selected objects, and 
+                    selection.
+                 */
+                break;
                 
             default:
                 console.log("Unknown change type: "+change.changeType);
@@ -168,6 +177,13 @@ coherent.ArrayController= Class.create(coherent.ObjectController, {
                 
             case coherent.ChangeType.deletion:
                 this.__sortDescriptors.removeObjectsAtIndexes(change.indexes);
+                break;
+                
+            case coherent.ChangeType.validationError:
+                /*  @TODO: What is the proper behaviour here? I can't imagine
+                    a sort descriptor having a validation error... Possibly, the
+                    right answer is to remove the sort descriptor?
+                 */
                 break;
                 
             default:
@@ -474,6 +490,12 @@ coherent.ArrayController= Class.create(coherent.ObjectController, {
                 
             case coherent.ChangeType.deletion:
                 this.__selectionIndexes.removeObjectsAtIndexes(change.indexes);
+                break;
+                
+            case coherent.ChangeType.validationError:
+                /*  There's nothing to do here. This change notification shouldn't
+                    occur, because the values are numbers rather than objects.
+                 */
                 break;
                 
             default:

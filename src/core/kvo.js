@@ -156,29 +156,32 @@ coherent.KeyInfo= Class.create({
 
 /** Enumerations for the types of changes.
     
-    @property setting       a key's value has changed, the newValue property of
-                            the change notification will contain the new value.
-                            If the key represents an array, the newValue is the
-                            new array.
-    @property insertion     an element or elements have been inserted into an
-                            array. The newValue property of the change
-                            notification will contain the new elements. The
-                            indexes property of the change notification will
-                            contain the index at which each element was inserted.
-                            The oldValue property will be null.
-    @property deletion      an element or elements have been removed from an
-                            array. The newValue property of the change
-                            notification will be null. The oldValue property
-                            will contain the elements removed from the array.
-                            And the indexes property will contain the index of
-                            each element that was removed.
-    @property replacement   an element or elements have been replace in an array.
-                            The newValue property of the change notification
-                            contains the new values for each element.
-                            The oldValue property contains the previous values
-                            for each element. And the indexes property will
-                            contain the index of each element replaced.
-    
+    @property setting - A key's value has changed, the newValue property of
+        the change notification will contain the new value. If the key
+        represents an array, the newValue is the new array.
+        
+    @property insertion - An element or elements have been inserted into an
+        array. The newValue property of the change notification will contain the
+        new elements. The indexes property of the change notification will
+        contain the index at which each element was inserted. The oldValue
+        property will be null.
+        
+    @property deletion - An element or elements have been removed from an
+        array. The newValue property of the change notification will be null.
+        The oldValue property will contain the elements removed from the array.
+        And the indexes property will contain the index of each element that was
+        removed.
+        
+    @property replacement - An element or elements have been replace in an array.
+        The newValue property of the change notification contains the new values
+        for each element. The oldValue property contains the previous values for
+        each element. And the indexes property will contain the index of each
+        element replaced.
+        
+    @property validationError - The property has failed delayed validation. This
+        can happen when the model values need to be sent to a server for
+        validation.
+        
     @namespace
  */
 coherent.ChangeType=
@@ -186,7 +189,8 @@ coherent.ChangeType=
     setting: 0,
     insertion: 1,
     deletion: 2,
-    replacement: 3
+    replacement: 3,
+    validationError: 4
 };
 
 
@@ -561,9 +565,8 @@ coherent.KVO= Class.create({
 
     /** Discover information about the specified key.
       
-        @param {String} keyPath - path to the attribute
+        @param {String} key - The name of the key to retrieve information about.
         @returns {coherent.KeyInfo} an instance of KeyInfo for the specified key
-        @throws `InvalidArgumentError` if the keyPath is null
      */
     infoForKey: function(key)
     {

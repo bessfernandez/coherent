@@ -24,6 +24,9 @@ var TestObserver= Class.create({
     {
         this.value= undefined;
         this.called= false;
+        this.change= null;
+        this.keyPath= null;
+        this.context= null;
         this.count= 0;
     }
 });

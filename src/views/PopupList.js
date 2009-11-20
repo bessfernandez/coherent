@@ -56,18 +56,28 @@ coherent.PopupList= Class.create(coherent.FormControl, {
             case coherent.ChangeType.setting:
                 this.setContent(change.newValue);
                 break;
+
             case coherent.ChangeType.insertion:
                 this.__content.insertObjectsAtIndexes(change.newValue, change.indexes);
                 this.__scheduleUpdate();
                 break;
+
             case coherent.ChangeType.deletion:
                 this.__content.removeObjectsAtIndexes(change.indexes);
                 this.__scheduleUpdate();
                 break;
+
             case coherent.ChangeType.replacement:
                 this.__content.replaceObjectsAtIndexes(change.newValue, change.indexes);
                 this.__scheduleUpdate();
                 break;
+
+            case coherent.ChangeType.validationError:
+                /*  There's no way to show the validation error here, so just
+                    ignore the notification.
+                 */
+                break;
+
             default:
                 console.log("Unknown change type: "+change.changeType);
                 break;
@@ -93,18 +103,28 @@ coherent.PopupList= Class.create(coherent.FormControl, {
             case coherent.ChangeType.setting:
                 this.setContentValues(change.newValue);
                 break;
+
             case coherent.ChangeType.insertion:
                 this.__contentValues.insertObjectsAtIndexes(change.newValue, change.indexes);
                 this.__scheduleUpdate();
                 break;
+
             case coherent.ChangeType.deletion:
                 this.__contentValues.removeObjectsAtIndexes(change.indexes);
                 this.__scheduleUpdate();
                 break;
+
             case coherent.ChangeType.replacement:
                 this.__contentValues.replaceObjectsAtIndexes(change.newValue, change.indexes);
                 this.__scheduleUpdate();
                 break;
+
+            case coherent.ChangeType.validationError:
+                /*  Popup lists don't really have a way to show validation
+                    issues. So just ignore it.
+                 */
+                break;
+
             default:
                 console.log("Unknown change type: "+change.changeType);
                 break;
@@ -130,18 +150,28 @@ coherent.PopupList= Class.create(coherent.FormControl, {
             case coherent.ChangeType.setting:
                 this.setContentObjects(change.newValue);
                 break;
+
             case coherent.ChangeType.insertion:
                 this.__contentObjects.insertObjectsAtIndexes(change.newValue, change.indexes);
                 this.__scheduleUpdate();
                 break;
+
             case coherent.ChangeType.deletion:
                 this.__contentObjects.removeObjectsAtIndexes(change.indexes);
                 this.__scheduleUpdate();
                 break;
+
             case coherent.ChangeType.replacement:
                 this.__contentObjects.replaceObjectsAtIndexes(change.newValue, change.indexes);
                 this.__scheduleUpdate();
                 break;
+
+            case coherent.ChangeType.validationError:
+                /*  There's not much to do here with a validation error. One of
+                    the content objects is invalid. Boo hoo.
+                 */
+                break;
+
             default:
                 console.log("Unknown change type: "+change.changeType);
                 break;

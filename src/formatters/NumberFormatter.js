@@ -28,7 +28,13 @@ coherent.NumberFormatter= Class.create(coherent.Formatter, {
         @type Boolean
         @default false
      */
-    allowEmptyString: false,
+    allowsEmptyString: false,
+
+    /** What value should be used when the input is an empty string?
+        @type Number
+        @default 0
+     */
+    valueForEmptyString: 0,
     
     /** Return the string representation of the value. If floating point values
         are not permitted, this method will round the number to the nearest
@@ -53,6 +59,9 @@ coherent.NumberFormatter= Class.create(coherent.Formatter, {
     valueForString: function(string)
     {
         string= string.trim();
+        if (!string && this.allowsEmptyString)
+            return this.valueForEmptyString;
+            
         if (this.allowsFloats)
             return parseFloat(string);
         else

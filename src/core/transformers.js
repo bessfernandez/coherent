@@ -5,6 +5,12 @@
  */
 coherent.ValueTransformer = Class.create({
 
+    constructor: function()
+    {
+        if (arguments.length==1 && 'object'===typeof(arguments[0]))
+            Object.extend(this, arguments[0]);
+    },
+    
     /** Transform a model value into a presentational value.
     
         @param value - The model value.
@@ -59,6 +65,7 @@ coherent.ValueTransformer.__subclassCreated__= function(subclass)
         This enables the detection of whether the Transformer _really_ supports
         reverse transformation, while at the same time, clearly documenting the
         API for reverseTransformedValue.
+        
         @JEFF: I think this may be a bit dangerous, because if someone were just
         inspecting the code, he might be confused about why reverseTransformedValue
         wasn't executing...
@@ -332,3 +339,30 @@ coherent.transformer.FirstObject= Class.create(coherent.ValueTransformer, {
         return array;
     }
 });
+
+
+coherent.transformer.Trimmed= Class.create(coherent.ValueTransformer, {
+
+    compressWhitespace: false,
+    
+    transformedValue: function(value)
+    {
+        if ('string'!==typeof(value))
+            return value;
+        if (this.compressWhitespace)
+            return value.trim().replace(/\s+/g, ' ');
+        return value.trim();
+    },
+    
+    reverseTransformedValue: function(value)
+    {
+        if ('string'!==typeof(value))
+            return value;
+        if (this.compressWhitespace)
+            return value.trim().replace(/\s+/g, ' ');
+        return value.trim();
+    }
+    
+});
+
+coherent.registerTransformerWithName(new coherent.transformer.Trimmed(), "trim");

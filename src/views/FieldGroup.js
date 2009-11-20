@@ -16,6 +16,13 @@ coherent.FieldGroup= Class.create(coherent.View, {
         @default true
      */
     capturePresentError: true,
+
+    /** Should errors be presented immediately or should they be displayed when
+        the field next regains focus?
+        @type Boolean
+        @default false
+     */
+    presentErrorsImmediately: false,
     
     /** Initialise the FieldGroup. This will create the shared instance of the
         {@link coherent.ErrorBubble} if it hasn't already been created.
@@ -97,6 +104,19 @@ coherent.FieldGroup= Class.create(coherent.View, {
             return;
         
         this.__fieldErrors[field.id]= error;
+        if (this.presentErrorsImmediately)
+            this.__presentError(error);
+    },
+    
+    __presentError: function(error)
+    {
+        var field= error.field;
+        this.__currentViewId= field.id;
+
+        this.__bubble.constrainToView(this);
+        this.__bubble.attachToView(field);
+        this.__bubble.setError(error);
+        this.__bubble.setVisible(true);
     },
     
     /** Clear all errors associated with a specific field. If the error bubble
@@ -147,12 +167,7 @@ coherent.FieldGroup= Class.create(coherent.View, {
         if (this.__currentViewId===newFirstResponder.id)
             return;
 
-        this.__currentViewId= newFirstResponder.id;
-
-        this.__bubble.constrainToView(this);
-        this.__bubble.attachToView(newFirstResponder);
-        this.__bubble.setError(error);
-        this.__bubble.setVisible(true);
+        this.__presentError(error);
     }
     
 });

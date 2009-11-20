@@ -196,6 +196,13 @@ coherent.OutlineView= Class.create(coherent.View, {
                 }
                 items.removeObjectsAtIndexes(indexes);
                 break;
+            
+            case coherent.ChangeType.validationError:
+                /*  @TODO: What's the correct thing to do when a child of a
+                    node is not valid? Probably should apply a class name to the
+                    view...
+                 */
+                break;
                 
             default:
                 throw new Error("Unknown change type: " + change.changeType);

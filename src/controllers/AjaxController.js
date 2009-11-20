@@ -4,30 +4,30 @@
 
 /** An object controller that obtains its content via an Ajax call. 
  *  
- *  @property queryInProgress   While the controller is communicating with the
+ *  @property {Boolean} queryInProgress   While the controller is communicating with the
  *                              server, it sets this property to `true`. Views
  *                              may bind to this property to display progress
  *                              messages or spinners.
  *  
- *  @property url   The server URL to which requests should be made.
+ *  @property {String} url   The server URL to which requests should be made.
  *  
- *  @property method="GET"  The request method to use for requests. This may be
+ *  @property {String} method  The request method to use for requests. This may be
  *                          either GET or POST, because not all browsers support
  *                          the full compliment of method types.
  *  
- *  @property parameters    A hash containing the Ajax parameters which should
+ *  @property {Object} parameters    A hash containing the Ajax parameters which should
  *                          be sent the server. Typically views will bind
  *                          views to keys within the parameter hash to
  *                          manipulate the query.
  *  
- *  @property queryDelay=500ms  Number of milliseconds after one of the query
+ *  @property {Number} queryDelay  Number of milliseconds after one of the query
  *                              related properties changes that the query should
  *                              be started. Repeated changes to the parameters
  *                              will indefinitely postpone the query.
  *  
- *  @property statusCode    The HTTP status code from the last query.
+ *  @property {Number} statusCode    The HTTP status code from the last query.
  *  
- *  @property errorMessage  The HTTP error message from the last query or
+ *  @property {String} errorMessage  The HTTP error message from the last query or
  *                          `undefined` if the last query did not fail.
  */
 coherent.AjaxController= Class.create(coherent.ObjectController, {
