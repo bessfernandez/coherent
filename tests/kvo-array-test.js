@@ -5,6 +5,34 @@ Test.create('kvo-array', {
     setup: function()
     {
     },
+
+    testNotificationCount: function(t)
+    {
+        var thing= new coherent.KVO();
+        var objects= coherent.KVO.adaptTree([
+                        {
+                            name: 'foo'
+                        },
+                        {
+                            name: 'bar'
+                        },
+                        {
+                            name: 'goober'
+                        },
+                        {
+                            name: 'baz'
+                        }
+                    ]);
+        thing.setValueForKey(objects, 'objects');
+        
+        var observer= new TestObserver();
+        
+        thing.addObserverForKeyPath(observer, 'observeChange', 'objects.name');
+        
+        thing.setValueForKeyPath('zebra', 'objects.name');
+        
+        t.assertEqual(1, observer.count);
+    },
     
     testSubArray: function(t)
     {
