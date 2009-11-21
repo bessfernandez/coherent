@@ -209,16 +209,7 @@ coherent.SelectionProxy= Class.create(coherent.KVO, {
             return;
 
         var selectedObjects= this.controller.selectedObjects();
-        var previousValue= this.valueForKey(key);
         selectedObjects.setValueForKey(value, key);
-        var newValue= this.valueForKey(key);
-        
-        if (previousValue===newValue)
-            return;
-
-        var change= new coherent.ChangeNotification(this, coherent.ChangeType.setting,
-                                                    newValue, previousValue);
-        this.notifyObserversOfChangeForKeyPath(change, key);
     },
     
     /** Set the value for a property identified by keyPath. If the selection is
@@ -233,15 +224,6 @@ coherent.SelectionProxy= Class.create(coherent.KVO, {
             return;
             
         var selectedObjects= this.controller.selectedObjects();
-        var previousValue= this.valueForKeyPath(keyPath);
         selectedObjects.setValueForKeyPath(value, keyPath);
-        var newValue= this.valueForKeyPath(keyPath);
-        
-        if (previousValue===newValue)
-            return;
-
-        var change= new coherent.ChangeNotification(this, coherent.ChangeType.setting,
-                                                    newValue, previousValue);
-        this.notifyObserversOfChangeForKeyPath(change, keyPath);
     }
 });
