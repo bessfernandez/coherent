@@ -2,6 +2,8 @@
 /*jsl:import EventLoop.js*/
 /*jsl:import Responder.js*/
 
+/** Standard wrapper for the page.
+ */
 coherent.Page= Class.create(coherent.Responder, {
     
     focusedElement: null,
@@ -515,8 +517,9 @@ coherent.Page= Class.create(coherent.Responder, {
         this._draggingView= null;
     },
     
-    /** @name coherent.DragInfo
-        @class This is an adhoc object passed to drag and drop methods.
+    /** @interface coherent.DragInfo
+        This is an adhoc object passed to drag and drop methods.
+        
         @property {Point} location - The x & y viewport coordinates of the mouse
             at the time of the event.
         @property {Element} target - The DOM node below the mouse (accounts for
@@ -775,6 +778,7 @@ coherent.Page= Class.create(coherent.Responder, {
     coherent.page= new coherent.Page();
     
     window._setTimeout= window.setTimeout;
+    /** @ignore */
     window.setTimeout= function(handler, delay)
     {
         if (!handler)
@@ -790,6 +794,7 @@ coherent.Page= Class.create(coherent.Responder, {
         
         var args= Array.from(arguments, 2);
         
+        /** @ignore */
         function timeoutWrapper()
         {
             coherent.EventLoop.begin();
@@ -801,6 +806,7 @@ coherent.Page= Class.create(coherent.Responder, {
     }
     
     window._setInterval= window.setInterval;
+    /** @ignore */
     window.setInterval= function(handler, delay)
     {
         if (!handler)
@@ -816,6 +822,7 @@ coherent.Page= Class.create(coherent.Responder, {
         
         var args= Array.from(arguments, 2);
         
+        /** @ignore */
         function intervalWrapper()
         {
             coherent.EventLoop.begin();

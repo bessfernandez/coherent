@@ -1,5 +1,5 @@
 /** Make title case version of string.
-    @returns original string with the first character capitalised.
+    @type String
  */
 String.prototype.titleCase= function()
 {
@@ -7,6 +7,7 @@ String.prototype.titleCase= function()
 }
 
 /** Trim the whitespace off either end of a string.
+    @type String
  */
 String.prototype.trim= function()
 {
@@ -23,7 +24,7 @@ String.prototype.trim= function()
 /** Determine whether this string begins with the specified string.
 
     @param {String} s - The prefix to check for.
-    @returns {Boolean} True if this string begins with the specified string.
+    @type Boolean
  */
 String.prototype.beginsWith= function(s)
 {

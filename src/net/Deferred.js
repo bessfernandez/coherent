@@ -9,6 +9,8 @@ var InvalidStateError= coherent.defineError('InvalidStateError');
     var SUCCESS= 0;
     var FAILURE= 1;
     
+    /** Any deferred value.
+     */
     coherent.Deferred= Class.create({
 
         constructor: function(canceller)

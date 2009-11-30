@@ -1,7 +1,44 @@
 /*jsl:import View.js*/
 /*jsl:import ../controllers/ArrayController.js*/
 
-/** Collection view... */
+
+/** @interface coherent.CollectionViewItem
+    
+    A CollectionViewItem contains information about each entry in the
+    content of the collection view. It represents the Binding context for
+    the individual subviews of the CollectionView.
+    
+    @property {coherent.KVO} representedObject - This is the object from
+        the content array associated with a specific element of the
+        CollectionView.
+        
+    @property {coherent.View} view - The view that is displaying the
+        representedObject. Subclasses of CollectionView may change this
+        to whatever type of view is appropriate for the representedObject,
+        however, the default behaviour instantiates an instance of the
+        {@link coherent.CollectionView#viewTemplate}.
+        
+    @property {Element} node - The DOM element associated with this item.
+    
+*/
+
+/** Collection view...
+
+    @property {coherent.VIEW} viewTemplate - The template for the individual
+        views used to display the content. The {@link #init} method will throw
+        an Error if a viewTemplate is not specified.
+        
+    @property {Element} templateNode - The DOM node that will be cloned to
+        display each content item. This is typically the first child of the
+        view container, however, if there are no children, the mark up will be
+        taken from the {@link #viewTemplate}.
+
+    @binding {coherent.KVO[]} content - The content to be displayed by the view.
+    
+    @binding {Number[]} selectionIndexes - The indexes of the selected items in
+        the data array.
+        
+ */
 coherent.CollectionView= Class.create(coherent.View, {
 
     animationOptions: {
@@ -12,10 +49,22 @@ coherent.CollectionView= Class.create(coherent.View, {
     
     exposedBindings: ['content', 'selectionIndexes'],
 
+    /** Should the selection be permitted to become empty? If `false`, there
+        will always be one item selected at all times.
+        @type Boolean
+        @default true
+     */
     allowsEmptySelection: true,
 
+    /** Is multiple selection permitted?
+        @type Boolean
+        @default false
+     */
     multiple: false,
     
+    /** Initialise the CollectionView instance. This method identifies the 
+        templateNode element based on the `tagName` of the view node.
+     */
     init: function()
     {
         //  Call base init
@@ -37,7 +86,7 @@ coherent.CollectionView= Class.create(coherent.View, {
         else
         {
             container= this.container();
-            templateNode= node.children[0];
+            templateNode= container.children[0];
         }
 
         if (templateNode)
@@ -58,13 +107,29 @@ coherent.CollectionView= Class.create(coherent.View, {
     },
 
     /** Should the view accept being the first responder?
+        @type Boolean
      */
     acceptsFirstResponder: function()
     {
         var node= this.node;
         return !(node.disabled || node.readOnly);
     },
+        
+    /** Create a new view for the representedObject. This method swizzles the
+        global dataModel to point to the created item, then creates an instance
+        of the {@link #viewTemplate} to associate with the new item. Because the
+        represented object is a property of the item, and the item is the binding
+        context for the view, the view can bind to properties on the represented
+        object via the key 'representedObject'.
+    
+        Subclasses may want to implement this method to return a different type
+        of view rather than whatever is provided by the {@link #viewTemplate}.
 
+        @param {coherent.KVO} representedObject - The object for which a new
+            item and view should be created.
+            
+        @type coherent.CollectionViewItem
+     */
     newItemForRepresentedObject: function(representedObject)
     {
         var oldDataModel= coherent.dataModel;
@@ -87,11 +152,22 @@ coherent.CollectionView= Class.create(coherent.View, {
         return item;
     },
     
+    /** Return the content associated with this view.
+        @type coherent.KVO[]
+     */
     content: function()
     {
         return this.__content;
     },
     
+    /** Set the content associated with this view. The view makes a shallow
+        copy of the `newContent` argument, so changes to the original array will
+        not be reflected in the view. Nor will the view receive change
+        notifications. If you want the view to automatically track changes to
+        the content array, use the content binding.
+     
+        @param {coherent.KVO[]} newContent - The new content.
+     */
     setContent: function(newContent)
     {
         var container= this.container();
@@ -141,6 +217,11 @@ coherent.CollectionView= Class.create(coherent.View, {
         }
     },
 
+    /** Track changes to the bound content value.
+    
+        @private
+        @param {coherent.ChangeNotification} change - The change notification
+     */
     observeContentChange: function(change)
     {
         if (change.changeType===coherent.ChangeType.setting)
@@ -207,11 +288,20 @@ coherent.CollectionView= Class.create(coherent.View, {
         }
     },
 
+    /** Retrieve the array of selected indexes. When the view does not allow
+        multiple selection, this should be an array with 0 or 1 entries.
+        @type Number[]
+     */
     selectionIndexes: function()
     {
         return this.__selectionIndexes;
     },
     
+    /** Set the selection for the view. A copy of the array of selected indexes
+        is made before highlighting the new selection.
+        
+        @param {Number[]} newSelectionIndexes - The array of selected indexes
+     */
     setSelectionIndexes: function(newSelectionIndexes)
     {
         var items= this.__items;
@@ -241,6 +331,9 @@ coherent.CollectionView= Class.create(coherent.View, {
         }
     },
 
+    /** Observe changes to the bound array of selected indexes.
+        @param {coherent.ChangeNotification} change - The change notification.
+     */
     observeSelectionIndexesChange: function(change)
     {
         if (coherent.ChangeType.setting===change.changeType)
@@ -299,6 +392,15 @@ coherent.CollectionView= Class.create(coherent.View, {
         }
     },
 
+    /** Determine the node associated with an event. Because click or touch
+        events may be fired on a deeply nested node, this method ascends the
+        parent change to find the node that is an immediate child of this view's
+        container node -- essentially one of the view items.
+        
+        @param {Event} event - The DOM event, usually a click event.
+        @type Element
+        @private
+     */
     itemNodeFromEvent: function(event)
     {
         var e = event.target||event.srcElement;
@@ -316,12 +418,24 @@ coherent.CollectionView= Class.create(coherent.View, {
         return e;
     },
     
+    /** Handle a touch start event. This event handler remembers the DOM node
+        of the item associated with the touch event. The mouse down event will
+        be fired with a stale event object, so by remembering the row, there's
+        no chance of running into problems with the stale event.
+        
+        @param {Event} event - A touch event
+     */
     ontouchstart: function(event)
     {
-        // get the row now instead of mouse down because it will be called after a delay.
+        // get the row now instead of onmousedown because it will be called after a delay.
         this.__touchedRow= this.itemNodeFromEvent(event);
     }, 
     
+    /** Handle a mouse down event within the CollectionView. This handler sets
+        the active class on the item node associated with the event.
+        
+        @param {Event} event - The mouse event.
+     */
     onmousedown: function(event)
     {
         if (this.node.disabled)
@@ -337,6 +451,11 @@ coherent.CollectionView= Class.create(coherent.View, {
         Element.addClassName(node, coherent.Style.kActiveClass);
     },
 
+    /** Handle the event fired when the visitor releases the mouse button after
+        depressing it on this view. This handler removes the active state from
+        the DOM node associated with the item that was clicked on.
+        @param {Event} event - The mouse up event.
+     */
     onmouseup: function(event)
     {
         if (this.node.disabled)
@@ -347,6 +466,12 @@ coherent.CollectionView= Class.create(coherent.View, {
         this.__activeNode= null;
     },
 
+    /** Handle a touch move event. This handler removes the active state from
+        the DOM node associated with the previous mousedown event before passing
+        the event to the base implementation.
+        
+        @param {Event} event - The touch move event
+     */
     ontouchmove: function(event)
     {
         if (this.node.disabled)
@@ -359,7 +484,10 @@ coherent.CollectionView= Class.create(coherent.View, {
     },
     
     /** Handle click events for items within the view. This supports multiple
-     *  and discontiguous selection.
+        and discontiguous selection. This method updates the bound selection
+        indexes value.
+        
+        @param {Event} event - The click event.
      */
     onclick: function(event)
     {
@@ -420,19 +548,16 @@ coherent.CollectionView= Class.create(coherent.View, {
     },
 
     /** Handle a keydown notification to update selection. If the view doesn't
-     *  have the focus, then the view ignores key events. This event handler
-     *  only processes KEY_UP_ARROW (cursor up) and KEY_DOWN_ARROW (cursor down) events.
-     *  
-     *  Keyboard selection without the shift key works according to the Mac
-     *  standard (up selects the previous element or the last element in the
-     *  collection if none are presently selected, down selects the next element
-     *  or the first element in the collection if no elements are selected).
-     *
-     *  @TODO: Keyboard selection with the shift key works like Tiger but should
-     *  be converted to work like Leopard.
-     *  
-     *  @param event    the HTML event object
-     *  @returns false to indicate that this event has been handled
+        have the focus, then the view ignores key events. This event handler
+        only processes KEY_UP_ARROW (cursor up) and KEY_DOWN_ARROW (cursor down)
+        events.
+        
+        Keyboard selection without the shift key works according to the Mac
+        standard (up selects the previous element or the last element in the
+        collection if none are presently selected, down selects the next element
+        or the first element in the collection if no elements are selected).
+      
+        @param {Event} event - the keydown event object
      **/
     onkeydown: function(event)
     {

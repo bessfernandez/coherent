@@ -1,5 +1,7 @@
 /*jsl:import FormControl.js*/
 
+/** A popup list.
+ */
 coherent.PopupList= Class.create(coherent.FormControl, {
 
     exposedBindings: ['content', 'contentObjects', 'contentValues', 'selectedIndex',

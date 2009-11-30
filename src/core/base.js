@@ -261,7 +261,7 @@ coherent.reverseCompareNumbers= function(left, right)
     of the error can be created.
   
     @param {String} errorName - The name of the error subclass -- also the name
-           of the initialiser function.
+        of the initialiser function.
     @returns {Function} A function that is the constructor for the new error type.
  */
 coherent.defineError= function(errorName)
@@ -280,10 +280,12 @@ coherent.defineError= function(errorName)
 var InvalidArgumentError= coherent.defineError("InvalidArgumentError");
 
 
-/** Add console & console.log for browsers that don't support it. */
+/* Add console & console.log for browsers that don't support it. */
 if ("undefined"===typeof(window.console))
     window.console= {};
 if ('undefined'===typeof(window.console.log))
+    /** @ignore */
     window.console.log= function(){};
 if ('undefined'===typeof(window.console.error))
+    /** @ignore */
     window.console.error= function(){};

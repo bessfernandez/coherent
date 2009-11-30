@@ -1,5 +1,6 @@
 /*jsl:import view-core.js*/
 
+/** Support for legacy video embedding via Quicktime */
 coherent.VideoLegacy= Class.create(coherent.View, {
 
     exposedBindings: ['src', 'currentTime', 'volume', 'muted', 'autoplay', 'playing', 'controls', 'loop', 'height', 'width'],

@@ -503,7 +503,11 @@ Object.extend(Element, {
                 bottom: box.bottom
             };
             
-            if (!!relativeToViewport===false) {
+            //  getBoundingClientRect returns coordinates relative to the
+            //  viewport. Scroll extents of the body need to be added in order
+            //  to return the rectangle relative to the page.
+            if (!relativeToViewport)
+            {
                 box.left+= Math.max(docElement.scrollLeft, body.scrollLeft);
                 box.right+= Math.max(docElement.scrollLeft, body.scrollLeft);
                 box.top+= Math.max(docElement.scrollTop, body.scrollTop);

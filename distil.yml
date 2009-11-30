@@ -2,7 +2,7 @@ name: coherent
 version: 3.0.0
 notice: src/NOTICE
 output-folder: build
-# browsers: [safari]
+browsers: [firefox]
 # browsers: [safari, firefox, ie]
 
 all:
@@ -13,6 +13,7 @@ all:
     tests:
         - tests/factory.js
         - tests/array-controller.js
+        - tests/kvo-array-test.js
         - tests/base-test.js
         - tests/controller-selection.js
         - tests/deferred.js
@@ -22,7 +23,6 @@ all:
         - tests/kvo-test.js
         - tests/url-test.js
         - tests/oop-test.js
-        - tests/kvo-array-test.js
 
 # sample:
 #     - sample.js

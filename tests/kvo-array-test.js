@@ -31,7 +31,7 @@ Test.create('kvo-array', {
         
         thing.setValueForKeyPath('zebra', 'objects.name');
         
-        t.assertEqual(1, observer.count);
+        t.assertEqual(1, observer.count, "Incorrect number of change notifications <http://code.google.com/p/coherent/issues/detail?id=6>");
     },
     
     testSubArray: function(t)

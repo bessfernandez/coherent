@@ -1,6 +1,13 @@
 /*jsl:import Formatter.js*/
 
-/** A formatter for numbers.
+/** Instances of coherent.NumberFormatter are responsible for formatting and
+    validating numeric data for views. The numeric data can be either integers
+    or floating point values.
+    
+    Using {@link #valueForEmptyString} it is possible to specify a default value
+    to use when the string value is empty. The default value of
+    {@link #allowsEmptyString} is `false`, so an empty string value is
+    considered invalid.
  */
 coherent.NumberFormatter= Class.create(coherent.Formatter, {
 

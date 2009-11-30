@@ -7,8 +7,6 @@
  */
 coherent.ErrorBubble= Class.create(coherent.Bubble, {
 
-    contentSelector: '.content',
-    
     markup: '<div class="bubble"></div>',
     innerHTML: '<span class="chrome tl"></span><span class="chrome tr"></span><span class="chrome top"></span><span class="chrome left"></span><span class="chrome right"></span><span class="chrome bottom"></span><span class="chrome bl"></span><span class="chrome br"></span><a href="#" class="close">close</a><span class="chrome center"></span><div class="container"><div class="content"></div><ul class="buttons"><li><button></button></li></ul></div><span class="chrome arrow"></span>',
 
@@ -41,13 +39,12 @@ coherent.ErrorBubble= Class.create(coherent.Bubble, {
             return;
 
         var error= this.__error;
-        var node= this.node;
-        var content= Element.query(node, this.contentSelector);
+        var container= this.container();
         var textnode;
 
         textnode= document.createTextNode(error.description);
-        content.innerHTML="";
-        content.appendChild(textnode);
+        container.innerHTML="";
+        container.appendChild(textnode);
         
         if (error.recoveryOptions && error.recoveryAttempter)
         {

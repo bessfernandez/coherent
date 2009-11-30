@@ -21,9 +21,9 @@ coherent.ArrayController= Class.create(coherent.ObjectController, {
 
     /** Create a new ArrayController instance.
         
-        @param {Object} [parameters=null]  generic name/value pairs used to
-               initialise this instance. See {@link coherent.Bindable} for the
-               parameter implementation.
+        @param {Object} [parameters=null]   Generic name/value pairs used to
+            initialise this instance. See {@link coherent.Bindable} for the
+            parameter implementation.
      */
     constructor: function(parameters)
     {

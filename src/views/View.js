@@ -23,19 +23,13 @@
         
     @binding {Boolean} enabled
         
-    @binding editable
-    @binding html
-    @binding text
+    @binding {Boolean} editable
+    @binding {String} html
+    @binding {String} text
     
  */
 coherent.View= Class.create(coherent.Responder, {
 
-    /** The bindings exposed by the Base view type. Each view should have its
-        own list of exposed bindings and may choose to hide bindings from its
-        parent.
-        
-        @type String[]
-     */
     exposedBindings: ['visible', 'class', 'enabled', 'editable', 'html', 'text', 'toolTip'],
     
     defaultPlaceholders: {

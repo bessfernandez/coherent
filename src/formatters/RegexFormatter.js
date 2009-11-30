@@ -1,6 +1,13 @@
 /*jsl:import Formatter.js*/
 
-/** A formatter that matches input against regular expressions.
+/** Instances of coherent.RegexFormatter don't convert values into textual 
+    representations, but they are useful for validating textual input against
+    a regular expression.
+    
+    A RegexFormatter may use one or more values for the {@link #invalidRegex}
+    and {@link #validRegex} regular expressions. During validation, string
+    values are tested first against the invalid regular expressions before
+    being tested against the valid regular expressions.
  */
 coherent.RegexFormatter= Class.create(coherent.Formatter, {
 
@@ -32,6 +39,8 @@ coherent.RegexFormatter= Class.create(coherent.Formatter, {
     
     /** Return true or a coherent.Error instance indicating the error that
         should be presented to the user.
+        @returns `true` or a {@link coherent.Error} instance indicating the
+            error that should be presented to the user.
      */
     isStringValid: function(string)
     {
@@ -54,6 +63,7 @@ coherent.RegexFormatter= Class.create(coherent.Formatter, {
     },
     
     /** Return true if the character is a valid input character.
+        @type Boolean
      */
     isValidInputCharacter: function(c)
     {

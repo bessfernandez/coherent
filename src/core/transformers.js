@@ -2,9 +2,25 @@
 
 
 /** The base class for all transformers.
+
+    Some predefined transformers include:
+    
+    - {@link coherent.transformer.Not} `not` - A transformer that reverses the
+        logical value. This applies to truthy and falsy values as well.
+    - {@link coherent.transformer.Truncated} `truncated` - A transformer that
+        will shorten a string longer than 50 characters.
+    - {@link coherent.transformer.StringsToObjects} `StringsToObjects` - A
+        transformer that will convert an array of strings into an array of
+        objects with each object having a key `string`.
+    - {@link coherent.transformer.Trimmed} `trim` - A transformer that will
+        remove the spaces at the beginning and end of a string.
  */
 coherent.ValueTransformer = Class.create({
 
+    /** Create a new ValueTransformer. If only one argument is passed, and it's
+        an object, this method will copy all the properties of the argument to
+        this transformer.
+     */
     constructor: function()
     {
         if (arguments.length==1 && 'object'===typeof(arguments[0]))
@@ -23,7 +39,7 @@ coherent.ValueTransformer = Class.create({
 
     /** Convert a presentation value back into a model value.
     
-        **Note:** Unless a subclass specifically overrides this method it will
+        Note: Unless a subclass specifically overrides this method it will
         get removed by the subclass hook ({@link coherent.ValueTransformer.__subclassCreated__}).
         
         @param value - The presentation value
@@ -56,19 +72,22 @@ coherent.ValueTransformer = Class.create({
     
 });
 
+/** Capture creation of subclasses of ValueTransformer. Mask the
+    {@link coherent.ValueTransformer#reverseTransformedValue} method if not
+    overridden in a subclass. This enables the detection of whether the
+    Transformer _really_ supports reverse transformation, while at the same
+    time, clearly documenting the API for reverseTransformedValue.
+    
+    @param {Class} subclass - The new subclass of coherent.ValueTransformer
+ */
 coherent.ValueTransformer.__subclassCreated__= function(subclass)
 {
     var rootproto= coherent.ValueTransformer.prototype;
     var proto= subclass.prototype;
     
-    /*  Mask the reverseTransformedValue if not overridden in a subclass.
-        This enables the detection of whether the Transformer _really_ supports
-        reverse transformation, while at the same time, clearly documenting the
-        API for reverseTransformedValue.
-        
-        @JEFF: I think this may be a bit dangerous, because if someone were just
-        inspecting the code, he might be confused about why reverseTransformedValue
-        wasn't executing...
+    /*  @JEFF: I think this may be a bit dangerous, because if someone were just
+        inspecting the code, he might be confused about why
+        reverseTransformedValue wasn't executing...
      */
     if (rootproto.reverseTransformedValue == proto.reverseTransformedValue)
         subclass.prototype.reverseTransformedValue = null;
@@ -87,7 +106,7 @@ coherent.transformerInstances= {};
 /** Lookup a ValueTransformer instance by name.
     
     @param {String} transformerName - The name of the value transformer
-    @returns {Object} a reference to the specifed value transformer
+    @returns {coherent.ValueTransformer} a reference to the specifed value transformer
     @throws {InvalidArgumentError} If the transformerName does not specify
             a pre-registered value transformer
  */
@@ -136,11 +155,11 @@ coherent.findTransformerWithName= function(transformerName)
 
 /** Register an instance of a ValueTransformer with a specific name.
 
-    @param valueTransformer the value transformer instance or constructor
-                            to register
-    @param name             the name by which this value transformer is known
+    @param {coherent.ValueTransformer} valueTransformer - The value transformer
+        instance or constructor to register.
+    @param {String} name - The name by which this value transformer is known.
     
-    @throws InvalidArgumentError if the valueTransformer parameter
+    @throws {InvalidArgumentError} if the valueTransformer parameter
             doesn't specify either a constructor or an instance of a valid
             ValueTransformer subclass.
  */
@@ -258,6 +277,10 @@ coherent.transformer.Generic= Class.create(coherent.ValueTransformer, {
 
 
 
+/** Truncate a string value at a specific length.
+    @property {Number} max - maximum length of the string value before it will
+        be truncated.
+ */
 coherent.transformer.Truncated= Class.create(coherent.ValueTransformer, {
 
     constructor: function(max)
@@ -292,6 +315,11 @@ coherent.registerTransformerWithName(new coherent.transformer.Truncated(50), "tr
 
 
 
+/** Convert a collection of strings into objects suitable for binding. This makes
+    it easier to display an array of simple strings.
+    
+    @property {String} key - The key used to reflect the string value.
+ */
 coherent.transformer.StringsToObjects= Class.create(coherent.ValueTransformer, {
 
     constructor: function(key)
@@ -330,17 +358,28 @@ coherent.transformer.StringsToObjects= Class.create(coherent.ValueTransformer, {
 coherent.registerTransformerWithName(new coherent.transformer.StringsToObjects('string'), 'StringsToObjects');
 
 
+
+/** Return the first object in a collection.
+ */
 coherent.transformer.FirstObject= Class.create(coherent.ValueTransformer, {
-    transformedValue: function(array) {
-        if (coherent.typeOf(array) == 'array') {
-            return array[0];
-        }
-        
-        return array;
+    transformedValue: function(array)
+    {
+        if ('array'!==coherent.typeOf(array))
+            return array;
+            
+        return array[0];
     }
 });
 
 
+/** Return a string value that has whitespace at the beginning and end removed.
+    This will also optionally compress whitespace within the value. Compressing
+    the whitespace is important because whitespace is not significant in HTML
+    display. By compressing it, you can recognise values that differ only via
+    whitespace, but which will appear the same.
+    
+    @property {Boolean} compressWhitespace - Should whitespace be compressed?
+ */
 coherent.transformer.Trimmed= Class.create(coherent.ValueTransformer, {
 
     compressWhitespace: false,

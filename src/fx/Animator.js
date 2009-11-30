@@ -157,6 +157,7 @@
     }
     
     /** An animation stepper for colour properties.
+        @constructs
      */
     function ColourStepper(property, element, start, end, shouldCleanup)
     {
@@ -221,6 +222,7 @@
 
     /** An animation stepper for numeric property values (integers) like left,
         top, width, height, etc.
+        @constructs
      */
     function NumericStepper(property, element, start, end, shouldCleanup)
     {
@@ -243,6 +245,7 @@
 
     /** An animation stepper for element opacity. There's a special case step
         function to handle IE.
+        @constructs
      */
     function OpacityStepper(element, start, end, shouldCleanup)
     {
@@ -280,6 +283,7 @@
 
     /** An animation stepper for discrete values like display. The value clicks
         over to the end value half way through the animation.
+        @constructs
      */
     function DiscreteStepper(property, element, start, end, shouldCleanup)
     {
@@ -302,7 +306,9 @@
         this.element.style[this.property]= '';
     }
     
-    
+    /** An animation stepper for the class name of a node.
+        @constructs
+     */
     function ClassNameStepper(element, start, end)
     {
         this.element= element;
@@ -317,43 +323,48 @@
         }
     }
     
+    function convertKeywords(keywords)
+    {
+        switch (keywords)
+        {
+            case 'top':
+                return '0% 50%';
+            case 'right':
+                return '100% 50%';
+            case 'bottom':
+                return '50% 100%';
+            case 'left':
+                return '0% 50%';
+            case 'center':
+                return '50% 50%';
+            default:
+                keywords = keywords.replace(/top|left/g, '0%');
+                keywords = keywords.replace(/bottom|right/g, '100%');
+                return keywords;   
+        }
+    }
+    function stripUnits(item)
+    {
+        return parseInt(item, 10);
+    }
+    
+    
     /** An animation stepper for background image positioning. It can support all
         permutations of background-position, including keywords like top, left, etc.
         Caveat: It's not possible to animate from percentages/keywords to pixels.
         In this case, we'll fall back to a DiscreteStepper.
+        @constructs
      */
     function BackgroundPositionStepper(element, start, end, shouldCleanup)
     {
-        function convertKeywords(keywords) {
-            switch (keywords) {
-                case 'top':
-                    return '0% 50%';
-                case 'right':
-                    return '100% 50%';
-                case 'bottom':
-                    return '50% 100%';
-                case 'left':
-                    return '0% 50%';
-                case 'center':
-                    return '50% 50%';
-                default:
-                    keywords = keywords.replace(/top|left/g, '0%');
-                    keywords = keywords.replace(/bottom|right/g, '100%');
-                    return keywords;   
-            }
-        }
-        function stripUnits(item) {
-            return parseInt(item, 10);
-        }
-        
         start = convertKeywords(start);
         end = convertKeywords(end);
         
         var startUnit = start.match(/%|px/)[0];
         var endUnit = end.match(/%|px/)[0];
-        if (startUnit != endUnit) {
-            return new DiscreteStepper('backgroundPosition', element, start, end, shouldCleanup);
-        }
+        if (startUnit != endUnit)
+            return new DiscreteStepper('backgroundPosition', element, start, end,
+                                       shouldCleanup);
         
         this.element = element;
         this.unit = startUnit;
@@ -765,6 +776,11 @@
     
     coherent.Animator = /** @scope coherent.Animator */ {
     
+        /** Animate adding a class name to an element.
+            @param {Element} element - The DOM element to animate.
+            @param {String} className - The new class name to add to the element.
+            @param {Object} [options] - Options for the animation.
+         */
         addClassName: function(element, className, options)
         {
             if (!className)
@@ -789,6 +805,11 @@
             animateClassName(element, elementClassName, options);
         },
         
+        /** Animate removing a class name from an element.
+            @param {Element} element - The DOM element to animate.
+            @param {String} className - The class name to remove from the element.
+            @param {Object} [options] - Options for the animation.
+         */
         removeClassName: function(element, className, options)
         {
             var elementClasses= element.className;
@@ -812,35 +833,50 @@
             else
                 elementClasses= className.reduce(_removeClassName, elementClasses);
 
-            //if (elementClassName==element.className)
-            //    return;
-            
             animateClassName(element, elementClasses.join(" "), options);
         },
-        
+
+        /** Animate setting the class name for an element.
+            @param {Element} element - The DOM element to animate.
+            @param {String} className - The new class name for the element.
+            @param {Object} [options] - Options for the animation.
+         */
         setClassName: function(element, className, options)
         {
             var elementClassName= element.className;
-            //if (elementClassName===className)
-            //    return;
-                
             animateClassName(element, className, options);
         },
         
+        /** Animate replacing one class name with another.
+            @param {Element} element - The DOM element to animate.
+            @param {String} oldClassName - The old class name that should be
+                removed, may be null or empty.
+            @param {String} newClassName - The new class name to add.
+            @param {Object} [options] - Animation options.
+         */
         replaceClassName: function(element, oldClassName, newClassName, options) 
         {
-            //if (oldClassName===newClassName)
-            //    return;
-            
-            if (oldClassName) {
+            if (oldClassName)
+            {
                 var regex = Element.regexForClassName(oldClassName);
                 newClassName= element.className.replace(regex, "$1"+newClassName+"$2");
-            } else {
+            }
+            else
+            {
                 newClassName = element.className + ' ' + newClassName;
             }
             animateClassName(element, newClassName, options);
         },
         
+        /** Animate changes to an element's class name. This method is very
+            general purpose and permits adding and removing class names. In
+            addition, the operation may be reversed by setting a flag in the
+            options parameter.
+            
+            @param {Element} element - The DOM element that should be animated.
+            @param {Object} options - A dictionary defining how the element
+                should be modified.
+         */
         animateClassName: function(element, options)
         {
             var elementClasses= (element.className||"").split(" ");

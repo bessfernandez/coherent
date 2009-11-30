@@ -1,7 +1,13 @@
 /*jsl:import ../core/startup.js*/
 /*jsl:import ../core/local.js*/
 
-/** Generic value formatting functionality.
+/** This is an abstract implementation of a formatting class used by views to
+    create, interpret, and validate the textual representation of a view's
+    contents.
+    
+    It is expected that this class will be subclassed to provide functionality.
+    The following are examples of how Formatter classes can be subclassed:
+    {@link coherent.NumberFormatter} and {@link coherent.RegexFormatter}.
  */
 coherent.Formatter= Class.create({
 
@@ -51,7 +57,7 @@ coherent.Formatter= Class.create({
     
     /** Check the validity of a character before updating the field.
         @param {String} c - the new character
-        @returns `true` if the character is a valid input character.
+        @type Boolean
      */
     isValidInputCharacter: function(c)
     {
