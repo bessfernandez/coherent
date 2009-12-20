@@ -5,24 +5,23 @@ output-folder: build
 browsers: [firefox]
 # browsers: [safari, firefox, ie]
 
-all:
-    include:
-        - src/core/startup.js
-        - src
+js:
+    - src/core/startup.js
+    - src
     
-    tests:
-        - tests/factory.js
-        - tests/array-controller.js
-        - tests/kvo-array-test.js
-        - tests/base-test.js
-        - tests/controller-selection.js
-        - tests/deferred.js
-        - tests/kvo-adapt-tree.js
-        - tests/kvo-dependent-test.js
-        - tests/kvo-subkey.js
-        - tests/kvo-test.js
-        - tests/url-test.js
-        - tests/oop-test.js
-
+tests:
+    - tests/factory.js
+    - tests/array-controller.js
+    - tests/kvo-array-test.js
+    - tests/base-test.js
+    - tests/controller-selection.js
+    - tests/deferred.js
+    - tests/kvo-adapt-tree.js
+    - tests/kvo-dependent-test.js
+    - tests/kvo-subkey.js
+    - tests/kvo-test.js
+    - tests/url-test.js
+    - tests/oop-test.js
+    
 # sample:
 #     - sample.js
