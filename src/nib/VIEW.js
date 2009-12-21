@@ -1,11 +1,12 @@
 /*jsl:import ../views/View.js*/
+/*jsl:import ../core/asset.js*/
 
-function VIEW(content, structure)
+function VIEW(markup, structure)
 {
-    if ('object'===typeof(content))
+    if (1==arguments.length)
     {
-        structure= content;
-        content= null;
+        structure= markup;
+        markup= null;
     }
 
     function setupView(viewNode)
@@ -13,8 +14,12 @@ function VIEW(content, structure)
         var view;
 
         if (!viewNode)
-            viewNode= coherent.View.createNodeFromMarkup(content);
-
+        {
+            if ("string"!==typeof(markup))
+                markup= markup.content();
+            viewNode= coherent.View.createNodeFromMarkup(markup);
+        }
+        
         var v;
         var p;
 

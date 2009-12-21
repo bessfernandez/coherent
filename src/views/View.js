@@ -1,6 +1,7 @@
 /*jsl:import view-core.js*/
 /*jsl:import Responder.js*/
 /*jsl:import DragAndDropHelper.js*/
+/*jsl:import ../core/Asset.js*/
 
 /** A View is a Bindable object.
 
@@ -930,6 +931,8 @@ coherent.View.__subclassCreated__= function(subclass)
         Object.applyDefaults(proto.__structure__, baseproto.__structure__);
     if (proto.animationOptions!==baseproto.animationOptions)
         Object.applyDefaults(proto.animationOptions, baseproto.animationOptions);
+    if (proto.markup && proto.markup instanceof coherent.Asset)
+        proto.markup= proto.markup.content();
 }
 
 /** Lookup the View instance for a particular node.

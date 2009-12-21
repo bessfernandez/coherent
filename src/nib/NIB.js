@@ -1,5 +1,6 @@
 /*jsl:import ../core/startup.js*/
 /*jsl:import ../net/XHR.js*/
+/*jsl:import ../core/asset.js*/
 
 /*jsl:declare NIB*/
 
@@ -22,9 +23,13 @@
                 continue;
             
             v= def[p];
+
             if (v && 'function'===typeof(v) && v.__factoryFn__)
                 v= v.call(model);
 
+            if (v instanceof coherent.Asset)
+                v= v.content();
+                
             if (!(ctypeof(v) in ignore) && !('addObserverForKeyPath' in v))
                 coherent.KVO.adaptTree(v);
         
@@ -79,14 +84,26 @@
         head.appendChild(script);
         
         NIB.__model= null;
-        
+        window.__filename__= null;
         return model;
     }
     
     Object.extend(NIB, {
 
+        asset: function(href, content)
+        {
+            var prefix= coherent.Scripts.currentScriptPrefix();
+            if (!prefix)
+                throw new Error('NIB.asset only available during load.');
+            if ('/'!==href.charAt(0))
+                href= [prefix, href].join("");
+            return new coherent.Asset(href, content, prefix);
+        },
+        
         load: function(href, owner)
         {
+            var lastSlash= href.lastIndexOf('/');
+            NIB.__prefix= href.substring(0, lastSlash+1);
             var d= XHR.get(href, null, {
                             responseContentType: 'text/plain'
                         });

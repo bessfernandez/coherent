@@ -30,33 +30,58 @@ coherent.Scripts = {
         @param {String|String[]} script - The script or an array of scripts to
             install in the global scope.
      */
-    install: function(script)
+    install: function(source, href)
     {
-        if (!script)
+        if (!source)
             return;
-        
-        function insertScript(source)
-        {
-            if (!source || !source.length)
-                return;
             
-            var script = document.createElement('script');
-            if (coherent.Browser.IE)
-                script.text= source;
-            else
-                script.appendChild(document.createTextNode(source));
-            script.type = 'text/javascript';
-            script.defer = false;
-            var head = document.getElementsByTagName('head').item(0);
-            head.appendChild(script);
-        }
+        var head = document.getElementsByTagName('head').item(0);
+        var script = document.createElement('script');
         
-        if ('string'===typeof(script))
+        if (coherent.Browser.IE)
+            script.text= source;
+        else
+            script.appendChild(document.createTextNode(source));
+
+        script.type = 'text/javascript';
+        script.defer = false;
+        window.__filename__= href;
+        head.appendChild(script);
+        window.__filename__= null;
+
+        console.log('inserted');
+    },
+    
+    currentScriptUrl: function()
+    {
+        if (window.__filename__)
+            return window.__filename__;
+
+        var scripts= document.getElementsByTagName("script");
+        if (!scripts || !scripts.length)
+            throw new Error("Could not find script");
+
+        var l= scripts.length;
+        var s;
+    
+        for (--l; l>=0; --l)
         {
-            insertScript(script);
-            return;
+            s= scripts[l];
+            if (s.src)
+                return s.src;
         }
-        
-        script.forEach(insertScript);
+    
+        throw new Error("No script tags with src attribute.");
+    },
+    
+    currentScriptPrefix: function()
+    {
+        var currentUrl= this.currentScriptUrl();
+        if (this.__currentPrefix && this.__currentUrl===currentUrl)
+            return this.__currentPrefix;
+    
+        this.__currentUrl= currentUrl;
+        var lastSlash= currentUrl.lastIndexOf('/');
+        return currentUrl.substring(0, lastSlash+1);
     }
 };
