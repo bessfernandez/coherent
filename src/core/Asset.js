@@ -22,9 +22,27 @@
         else
             style.appendChild(document.createTextNode(css));
     }
-    
-    coherent.Asset= function(href, content, prefix)
+
+    function currentAssetPrefix()
     {
+        var currentUrl= coherent.Scripts.currentScriptUrl();
+        if (this.__currentPrefix && this.__currentUrl===currentUrl)
+            return this.__currentPrefix;
+    
+        this.__currentUrl= currentUrl;
+        var lastSlash= currentUrl.lastIndexOf('/');
+        return currentUrl.substring(0, lastSlash+1);
+    }
+    
+    coherent.Asset= function(href, content)
+    {
+        if (!(this instanceof coherent.Asset))
+            return new coherent.Asset(href, content);
+            
+        var prefix= currentAssetPrefix();
+        if ('/'!==href.charAt(0))
+            href= [prefix, href].join('');
+            
         if (href in assetLookup)
             return assetLookup[href];
         assetLookup[href]= this;

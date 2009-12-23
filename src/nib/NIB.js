@@ -6,6 +6,11 @@
 
 (function() {
 
+    var kSpecialKeys= {
+        'owner': true,
+        'application': true
+    };
+    
     function NIB(def)
     {
         var oldDataModel= coherent.dataModel;
@@ -15,11 +20,12 @@
         var p;
         var ignore= coherent.KVO.typesOfKeyValuesToIgnore;
         var ctypeof= coherent.typeOf;
-    
+        var views= [];
+        
         for (p in def)
         {
             //  Skip owner, because it's special
-            if ('owner'===p)
+            if (p in kSpecialKeys)
                 continue;
             
             v= def[p];
@@ -32,23 +38,30 @@
                 
             if (!(ctypeof(v) in ignore) && !('addObserverForKeyPath' in v))
                 coherent.KVO.adaptTree(v);
-        
+
+            if (v instanceof coherent.View)
+                views.push(v);
             model.setValueForKey(v, p);
         }
 
-        //  Setup linkages to the owner object
-        if ('owner' in def)
+        model.__views= views;
+        
+        //  Setup linkages to the special objects
+        for (var key in kSpecialKeys)
         {
-            var ownerDef= def.owner;
-            var owner= model.valueForKey('owner');
+            var specialDef= def[key];
+            var special= model.valueForKey(key);
             var modelValue;
             
-            for (p in ownerDef)
+            if (!special)
+                continue;
+                
+            for (p in specialDef)
             {
-                v= ownerDef[p];
+                v= specialDef[p];
                 if ('string'!==typeof(v))
                 {
-                    owner.setValueForKeyPath(v, p);
+                    special.setValueForKeyPath(v, p);
                     continue;
                 }
                 
@@ -56,11 +69,11 @@
                 modelValue= model.valueForKeyPath(v);
                 if (null===modelValue || 'undefined'===typeof(modelValue))
                 {
-                    owner.setValueForKeyPath(v, p);
+                    special.setValueForKeyPath(v, p);
                     continue;
                 }
                 
-                owner.setValueForKeyPath(modelValue, p);
+                special.setValueForKeyPath(modelValue, p);
             }
         }
         
@@ -76,7 +89,10 @@
         
         window.__filename__= href;
         var model= NIB.__model= new coherent.KVO();
+
         NIB.__model.setValueForKey(owner, 'owner');
+        NIB.__model.setValueForKey(coherent.Application.shared, 'application');
+        
         if (coherent.Browser.IE)
             script.text= source;
         else
@@ -92,18 +108,11 @@
 
         asset: function(href, content)
         {
-            var prefix= coherent.Scripts.currentScriptPrefix();
-            if (!prefix)
-                throw new Error('NIB.asset only available during load.');
-            if ('/'!==href.charAt(0))
-                href= [prefix, href].join("");
-            return new coherent.Asset(href, content, prefix);
+            return new coherent.Asset(href, content);
         },
         
         load: function(href, owner)
         {
-            var lastSlash= href.lastIndexOf('/');
-            NIB.__prefix= href.substring(0, lastSlash+1);
             var d= XHR.get(href, null, {
                             responseContentType: 'text/plain'
                         });

@@ -516,6 +516,8 @@ var Class= (function(){
                             var superproto= klass.superclass && klass.superclass.prototype;
                             for (var p in decl)
                                 addMember(proto, p, decl[p], superproto);
+                            if (decl.toString!=={}.toString)
+                                addMember(proto, 'toString', decl.toString, superproto);
                         };
         })()
     };

@@ -48,8 +48,6 @@ coherent.Scripts = {
         window.__filename__= href;
         head.appendChild(script);
         window.__filename__= null;
-
-        console.log('inserted');
     },
     
     currentScriptUrl: function()
@@ -70,18 +68,7 @@ coherent.Scripts = {
             if (s.src)
                 return s.src;
         }
-    
-        throw new Error("No script tags with src attribute.");
-    },
-    
-    currentScriptPrefix: function()
-    {
-        var currentUrl= this.currentScriptUrl();
-        if (this.__currentPrefix && this.__currentUrl===currentUrl)
-            return this.__currentPrefix;
-    
-        this.__currentUrl= currentUrl;
-        var lastSlash= currentUrl.lastIndexOf('/');
-        return currentUrl.substring(0, lastSlash+1);
+
+        return null;
     }
 };
