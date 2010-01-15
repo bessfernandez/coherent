@@ -34,6 +34,22 @@
         return currentUrl.substring(0, lastSlash+1);
     }
     
+    /** A generic reference to an asset within the application or one of its
+        bundles.
+        
+        @constructor
+        @property {String} href - The URL associated with the asset
+        @property {String} dirname - The directory portion of the href
+        @property {String} ext - The extension (including the dot) for the
+            asset. Used to determine the type.
+            
+        @param {String} href - The URL for the asset. If this is a relative URL,
+            it is assumed to be relative to the current bundle and will have the
+            URL prefix of the bundle prepended to the href value.
+        @param {String} [content] - The content for the asset. This is set by
+            the build system when generating release mode versions of the
+            bundle.
+     */
     coherent.Asset= function(href, content)
     {
         if (!(this instanceof coherent.Asset))

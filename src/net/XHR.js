@@ -9,9 +9,11 @@
 (function(){
 
     /** Retrieve an XMLHttpRequest object for each browser.
-        @inner
+        @name getTransport
+        @function
         @type XMLHttpRequest
      */
+
     var getTransport= function()
                       {
                           throw new Error('XMLHttpRequest not available.');

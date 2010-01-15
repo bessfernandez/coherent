@@ -172,7 +172,7 @@ coherent.CollectionView= Class.create(coherent.View, {
     {
         var container= this.container();
 
-        this.__content= newContent= newContent ? newContent.concat() : [];
+        this.__content= newContent= newContent ? newContent.copy() : [];
         
         var items= this.__items;
         var numberOfItems= items.length;
@@ -272,7 +272,7 @@ coherent.CollectionView= Class.create(coherent.View, {
                 {
                     items[indexes[index]].setValueForKey(change.newValue[index], 'representedObject');
                 }
-                this.__content.replaceObjectsAtIndexes(change.newValue, indexes);
+                this.__content.replaceObjectsAtIndexesWithObjects(indexes, change.newValue);
                 break;
 
             case coherent.ChangeType.validationError:
@@ -318,7 +318,7 @@ coherent.CollectionView= Class.create(coherent.View, {
             this.__selectionIndexes= [];
         
         //  create a copy
-        selection= this.__selectionIndexes.concat();
+        selection= this.__selectionIndexes.copy();
         nextSelected= selection.shift();
         
         for (index=0; index<len; ++index)
@@ -367,7 +367,7 @@ coherent.CollectionView= Class.create(coherent.View, {
                 break;
 
             case coherent.ChangeType.replacement:
-                this.__selectionIndexes.replaceObjectsAtIndexes(change.newValue, change.indexes);
+                this.__selectionIndexes.replaceObjectsAtIndexesWithObjects(change.indexes, change.newValue);
                 change.oldValue.forEach(function(i) {
                                     item= items[i];
                                     item.selected= false;
@@ -509,7 +509,7 @@ coherent.CollectionView= Class.create(coherent.View, {
         var container= this.container();
         var itemIndex= Array.from(container.children).indexOf(e);
         
-        var selectionIndexes= this.selectionIndexes().concat();
+        var selectionIndexes= this.selectionIndexes().copy();
 
         var ctrlKeyDown= event.ctrlKey || event.metaKey;
         var shiftKeyDown= event.shiftKey;
@@ -572,7 +572,7 @@ coherent.CollectionView= Class.create(coherent.View, {
 
         Event.stop(event);
         
-        var selectionIndexes= this.selectionIndexes().concat();
+        var selectionIndexes= this.selectionIndexes().copy();
         var maxIndex= this.__content.length-1;
         var hasSelection= selectionIndexes.length;
         var newIndex= this.extendIndex;

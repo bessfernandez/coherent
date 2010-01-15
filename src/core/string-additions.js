@@ -1,3 +1,8 @@
+/** @class
+    @name String
+ */
+ 
+
 /** Make title case version of string.
     @type String
  */

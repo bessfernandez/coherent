@@ -1,9 +1,9 @@
 /*jsl:import kvo.js*/
 /*jsl:import array-additions.js*/
+/*jsl:import array-interface.js*/
 
 /** Add some methods to the Array prototype to support Key Value functionality.
-    
-    @scope Array.prototype
+    @implements coherent.Array
  */
 Class.extend(Array, {
 
@@ -14,6 +14,16 @@ Class.extend(Array, {
     containsObject: function(obj)
     {
         return -1!==this.indexOf(obj);
+    },
+
+    objectAtIndex: function(index)
+    {
+        return this[index];
+    },
+    
+    count: function()
+    {
+        return this.length;
     },
     
     /** Retrieve the "value" of a particular key for an Array object. This will
@@ -238,7 +248,7 @@ Class.extend(Array, {
         @param object - the new object
         @param {Number} index - the index of the old object to replace
      */
-    replaceObjectAtIndex: function(object, index)
+    replaceObjectAtIndexWithObject: function(object, index)
     {
         var oldValue= this[index];
         this[index]= object;
@@ -257,7 +267,7 @@ Class.extend(Array, {
         @param {Array} objects - the new objects
         @param {Number[]} indexes - the indexes of the old objects to replace
      */
-    replaceObjectsAtIndexes: function(objects, indexes)
+    replaceObjectsAtIndexesWithObjects: function(indexes, objects)
     {
         var oldValues= [];
         var len= objects.length;
@@ -494,3 +504,15 @@ Class.extend(Array, {
 
 //  Add all KVO methods to Arrays
 coherent.KVO.adapt(Array.prototype);
+
+/** Find the index at which an object appears. Returns -1 if the object does
+    not appear in the array.
+    @type Number
+    @param {Object} object - The object to locate
+ */
+Array.prototype.indexOfObject= Array.prototype.indexOf;
+
+/** Create a shallow copy of this array.
+    @type Array
+ */
+Array.prototype.copy= Array.prototype.concat;

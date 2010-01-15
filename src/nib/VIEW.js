@@ -1,6 +1,8 @@
 /*jsl:import ../views/View.js*/
 /*jsl:import ../core/asset.js*/
 
+/** Factory function for creating views.
+ */
 function VIEW(markup, structure)
 {
     if (1==arguments.length)

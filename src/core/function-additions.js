@@ -1,3 +1,7 @@
+/** @class
+    @name Function
+ */
+ 
 /** ES5 defines a bind method for functions, but that's not implemented by any
     current browsers, yet.
  */
@@ -102,6 +106,10 @@ if (!Function.prototype.bindAndDelay)
  */
 Function.prototype.sync= function()
 {
+    /** The function that will be called after all the sync points complete.
+        @function
+        @inner
+     */
     var fn= arguments.length?this.bind.apply(this, arguments):this;
     var joinPoints= {};
     var cancelled= false;

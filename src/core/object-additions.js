@@ -1,5 +1,18 @@
 /*jsl:import set.js*/
 
+/** @class
+    @name Object
+ */
+
+if (!Object.keys)
+    Object.keys= function(object)
+    {
+        var keys= [];
+        for (var k in object)
+            keys.push(k);
+        return keys;
+    }
+    
 /** Make a shallow-copy clone of an object. Modifications are copy-on-write.
     Note, because this is a shallow copy, only properties actually on the cloned
     object will be copy-on-write. For example, if you clone foo into bar and

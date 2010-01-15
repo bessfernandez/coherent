@@ -8,6 +8,7 @@ browsers: [firefox]
 js:
     - src/core/startup.js
     - src
+    # - sample.js
     
 tests:
     - tests/factory.js
@@ -22,6 +23,3 @@ tests:
     - tests/kvo-test.js
     - tests/url-test.js
     - tests/oop-test.js
-    
-# sample:
-#     - sample.js

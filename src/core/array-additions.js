@@ -1,5 +1,9 @@
 /*jsl:import base.js*/
 
+/** @class
+    @name Array
+ */
+ 
 /** Return an array containing the distinct elements from this array.
     @type Array
  */

@@ -368,7 +368,7 @@ coherent.OutlineView= Class.create(coherent.View, {
         }
         
         if (newSelectedObjects)
-            newSelectedObjects= newSelectedObjects.concat();
+            newSelectedObjects= newSelectedObjects.copy();
         else
             newSelectedObjects= [];
             

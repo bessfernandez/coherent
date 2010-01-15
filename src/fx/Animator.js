@@ -2,14 +2,20 @@
 /*jsl:import ../core/startup.js*/
 /*jsl:import ../dom/element.js*/
 /*jsl:import ../dom/element-ie.js*/
+/*jsl:import steppers.js*/
+/*jsl:import steppers-ie.js*/
+
 
 /** @name coherent.Animator
     @namespace The animator
 */
 (function() {
 
+    var fx= coherent.fx;
+    
     var DEFAULTS = {
         duration: 500,
+        discreteTransitionPoint: 0.5,
         actions: {}
     };
     
@@ -30,60 +36,6 @@
         }
         Element.depthFirstTraversal(node, visitNode);
         return info;
-    }
-    
-    function colourToString()
-    {
-        return [this.r, this.g, this.b, this.a].join(',');
-    }
-    
-    function stringToColor(color)
-    {
-        if (typeof(color) != "string")
-            return color;
-        
-        var rgb;
-        
-        if ((rgb= Element.colours[color.toLowerCase()]))
-            color= rgb;
-
-        if ((rgb= color.match(/^rgb(?:a)?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*(\d(?:\.\d+)?)\s*)?\)$/i)))
-            return {
-                r: parseInt(rgb[1], 10),
-                g: parseInt(rgb[2], 10),
-                b: parseInt(rgb[3], 10),
-                a: parseInt(rgb[4]||1, 10),
-                toString: colourToString
-            };
-
-        if ('#'!==color.charAt(0)) {
-            if (color=="transparent") {
-                return {
-                    r: 255,
-                    g: 255,
-                    b: 255,
-                    a: 0
-                };
-            }
-            throw new Error('Invalid colour: ' + color);
-        }
-        
-        if (4==color.length)
-            return {
-                r: parseInt(color.charAt(1)+color.charAt(1), 16),
-                g: parseInt(color.charAt(2)+color.charAt(2), 16),
-                b: parseInt(color.charAt(3)+color.charAt(3), 16),
-                a: 1,
-                toString: colourToString
-            };
-        else
-            return {
-                r: parseInt(color.substr(1,2), 16),
-                g: parseInt(color.substr(3,2), 16),
-                b: parseInt(color.substr(5,2), 16),
-                a: 1,
-                toString: colourToString
-            };
     }
     
     function normaliseProperties(props)
@@ -132,21 +84,27 @@
     
     function step()
     {
-        var element, t, stepper;
-        var now = (new Date()).getTime();
-        coherent.EventLoop._start= now;
+        var now = coherent.EventLoop.getStart();
+        
+        var element;
+        var t;
+        var stepper;
         
         for (var a in actors)
         {
             var actor= actors[a];
             var properties= actor.properties;
             
-            for (var p in properties) {
+            for (var p in properties)
+            {
                 stepper = properties[p][0];
-                if (now >= stepper.endTime) {
+                if (now >= stepper.endTime)
+                {
                     stepper.step(1);
-                    onAnimationComplete(a, p);
-                } else if (stepper.startTime <= now) {
+                    animationDidComplete(actor, p);
+                }
+                else if (stepper.startTime <= now)
+                {
                     t = (now-stepper.startTime)/stepper.totalTime;
                     stepper.step(t);
                 }
@@ -156,283 +114,15 @@
         lastStep = now;
     }
     
-    /** An animation stepper for colour properties.
-        @constructs
-     */
-    function ColourStepper(property, element, start, end, shouldCleanup)
-    {
-        this.property= property;
-        this.element= element;
-        this.start= stringToColor(start);
-        this.end= stringToColor(end);
-        
-        if (coherent.Support.CSS3ColorModel) {
-            // We assume here that if you are fading to/from alpha=0, then you don't
-            // want a color shift, so make sure the RGB values are equal.
-            if (this.start.a === 0) {
-                this.start.r = this.end.r;
-                this.start.g = this.end.g;
-                this.start.b = this.end.b;
-            } else if (this.end.a === 0) {
-                this.end.r = this.start.r;
-                this.end.g = this.start.g;
-                this.end.b = this.start.b;
-            }
-
-            this.step = this.stepRGBA;
-        } else {
-            this.step = this.stepRGB;
-        }
-        
-        this.delta= {
-            r: this.end.r-this.start.r,
-            g: this.end.g-this.start.g,
-            b: this.end.b-this.start.b,
-            a: this.end.a-this.start.a
-        };
-
-        this.shouldCleanup= !!shouldCleanup;
-    }
-    ColourStepper.prototype.stepRGB= function(t)
-    {
-        if (this.curve)
-            t= this.curve(t);
-        
-        var rgb= ['rgb(',
-                   Math.round(t * this.delta.r + this.start.r), ',',
-                   Math.round(t * this.delta.g + this.start.g), ',',
-                   Math.round(t * this.delta.b + this.start.b), ')'].join('');
-        this.element.style[this.property]= rgb;
-    }
-    ColourStepper.prototype.stepRGBA= function(t)
-    {
-        if (this.curve)
-            t= this.curve(t);
-        var rgba= ['rgba(',
-                   Math.round(t * this.delta.r + this.start.r), ',',
-                   Math.round(t * this.delta.g + this.start.g), ',',
-                   Math.round(t * this.delta.b + this.start.b), ',',
-                              t * this.delta.a + this.start.a, ')'].join('');
-        this.element.style[this.property]= rgba;
-    }
-    ColourStepper.prototype.cleanup= function()
-    {
-        this.element.style[this.property]= '';
-    }
-
-    /** An animation stepper for numeric property values (integers) like left,
-        top, width, height, etc.
-        @constructs
-     */
-    function NumericStepper(property, element, start, end, shouldCleanup)
-    {
-        this.property= property;
-        this.element= element;
-        this.start= parseInt(start||0, 10);
-        this.end= parseInt(end||0, 10);
-        this.delta= this.end-this.start;
-        this.shouldCleanup = !!shouldCleanup;
-    }
-    NumericStepper.prototype.step= function(t)
-    {
-        if (this.curve)
-            t= this.curve(t);
-        this.element.style[this.property]= Math.round(t*this.delta + this.start) + 'px';
-    }
-    NumericStepper.prototype.cleanup= function() {
-        this.element.style[this.property]= '';
-    }
-
-    /** An animation stepper for element opacity. There's a special case step
-        function to handle IE.
-        @constructs
-     */
-    function OpacityStepper(element, start, end, shouldCleanup)
-    {
-        this.element= element;
-        this.start= parseFloat(start||0);
-        this.end= parseFloat(end||0);
-        this.delta= end-start;
-        this.shouldCleanup = !!shouldCleanup;
-    }
-    if (coherent.Browser.IE) {
-        OpacityStepper.prototype.step= function(t)
-        {
-            if (this.curve)
-                t= this.curve(t);
-            var opacity = t * this.delta + this.start;
-            this.element.style.filter = (opacity>=1) ? '' : 'Alpha(Opacity='+opacity*100+')';
-        }
-        OpacityStepper.prototype.cleanup= function()
-        {
-            this.element.style.filter = '';
-        }
-    } else {
-        OpacityStepper.prototype.step= function(t)
-        {
-            if (this.curve)
-                t= this.curve(t);
-            var opacity= t*this.delta + this.start;
-            this.element.style.opacity= (opacity>=1)?1:opacity;
-        }
-        OpacityStepper.prototype.cleanup= function() 
-        {
-            this.element.style.opacity= '';
-        }
-    }
-
-    /** An animation stepper for discrete values like display. The value clicks
-        over to the end value half way through the animation.
-        @constructs
-     */
-    function DiscreteStepper(property, element, start, end, shouldCleanup)
-    {
-        this.property= property;
-        this.element= element;
-        this.start= start;
-        this.end= end;
-        this.shouldCleanup= !!shouldCleanup;
-    }
-    DiscreteStepper.prototype.step= function(t)
-    {
-        if (t>=this.discreteTransitionPoint)
-        {
-            this.element.style[this.property] = this.end;
-            this.step= function(t){};
-        }
-    }
-    DiscreteStepper.prototype.cleanup= function()
-    {
-        this.element.style[this.property]= '';
-    }
-    
-    /** An animation stepper for the class name of a node.
-        @constructs
-     */
-    function ClassNameStepper(element, start, end)
-    {
-        this.element= element;
-        this.start= start;
-        this.end= end;
-    }
-    ClassNameStepper.prototype.step= function(t)
-    {
-        if (t>=this.discreteTransitionPoint) {
-            this.element.className = this.end;
-            this.step = function(t){};
-        }
-    }
-    
-    function convertKeywords(keywords)
-    {
-        switch (keywords)
-        {
-            case 'top':
-                return '0% 50%';
-            case 'right':
-                return '100% 50%';
-            case 'bottom':
-                return '50% 100%';
-            case 'left':
-                return '0% 50%';
-            case 'center':
-                return '50% 50%';
-            default:
-                keywords = keywords.replace(/top|left/g, '0%');
-                keywords = keywords.replace(/bottom|right/g, '100%');
-                return keywords;   
-        }
-    }
-    function stripUnits(item)
-    {
-        return parseInt(item, 10);
-    }
-    
-    
-    /** An animation stepper for background image positioning. It can support all
-        permutations of background-position, including keywords like top, left, etc.
-        Caveat: It's not possible to animate from percentages/keywords to pixels.
-        In this case, we'll fall back to a DiscreteStepper.
-        @constructs
-     */
-    function BackgroundPositionStepper(element, start, end, shouldCleanup)
-    {
-        start = convertKeywords(start);
-        end = convertKeywords(end);
-        
-        var startUnit = start.match(/%|px/)[0];
-        var endUnit = end.match(/%|px/)[0];
-        if (startUnit != endUnit)
-            return new DiscreteStepper('backgroundPosition', element, start, end,
-                                       shouldCleanup);
-        
-        this.element = element;
-        this.unit = startUnit;
-        this.start = Array.map(start.split(' '), stripUnits);
-        this.end = Array.map(end.split(' '), stripUnits);
-        this.delta = [this.end[0]-this.start[0], this.end[1]-this.start[1]];
-        this.shouldCleanup= !!shouldCleanup;
-        
-        return this;
-    }
-    BackgroundPositionStepper.prototype.step = function(t)
-    {
-        if (this.curve)
-            t= this.curve(t);
-        this.element.style.backgroundPosition= Math.round(t * this.delta[0] + this.start[0])+this.unit+' '+
-                                               Math.round(t * this.delta[1] + this.start[1])+this.unit;
-    }
-    BackgroundPositionStepper.prototype.cleanup= function()
-    {
-        if (coherent.Browser.IE) {
-            this.element.style.backgroundPositionX = '';
-            this.element.style.backgroundPositionY = '';
-        } else {
-            this.element.style.backgroundPosition = '';
-        }
-    }
-
-
-    function getStepper(property, element, start, end, cleanup)
-    {
-        switch(property)
-        {
-            case '_className':
-                return new ClassNameStepper(element, start, end);
-                
-            case 'display':
-                return new DiscreteStepper(property, element, start, end, cleanup);
-            
-            case 'backgroundPosition':
-                return new BackgroundPositionStepper(element, start, end, cleanup);
-                
-            case 'backgroundColor':
-            case 'color':
-            case 'borderColor':
-            case 'borderTopColor':
-            case 'borderRightColor':
-            case 'borderBottomColor':
-            case 'borderLeftColor':
-                return new ColourStepper(property, element, start, end, cleanup);
-            
-            case 'opacity':
-                return new OpacityStepper(element, start, end, cleanup);
-            
-            default:
-                return new NumericStepper(property, element, start, end, cleanup);
-        }
-    }
-    
-    function onAnimationComplete(elementID, property)
+    function animationDidComplete(actor, property)
     {
         var callbacks = [];
-        var actor= actors[elementID];
         var stepper = actor.properties[property].shift();
         
-        if (stepper.shouldCleanup && "function"===typeof(stepper.cleanup))
+        if (stepper.shouldCleanup && stepper.cleanup)
             stepper.cleanup();
         
-        if ("function" == typeof(stepper.callback))
+        if (stepper.callback)
             callbacks.push(stepper.callback);
         
         if (!actor.properties[property].length)
@@ -443,9 +133,9 @@
         
         if (!actor.propCount)
         {
-            if ("function" == typeof(actors[elementID]._callback))
-                callbacks.push(actor._callback);
-            delete(actors[elementID]);
+            if (actor.callback)
+                callbacks.push(actor.callback);
+            delete(actors[actor.id]);
             actorCount--;
         }
         
@@ -455,7 +145,7 @@
         // execute callbacks
         var callbackCount= callbacks.length;
         for (var c=0; c<callbackCount; c++)
-            callbacks[c](document.getElementById(elementID), property);
+            callbacks[c](actor.node, property);
     }
     
     function animateProperties(element, hash, options)
@@ -476,18 +166,18 @@
         {
             actorCount++;
             actor= actors[elementId] = {
-                _node: element,
+                node: element,
+                id: elementId,
                 propCount: 0,
                 properties: {}
             };
         }
-        if ("function" == typeof(options.callback))
-            actor._callback = options.callback;
+        if (options.callback)
+            actor.callback = options.callback;
         
-        var groupStart  = coherent.EventLoop.getStart();
-        var groupEnd    = groupStart + options.duration;
-        var startStyles = options.startStyles || getStyles(element,
-                                                           Set.toArray(hash));
+        var groupStart= coherent.EventLoop.getStart();
+        var groupEnd= groupStart + options.duration;
+        var startStyles= options.startStyles || getStyles(element, Object.keys(hash));
 
         normaliseProperties(hash);
               
@@ -510,7 +200,7 @@
                 end= groupEnd;
 
             var curve = propertyEntry.curve || options.curve;
-            var discreteTransitionPoint = propertyEntry.discreteTransitionPoint || options.discreteTransitionPoint || 0.5;
+            var discreteTransitionPoint = propertyEntry.discreteTransitionPoint || options.discreteTransitionPoint;
             var cleanup = typeof(propertyEntry.cleanup)!=="undefined" ? propertyEntry.cleanup : options.cleanup;
             var propertySteppers;
 
@@ -541,15 +231,15 @@
                 propertySteppers= propertySteppers.reduce(testCollision, []);
             
             //  Create the new stepper for this property
-            var stepper= getStepper(p, element, startStyles[p], value, cleanup);
-            stepper.startTime = start;
-            stepper.endTime   = end;
-            stepper.totalTime = end-start;
-            stepper.curve     = curve;
-            stepper.discreteTransitionPoint = discreteTransitionPoint;
+            var stepper= fx.getStepper(p, element, startStyles[p], value, cleanup);
+            stepper.startTime= start;
+            stepper.endTime= end;
+            stepper.totalTime= end-start;
+            stepper.curve= curve;
+            stepper.discreteTransitionPoint= discreteTransitionPoint;
             
             if ('object'===typeof(propertyEntry) && 'callback' in propertyEntry)
-                stepper.callback = propertyEntry.callback;
+                stepper.callback= propertyEntry.callback;
             
             if (options.stepBackToZero)
                 stepper.step(0);
@@ -577,7 +267,8 @@
         
         options = Object.applyDefaults(options, DEFAULTS);
         
-        if (options.delay) {
+        if (options.delay)
+        {
             animateClassName.delay(options.delay, element, newClassName, options);
             delete options.delay;
             return;
@@ -606,7 +297,7 @@
             if (!actor)
                 continue;
             
-            style= actor._node.style;
+            style= actor.node.style;
             for (var p in actor.properties)
                 style[p]= '';
         }
@@ -616,13 +307,13 @@
         element.className = oldClassName;
 
         /* If there is a callback supplied for this class transition, 
-           move it to the _className property rather than the animation itself.
-           This way, if the class transition is interrupted by another (without a callback)
-           The original callback won't run.
+           move it to the classname property rather than the animation itself.
+           This way, if the class transition is interrupted by another (without
+           a callback) the original callback won't run.
         */
         var thingsToAnimate = {};
-        thingsToAnimate[element.id] = {
-            _className: {
+        thingsToAnimate[element.id]= {
+            classname: {
                 value: newClassName,
                 duration: options.duration,
                 callback: options.callback
@@ -655,11 +346,10 @@
             
             // If nodeAction is a function, it should be executed.
             // It is expected to return an animation type (FADE_NODE, IGNORE_NODE, etc)
-            if ("function" === typeof(nodeAction)) {
+            if ("function"===typeof(nodeAction))
                 nodeAction = nodeAction(node, startStyles, endStyles);
-            }
             
-            if ('object'==typeof(nodeAction))
+            if ('object'===typeof(nodeAction))
             {
                adjusted= nodeAction;
                nodeAction= coherent.Animator.MORPH_NODE;
@@ -896,7 +586,7 @@
                 if ('string'===typeof(remove))
                     elementClasses= _removeClassName(elementClasses, remove);
                 else
-                    elementClasses= remove.reduce(_addClassName, elementClasses);
+                    elementClasses= remove.reduce(_removeClassName, elementClasses);
             }
 
             if (options.duration)

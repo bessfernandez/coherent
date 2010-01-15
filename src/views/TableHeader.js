@@ -20,7 +20,7 @@ coherent.TableHeader= Class.create(coherent.View, {
     
     setSortKeys: function(sortKeys)
     {
-        this.__sortKeys= (sortKeys= sortKeys ? sortKeys.concat() : []);
+        this.__sortKeys= (sortKeys= sortKeys ? sortKeys.copy() : []);
         
         //  compute the sortKeyToIndex map
         var len= sortKeys.length;

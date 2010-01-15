@@ -48,6 +48,7 @@ if (coherent.Browser.IE)
             if (!Event._readyCallbacks)
             {
                 document.write("<script id=__ie_onload defer src=javascript:void(0)><\/script>");
+                /** @inner */
                 var script= document.getElementById("__ie_onload");
                 script.onreadystatechange = function()
                 {

@@ -15,13 +15,17 @@ var Class= (function(){
      */
     function wrapConstructorForBase(construct, superclass)
     {
-        var wrapped;
+        /** Create a wrapped constructor
+            @function
+            @inner
+         */
+        var wrappedConstructor;
         
         if (!construct && !superclass)
             return construct;
             
         if (!construct)
-            wrapped= function()
+            wrappedConstructor= function()
             {
                 return superclass.apply(this, arguments);
             };
@@ -33,13 +37,13 @@ var Class= (function(){
                 return construct;
                 
             if (!callsBase)
-                wrapped= function()
+                wrappedConstructor= function()
                 {
                     superclass.call(this);
                     return construct.apply(this, arguments);
                 };
             else
-                wrapped= function()
+                wrappedConstructor= function()
                 {
                     var prev= this.base;
                     this.base= superclass||function(){};
@@ -49,17 +53,17 @@ var Class= (function(){
                 };
         }
         
-        wrapped.valueOf= function()
+        wrappedConstructor.valueOf= function()
         {
             return construct;
         }
-        wrapped.toString= function()
+        wrappedConstructor.toString= function()
         {
             return String(construct);
         }
-        wrapped.displayName='Constructor wrapper';
+        wrappedConstructor.displayName='Constructor wrapper';
         
-        return wrapped;
+        return wrappedConstructor;
     }
     
     /** Call the factory method for a class.
@@ -146,6 +150,11 @@ var Class= (function(){
         //  stuff.
         construct= wrapConstructorForBase(construct, superclass);
 
+        /** The wrapped constructor. This wrapper enables factory methods,
+            declarative objects, and post construct hooks.
+            @function
+            @inner
+         */
         var wrapped;
         
         if (construct)
@@ -238,6 +247,10 @@ var Class= (function(){
         if (!method || !/this\.base/.test(method))
             return method;
         
+        /** Wrap a method so that it may call the superclass implementation.
+            @function
+            @inner
+         */
         function wrappedMethod()
         {
             var prev= this.base;
@@ -444,6 +457,47 @@ var Class= (function(){
             return construct;
         },
 
+        /** A **very** lightweight version of {@link Class.create}. This version
+            does not support methods calling base implementations, the hook for
+            post construction, nor creating factory objects. But if you just
+            want to create a fast lightweight class, this is your tool.
+         */
+        _create: function(superclass, decl)
+        {
+            var proto= {};
+            
+            switch (arguments.length)
+            {
+                case 0:
+                    throw new TypeError('Missing superclass and declaration arguments');
+            
+                case 1:
+                    decl= superclass;
+                    superclass= undefined;
+                    break;
+                
+                default:
+                    proto= makePrototype(superclass);
+                    break;
+            }
+
+            var constructor= emptyFn;
+            if (decl.hasOwnProperty('constructor'))
+            {
+                constructor= decl.constructor;
+                delete decl.constructor;
+            }
+
+            constructor.prototype= proto;
+            constructor.prototype.constructor= constructor;
+            constructor.prototype.superclass= superclass;
+            
+            Class.extend(constructor, decl);
+            return constructor;
+        },
+        
+        emptyFn: emptyFn,
+        
         /** Determine the name of the property of an object with the given
             value. Because the property value might appear more than once in
             a given object, this function might not be definitive. But for

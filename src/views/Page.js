@@ -88,6 +88,11 @@ coherent.Page= Class.create(coherent.Responder, {
         return null;
     },
     
+    nextResponder: function()
+    {
+        return coherent.Application.shared;
+    },
+    
     _findFirstResponder: function(view)
     {
         while (view && !view.acceptsFirstResponder())

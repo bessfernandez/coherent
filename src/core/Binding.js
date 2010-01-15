@@ -1,7 +1,6 @@
 /*jsl:import kvo.js*/
 /*jsl:import transformers.js*/
 
-/** @lends coherent */
 Object.extend(coherent, {
     NoSelectionMarkerType: 'noSelection',
     MultipleValuesMarkerType: 'multipleValues',

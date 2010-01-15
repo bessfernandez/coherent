@@ -1,8 +1,6 @@
 /*jsl:import kvo.js*/
 
 
-/** @scope coherent
- */
 Object.extend(coherent, {
 
     dataModel: new coherent.KVO(),

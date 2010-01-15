@@ -47,7 +47,7 @@ coherent.PopupList= Class.create(coherent.FormControl, {
     setContent: function(newContent)
     {
         //  create a copy of the array
-        this.__content= newContent ? newContent.concat() : [];
+        this.__content= newContent ? newContent.copy() : [];
         this.__scheduleUpdate();
     },
 
@@ -70,7 +70,7 @@ coherent.PopupList= Class.create(coherent.FormControl, {
                 break;
 
             case coherent.ChangeType.replacement:
-                this.__content.replaceObjectsAtIndexes(change.newValue, change.indexes);
+                this.__content.replaceObjectsAtIndexesWithObjects(change.indexes, change.newValue);
                 this.__scheduleUpdate();
                 break;
 
@@ -94,7 +94,7 @@ coherent.PopupList= Class.create(coherent.FormControl, {
     setContentValues: function(newContentValues)
     {
         //  create a copy of the array
-        this.__contentValues= newContentValues ? newContentValues.concat() : [];
+        this.__contentValues= newContentValues ? newContentValues.copy() : [];
         this.__scheduleUpdate();
     },
 
@@ -117,7 +117,7 @@ coherent.PopupList= Class.create(coherent.FormControl, {
                 break;
 
             case coherent.ChangeType.replacement:
-                this.__contentValues.replaceObjectsAtIndexes(change.newValue, change.indexes);
+                this.__contentValues.replaceObjectsAtIndexesWithObjects(change.indexes, change.newValue);
                 this.__scheduleUpdate();
                 break;
 
@@ -141,7 +141,7 @@ coherent.PopupList= Class.create(coherent.FormControl, {
     setContentObjects: function(newContentObjects)
     {
         //  create a copy of the array
-        this.__contentObjects= newContentObjects ? newContentObjects.concat() : [];
+        this.__contentObjects= newContentObjects ? newContentObjects.copy() : [];
         this.__scheduleUpdate();
     },
 
@@ -164,7 +164,7 @@ coherent.PopupList= Class.create(coherent.FormControl, {
                 break;
 
             case coherent.ChangeType.replacement:
-                this.__contentObjects.replaceObjectsAtIndexes(change.newValue, change.indexes);
+                this.__contentObjects.replaceObjectsAtIndexesWithObjects(change.indexes, change.newValue);
                 this.__scheduleUpdate();
                 break;
 

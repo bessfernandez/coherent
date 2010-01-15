@@ -5,21 +5,22 @@ coherent.VideoLegacy= Class.create(coherent.View, {
 
     exposedBindings: ['src', 'currentTime', 'volume', 'muted', 'autoplay', 'playing', 'controls', 'loop', 'height', 'width'],
     
+    /** Construct a legacy video view.
+     */
     constructor: function(view, parameters, videoElement)
     {
         
-        if (window.dashcode.inDesign) {
+        if (window.dashcode.inDesign)
             return;
-        }
         
-        function findElement(parent, tag, index) {
+        /** Helper method to find the embed or object elements.
+         */
+        function findElement(parent, tag, index)
+        {
             var items = parent.getElementsByTagName(tag);
             
-            if (items && items.length) {
-                if (index < items.length) {
-                    return items[index];
-                }
-            }
+            if (items && items.length && index < items.length)
+                return items[index];
             
             return null;
         }

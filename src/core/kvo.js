@@ -1,266 +1,10 @@
 /*jsl:import startup.js*/
 /*jsl:import Error.js*/
-
-/** Constructor for the data kept for each observable/observed key.
-    
-    @property __uid An unique identifier for this key info, used in creating the
-                    parent link information.
-    @property reader    A reference to the getter function (if one exists) used
-                        to retrieve the current value from an object.
-    @property mutator   A reference to the setter function (if one exists) which
-                        will be used to update the key for an object.
-    @property validator A reference to the validation method (usually in the
-                        form `validate` + key) which _may_ be invoked to
-                        determine whether a value is valid. This method is
-                        **never** called by `setValueForKey` and should only be
-                        called by user interface code.
-    @property key   The original key name that this KeyInfo object represents.
-    @property mutable   Is the field with this key name mutable on objects? A
-                        field is not mutable if a getter function exists but no
-                        setter function exists.
-    @property changeCount   The number of times `willChangeValueForKey` has been
-                            called. This is decremented each time
-                            `didChangeValueForKey` is called.
-    
-    @private
- */
-coherent.KeyInfo= Class.create({
-
-    /** Create a new KeyInfo object.
-        
-        @param {Object} obj - the object on which the key is defined
-        @param {String} key - the name of the key to manage
-     */
-    constructor: function(obj, key)
-    {
-        var methods= coherent.KVO.getPropertyMethodsForKeyOnObject(key, obj);
-
-        this.__uid= [key, coherent.generateUid()].join('_');
-
-        //  store accessor & mutator
-        this.reader= methods.getter;
-        this.mutator= methods.mutator;
-        this.validator= methods.validator;
-        this.key= key;
-        
-        //  Obviously, a key is mutable if there's a mutator defined, but
-        //  if the key has neither reader or mutator methods, then I
-        //  access it via direct property access and the key is mutable
-        this.mutable= ((this.mutator||!this.reader)?true:false);
-
-        if (!this.reader && !this.mutator)
-            this.mutable= true;
-
-        //  changeCount is the number of times willChangeValueForKey has been
-        //  called. This is decremented for each call to didChangeValueForKey.
-        //  When this value returns to 0, a change notification is issued. The
-        //  previous value is only cached for the first change.
-        this.changeCount= 0;
-        
-        //  Setup initial parent link for value if there is one
-        var value= methods.value;
-        if (!value)
-            return;
-            
-        var valueType= coherent.typeOf(value);
-        if (valueType in coherent.KVO.typesOfKeyValuesToIgnore ||
-            !value._addParentLink)
-            return;
-
-        value._addParentLink(obj, this);
-    },
-    
-    /** Retrieve the value of this key for a given object. If the value can have
-        a parent link, this method will create it.
-        
-        @param {coherent.KVO} obj - the KVO instance from which to fetch the
-               value.
-        @returns the current value of the key for the specified object
-     */
-    get: function(obj)
-    {
-        //  This is kind of tortured logic, because undefined is reserved to
-        //  mean that there's a missing object in the keyPath chain. So the
-        //  result of valueForKey should NEVER be undefined.
-
-        //  Note, a reader method will get wrapped to handle adding the parent
-        //  link for this property (because someone might access the value
-        //  directly via the getter method). So there's no need to handle it
-        //  here.
-        if (this.reader)
-            return this.reader.call(obj);
-            
-        var value;
-
-        if (this.key in obj)
-            value= obj[this.key];
-        else
-            value= null;
-        
-        if (value && value._addParentLink)
-            value._addParentLink(obj, this);
-            
-        return value;
-    },
-    
-    /** Store a new value for a given object. This method will call a mutator
-        method if one exists, or otherwise will call `willChangeValueForKey`,
-        update the field directly, and then call `didChangeValueForKey`.
-        
-        @param obj  the object to modify
-        @param newValue the new value that will replace the old value.
-     */
-    set: function(obj, newValue)
-    {
-        if (this.mutator)
-            this.mutator.call(obj, newValue);
-        else
-        {
-            //  bracket modification of the value with change notifications.
-            //  This should only ever be executed for MSIE or other browsers
-            //  that don't support properties.
-            obj.willChangeValueForKey(this.key, this);
-            obj[this.key]= newValue;
-            obj.didChangeValueForKey(this.key, this);
-        }
-    },
-    
-    /** Validate the new value for a given object. This method will call a
-        validator function if one exists. Otherwise, it will simply return true.
-     */
-    validate: function(obj, newValue)
-    {
-        if (!this.validator)
-            return newValue;
-        return this.validator.call(obj, newValue);
-    },
-    
-    /** Remove the parent link for this KeyInfo object. Child object reference
-        the parentLink rather than the owner object directly. This gives the
-        owner a method to disconnect from the child without maintaining a
-        reference to the child.
-     */
-    unlinkParentLink: function()
-    {
-        if (!this.parentLink)
-            return;
-        this.parentLink.observer= null;
-        this.parentLink.callback= null;
-        this.parentLink= null;
-    }
-
-});
+/*jsl:import KeyInfo.js*/
+/*jsl:import ChangeNotification.js*/
+/*jsl:import ObserverEntry.js*/
 
 
-
-
-/** Enumerations for the types of changes.
-    
-    @property setting - A key's value has changed, the newValue property of
-        the change notification will contain the new value. If the key
-        represents an array, the newValue is the new array.
-        
-    @property insertion - An element or elements have been inserted into an
-        array. The newValue property of the change notification will contain the
-        new elements. The indexes property of the change notification will
-        contain the index at which each element was inserted. The oldValue
-        property will be null.
-        
-    @property deletion - An element or elements have been removed from an
-        array. The newValue property of the change notification will be null.
-        The oldValue property will contain the elements removed from the array.
-        And the indexes property will contain the index of each element that was
-        removed.
-        
-    @property replacement - An element or elements have been replace in an array.
-        The newValue property of the change notification contains the new values
-        for each element. The oldValue property contains the previous values for
-        each element. And the indexes property will contain the index of each
-        element replaced.
-        
-    @property validationError - The property has failed delayed validation. This
-        can happen when the model values need to be sent to a server for
-        validation.
-        
-    @namespace
- */
-coherent.ChangeType=
-{
-    setting: 0,
-    insertion: 1,
-    deletion: 2,
-    replacement: 3,
-    validationError: 4
-};
-
-
-
-    
-/** Change notifications are the root of all updates.
-    @constructor
-    
-    @property {Object} object - The object for which this update is being sent
-    @property {coherent.ChangeType} changeType - The type of change this
-              notification represents, one of `setting`, `insertion`, `deletion`,
-              or `replacement`.
-    @property newValue - The new value for the property
-    @property oldValue - The previous value for the property
-    @property {Number[]} indexes - If the change is for an array, this is an
-              array of modified indexes, otherwise, this will be undefined.
-              
-    @property {Set} notifiedObserverUids - this is the set UIDs from of observers
-              that have already received notifications for this change.
- */
-coherent.ChangeNotification= function(object, changeType, newValue, oldValue, indexes)
-{
-    this.object= object;
-    this.changeType= changeType;
-    this.newValue= newValue;
-    this.oldValue= oldValue;
-    this.indexes= indexes;
-    this.notifiedObserverUids= {};
-}
-
-
-
-
-/** An ObserverEntry is an internal structure and probably doesn't hold much
-    general value.
-    
-    @private
-    
-    @property {Object} observer - A reference to the object which will be used
-              to call the callback method.
-    @property {Function} callback - A reference to a function which will be
-              invoked when changes occur.
-    @property {String} context - General purpose value which will be passed to
-              the observer method as the final parameter (context). This is
-              often used to construct the full key path from a child
-              notification.
- */
-coherent.ObserverEntry=Class.create({
-
-    /** Construct a new ObserverEntry
-     */
-    constructor: function(observer, callback, context)
-    {
-        this.observer= observer;
-        this.callback= callback;
-        this.context= context;
-    },
-    
-    observeChangeForKeyPath: function(change, keyPath)
-    {
-        //  check to see whether this observer has already been notified
-        if (!this.callback || !this.observer ||
-            this.observer.__uid in change.notifiedObserverUids)
-            return;
-
-        this.callback.call(this.observer, change, keyPath,
-                           this.context);
-    }
-    
-});
 
 
 
@@ -1035,38 +779,40 @@ coherent.KVO= Class.create({
 coherent.KVO.kAllPropertiesKey= "*";
 
 /** Set of keys which should be ignored when computing the list of mutable keys
- *  and when adapting an existing object.
+    and when adapting an existing object.
  */
 coherent.KVO.keysToIgnore= $S("__keys","__observers","__keysToIgnore",
                               "__dependentKeys", "__mutableKeys",
                               "__factories__");
 
 /** Set of value types which will be ignored when adapting an object and when
- *  attempting to observe child object changes.
+    attempting to observe child object changes.
  */
 coherent.KVO.typesOfKeyValuesToIgnore= $S("string", "number", "boolean", "date",
                                           "regexp", "function");
 
 
 /** Private method for getting property methods for an object.
- *  @private
- *  @function
+    @private
+    @function
  */
 coherent.KVO.getPropertyMethodsForKeyOnObject= (function(){
 
     /** Create property getter/setter methods for a key. The actual value of the
-     *  key will be stored in __kvo_prop_+key. The getter and setter methods
-     *  will automatically call willChange & didChange and addParentLink.
-     *  
-     *  @param key  the name of the key to wrap
-     *  @param [privateKey] the name of the private key to use.
-     *  
-     *  @inner
+        key will be stored in __kvo_prop_+key. The getter and setter methods
+        will automatically call willChange & didChange and addParentLink.
+        
+        @param key  the name of the key to wrap
+        @param [privateKey] the name of the private key to use.
+        
+        @inner
      */
     function createPropertyMethods(key, privateKey)
     {
         privateKey= privateKey || '__kvo_prop_' + key;
         
+        /** The methods that will be returned.
+         */
         var methods= {
         
             getter: function()
@@ -1108,48 +854,57 @@ coherent.KVO.getPropertyMethodsForKeyOnObject= (function(){
     }
     
     /** Create a wrapper function that will invoke willChange before
-     *  calling the original mutator and didChange after calling the
-     *  original mutator.
-     *  
-     *  @param mutator  the original mutator function to wrap
-     *  @param key      the name of the key
-     *  @returns a wrapped function
-     *  
-     *  @inner
+        calling the original mutator and didChange after calling the
+        original mutator.
+        
+        @param mutator  the original mutator function to wrap
+        @param key      the name of the key
+        @returns a wrapped function
+        
+        @inner
      */
     function wrapMutatorWithChangeNotificationForKey(mutator, key)
     {
-        function wrapped(value)
+        /** A wrapper around a KVO mutator method that calls willChangeValueForKey
+            before calling the mutator and didChangeValueForKey after calling.
+         */
+        function wrappedSetter(value)
         {
             this.willChangeValueForKey(key);
             var result= mutator.call(this, value);
             this.didChangeValueForKey(key);
             return result;
         }
-        wrapped.__key= key;
-        wrapped.valueOf= function()
+        wrappedSetter.__key= key;
+        wrappedSetter.valueOf= function()
         {
             return mutator;
         }
-        wrapped.toString= function()
+        wrappedSetter.toString= function()
         {
             return String(mutator);
         }
-        return wrapped;
+        return wrappedSetter;
     }
 
     /** Create a wrapped getter function which will ensure that the parent link
-     *  is added to all property values.
-     *  
-     *  @param getter   the original getter function to wrap
-     *  @param key      the name of the key
-     *  @returns a wrapped function
-     *  
-     *  @inner
+        is added to all property values.
+        
+        @param getter   the original getter function to wrap
+        @param key      the name of the key
+        @returns a wrapped function
+        
+        @inner
      */
     function wrapGetterWithAddParentLinkForKey(getter, key)
     {
-        function wrapped()
+        /** A wrapper around the KVO object's getter method that will add a
+            link back to the KVO object from the value returned. This allows
+            change notifications to propagate back to the original owner.
+            @inner
+            @function
+         */
+        function wrappedGetter()
         {
             var value= getter.call(this);
             var keyInfo= this.__keys?this.__keys[key]:null;
@@ -1163,16 +918,16 @@ coherent.KVO.getPropertyMethodsForKeyOnObject= (function(){
                 
             return value;
         }
-        wrapped.__key= key;
-        wrapped.valueOf= function()
+        wrappedGetter.__key= key;
+        wrappedGetter.valueOf= function()
         {
             return getter;
         }
-        wrapped.toString= function()
+        wrappedGetter.toString= function()
         {
             return String(getter);
         }
-        return wrapped;
+        return wrappedGetter;
     }
     
     /** The actual implementation of getPropertyMethodsForKeyOnObject for

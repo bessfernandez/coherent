@@ -9,6 +9,7 @@
     see: http://dojotoolkit.org/license for details
 */
 
+/**#nocode+*/
 
 (function(){
 
@@ -194,10 +195,12 @@
             }
             else if (_recentHash === winLoc.hash &&
                      (ifrOffline || recentIframeQuery === iframeLoc.search))
+/*jsl:ignore*/            
             {
                 //  We're in stable state (s1, iframe query == main window hash)
                 //  do nothing
             }
+/*jsl:end*/
             else
             {
                 //  The user has initiated a URL change somehow.
@@ -267,3 +270,5 @@
     Event.onDomReady(setup);
 
 })();
+
+/**#nocode-*/

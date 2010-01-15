@@ -1,5 +1,7 @@
 /*jsl:import array-additions.js*/
 
+/**#nocode+*/
+
 /** Create an array from an array-like object.
  */
 Array.from= function(obj, startIndex)
@@ -12,6 +14,8 @@ Array.from= function(obj, startIndex)
     }
     return result;
 }
+
+/**#nocode-*/
 
 // Mozilla 1.8 & Safari 420+ has support for indexOf, lastIndexOf, forEach, filter, map, some, every
 // http://developer-test.mozilla.org/docs/Core_JavaScript_1.5_Reference:Objects:Array:lastIndexOf

@@ -1,8 +1,10 @@
-/*jsl:import startup.js*/
+/*jsl:import Responder.js*/
 /*jsl:import ../NIB/NIB.js*/
-/*jsl:import hash.js*/
+/*jsl:import ../core/hash.js*/
 
-coherent.Application= Class.create(coherent.KVO, {
+/** An application class.
+ */
+coherent.Application= Class.create(coherent.Responder, {
 
     constructor: function()
     {
@@ -11,8 +13,15 @@ coherent.Application= Class.create(coherent.KVO, {
         this.__assetLocation="";
         this.delegate= null;
         coherent.hash.addObserverForKeyPath(this, 'observeHashChange', 'value');
+        return this;
     },
     
+    /** Handle changes to the URL hash. If a {@link #delegate} has been set, this
+        method calls the delegate's `hashDidChange` method.
+        
+        @param {coherent.ChangeNotification} change - The change notification with
+            the new and old value for the URL hash.
+     */
     observeHashChange: function(change)
     {
         var newValue= change.newValue;

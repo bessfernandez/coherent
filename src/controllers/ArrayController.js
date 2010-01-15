@@ -75,7 +75,7 @@ coherent.ArrayController= Class.create(coherent.ObjectController, {
     setContent: function(newContent)
     {
         //  create a copy of the content
-        this.__content= newContent?newContent.concat():[];
+        this.__content= newContent?newContent.copy():[];
         this.rearrangeObjects();
         
         if (!this.preservesSelection)
@@ -102,7 +102,7 @@ coherent.ArrayController= Class.create(coherent.ObjectController, {
                 break;
                 
             case coherent.ChangeType.replacement:
-                this.__content.replaceObjectsAtIndexes(change.newValue, change.indexes);
+                this.__content.replaceObjectsAtIndexesWithObjects(change.indexes, change.newValue);
                 this.__removeObjectsFromArrangedObjects(change.oldValue);
                 this.__insertObjectsIntoArrangedObjects(change.newValue);
                 break;
@@ -146,7 +146,7 @@ coherent.ArrayController= Class.create(coherent.ObjectController, {
     setSortDescriptors: function(descriptors)
     {
         //  copy the array
-        descriptors= descriptors.concat();
+        descriptors= descriptors.copy();
         this.__sortDescriptors= descriptors;
         
         if (this.bindings.sortDescriptors)
@@ -172,7 +172,7 @@ coherent.ArrayController= Class.create(coherent.ObjectController, {
                 break;
                 
             case coherent.ChangeType.replacement:
-                this.__sortDescriptors.replaceObjectsAtIndexes(change.newValue, change.indexes);
+                this.__sortDescriptors.replaceObjectsAtIndexesWithObjects(change.indexes, change.newValue);
                 break;
                 
             case coherent.ChangeType.deletion:
@@ -341,7 +341,7 @@ coherent.ArrayController= Class.create(coherent.ObjectController, {
         var filterPredicate= this.__filterPredicate;
 
         if (!filterPredicate)
-            return objects.concat();
+            return objects.copy();
 
         return objects.filter(filterPredicate);
     },
@@ -354,7 +354,7 @@ coherent.ArrayController= Class.create(coherent.ObjectController, {
     {
         var compareFunction= coherent.SortDescriptor.comparisonFunctionFromDescriptors(this.sortDescriptors());
         if (!compareFunction)
-            return objects.concat();
+            return objects.copy();
             
         return objects.sort(compareFunction);
     },
@@ -450,7 +450,7 @@ coherent.ArrayController= Class.create(coherent.ObjectController, {
         this.willChangeValueForKey('canSelectPrevious');
         this.willChangeValueForKey('canRemove');
         
-        this.__selectionIndexes= selectionIndexes.concat();
+        this.__selectionIndexes= selectionIndexes.copy();
         this.__selectedObjects= this.__arrangedObjects.objectsAtIndexes(selectionIndexes);
         
         if (this.bindings.selectionIndexes)
@@ -485,7 +485,7 @@ coherent.ArrayController= Class.create(coherent.ObjectController, {
                 break;
                 
             case coherent.ChangeType.replacement:
-                this.__selectionIndexes.replaceObjectsAtIndexes(change.newValue, change.indexes);
+                this.__selectionIndexes.replaceObjectsAtIndexesWithObjects(change.indexes, change.newValue);
                 break;
                 
             case coherent.ChangeType.deletion:
