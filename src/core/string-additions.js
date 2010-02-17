@@ -10,21 +10,23 @@ String.prototype.titleCase= function()
 {
     return this.charAt(0).toUpperCase() + this.substr(1);
 }
+String.prototype.titleCase.displayName="titleCase";
 
-/** Trim the whitespace off either end of a string.
-    @type String
- */
-String.prototype.trim= function()
-{
-    var str= this.replace(/^\s+/, '');
-	for (var i = str.length - 1; i > 0; --i)
-		if (/\S/.test(str.charAt(i)))
-		{
-			str = str.substring(0, i + 1);
-			break;
-		}
-	return str;
-}
+if (!String.prototype.trim)
+    /** Trim the whitespace off either end of a string.
+        @type String
+     */
+    String.prototype.trim= function()
+    {
+        var str= this.replace(/^\s+/, '');
+    	for (var i = str.length - 1; i > 0; --i)
+    		if (/\S/.test(str.charAt(i)))
+    		{
+    			str = str.substring(0, i + 1);
+    			break;
+    		}
+    	return str;
+    }
 
 /** Determine whether this string begins with the specified string.
 

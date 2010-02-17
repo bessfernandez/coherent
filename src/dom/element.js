@@ -156,15 +156,20 @@ Object.extend(Element, {
         if ('string'===typeof(classesToAdd))
             add(classes, classesToAdd);
         else
-            for (i=0, len=classesToAdd.length; i<len; ++i)
-                add(classes, classesToAdd[i]);
-                
+        {
+            len= classesToAdd.length;
+            while (len--)
+                add(classes, classesToAdd[len]);
+        }
+        
         if ('string'===typeof(classesToRemove))
             remove(classes, classesToRemove);
         else
-            for (i=0, len=classesToRemove.length; i<len; ++i)
-                remove(classes, classesToRemove[i]);
-                
+        {
+            len= classesToRemove.length;
+            while (len--)
+                remove(classes, classesToRemove[len]);
+        }
         element.className= Set.join(classes, ' ');
     },
 
@@ -203,9 +208,9 @@ Object.extend(Element, {
         var p;
         var len= propsToGet.length;
 
-        for (var i=0; i<len; ++i)
+        while (len--)
         {
-            p= propsToGet[i];
+            p= propsToGet[len];
             styles[p]= element.style[p]||computedStyle[p]||null;
         }
     
@@ -403,12 +408,13 @@ Object.extend(Element, {
      */
     query: function(node, selector)
     {
-        if (1==arguments.length) {
-            selector = node;
-            node = document;
-        } else if (node != document) {
-            selector = '#'+Element.assignId(node)+' '+selector;
+        if ('undefined'===typeof(selector))
+        {
+            selector= node;
+            node= document;
         }
+        else if (node!==document)
+            selector = ['#', Element.assignId(node), ' ', selector].join('');
         return node.querySelector(selector);
     },
     
@@ -421,12 +427,13 @@ Object.extend(Element, {
      */
     queryAll: function(node, selector)
     {
-        if (1==arguments.length) {
+        if ('undefined'===typeof(selector))
+        {
             selector = node;
             node = document;
-        } else if (node != document) {
-            selector = '#'+Element.assignId(node)+' '+selector;
         }
+        else if (node!==document)
+            selector = ['#', Element.assignId(node), ' ', selector].join('');
         return Array.from(node.querySelectorAll(selector));
     },
 
@@ -690,14 +697,14 @@ if ('undefined'===typeof(document.documentElement.children))
         var len= this.childNodes.length;
         var node;
 
-        for (var i=0; i<len; ++i)
+        while (len--)
         {
-            node= this.childNodes[i];
+            node= this.childNodes[len];
 
             if (Node.ELEMENT_NODE!==node.nodeType)
                 continue;
 
-            arr.push(node);
+            arr.unshift(node);
         }
 
         return arr;

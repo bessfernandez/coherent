@@ -62,7 +62,7 @@ coherent.Scripts = {
         var l= scripts.length;
         var s;
     
-        for (--l; l>=0; --l)
+        while (l--)
         {
             s= scripts[l];
             if (s.src)

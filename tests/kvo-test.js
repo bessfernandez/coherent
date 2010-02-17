@@ -6,6 +6,7 @@ Test.create('kvo', {
     {
         this.kvo= new coherent.KVO();
         this.kvo.foo= "bar";
+        this.kvo.zero= 0;
         this.kvo.__name= "zebra";
         coherent.registerModelWithName( this.kvo, "kvo" );
     
@@ -25,6 +26,7 @@ Test.create('kvo', {
 
     testValueForKey: function(t)
     {
+        t.assertEqual( 0, this.kvo.valueForKey('zero') );
         t.assertEqual( "bar", this.kvo.valueForKey('foo') );
         t.assertEqual( "zebra", this.kvo.valueForKey('name') );
         t.assertNull( this.kvo.valueForKey('zebra') );
@@ -75,7 +77,7 @@ Test.create('kvo', {
 
     testObserveSubKeyChangePriorToSwizzle: function(t)
     {
-        var name= coherent.KVO.adapt({
+        var name= new coherent.KVO({
             first: 'john',
             last: 'doe'
         });
@@ -87,7 +89,7 @@ Test.create('kvo', {
         {
             called= true;
         }
-        
+
         this.kvo.setName(name);
         this.kvo.addObserverForKeyPath(observer, observeChange, 'name.first');
     

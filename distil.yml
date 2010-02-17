@@ -2,24 +2,27 @@ name: coherent
 version: 3.0.0
 notice: src/NOTICE
 output-folder: build
-browsers: [firefox]
+browsers: firefox
+class list: classes.js
+
 # browsers: [safari, firefox, ie]
 
 js:
     - src/core/startup.js
     - src
-    # - sample.js
-    
-tests:
-    - tests/factory.js
-    - tests/array-controller.js
-    - tests/kvo-array-test.js
-    - tests/base-test.js
-    - tests/controller-selection.js
-    - tests/deferred.js
-    - tests/kvo-adapt-tree.js
-    - tests/kvo-dependent-test.js
-    - tests/kvo-subkey.js
-    - tests/kvo-test.js
-    - tests/url-test.js
-    - tests/oop-test.js
+
+
+test:
+    tests:
+        - tests/factory.js
+        - tests/array-controller.js
+        - tests/kvo-array-test.js
+        - tests/base-test.js
+        - tests/controller-selection.js
+        - tests/deferred.js
+        - tests/kvo-adapt-tree.js
+        - tests/kvo-dependent-test.js
+        - tests/kvo-subkey.js
+        - tests/kvo-test.js
+        - tests/url-test.js
+        - tests/oop-test.js

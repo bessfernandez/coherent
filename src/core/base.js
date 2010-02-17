@@ -7,19 +7,21 @@ if ("undefined"!==typeof(coherent))
 var coherent= {
     /** The version of the Coherent library. */
     version: "@VERSION@",
+    
     /** Helper method to generate an unique ID. Basically this is a simply
         increasing value. It's not really unique outside of the page, so you
         shouldn't use this value for synchronising components across pages or
         communicating with servers.
         @type Number
      */
-    generateUid: (function(){
-            var uid= 0;
-            return function()
-            {
-                return ++uid;
-            };
-        })()
+    generateUid: function()
+    {
+        return ++(coherent.__nextUid);
+    },
+    
+    __nextUid: 0,
+        
+    globalObject: (function(){ return this; })()
 };
 
 

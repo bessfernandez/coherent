@@ -112,6 +112,8 @@ coherent.SegmentedControl = Class.create(coherent.View, {
         if (!target || target===node)
             return;
             
+        Event.preventDefault(event);
+        
         this.setSelectedIndex(target.segmentIndex);
         this.sendAction();
     }

@@ -1,17 +1,5 @@
 /*jsl:import set.js*/
 
-/** @class
-    @name Object
- */
-
-if (!Object.keys)
-    Object.keys= function(object)
-    {
-        var keys= [];
-        for (var k in object)
-            keys.push(k);
-        return keys;
-    }
     
 /** Make a shallow-copy clone of an object. Modifications are copy-on-write.
     Note, because this is a shallow copy, only properties actually on the cloned
@@ -26,6 +14,19 @@ Object.clone= function(obj)
     var fn = (function(){});
     fn.prototype = obj;
     return new fn();
+}
+
+/** Simple way to find an object using its property path.
+ */
+Object.get= function(path, context)
+{
+    var obj= context||coherent.globalObject;
+    var parts= path.split('.');
+    var p;
+    
+    for (var i=0; obj && (p=parts[i]); ++i)
+        obj= obj[p];
+    return obj;
 }
 
 /** Apply default values to an object.

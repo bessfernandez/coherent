@@ -10,6 +10,11 @@
                 font-size: 13px;
             }
 
+            a
+            {
+                outline: none;
+            }
+            
             #demo
             {
             }
@@ -38,12 +43,12 @@
                 color: HighlightText;
             }
 */            
-            .updating
+            .c-updating
             {
                 color: rgba(0,0,0,0);
             }
             
-            .nullValue
+            .c-placeholder
             {
                 color: #999;
             }
@@ -85,7 +90,7 @@
                 padding-left: 16px;
             }
 
-            .item.outline-leaf .content
+            .item.c-outline-leaf .content
             {
                 margin-left: 11px;
                 padding-left: 5px;
@@ -223,7 +228,7 @@
                 background-image: url(images/arrowRight_pressed.png);
             }
             
-            .item .outline-disclosure-button
+            .item .c-outline-disclosure-button
             {
                 position: absolute;
                 left: 3px;
@@ -238,51 +243,51 @@
                 background-position: 0px 0px;
             }
 
-            .outline-expanded .outline-disclosure-button
+            .c-outline-expanded .c-outline-disclosure-button
             {
                 background-image: url(images/disclosureTriangleSmallDown.png);
             }
 
-            .item:hover .outline-disclosure-button
+            .item:hover .c-outline-disclosure-button
             {
                 background-image: url(images/disclosureTriangleSmallRightWhite.png);
             }
 
-            .outline-expanded:hover .outline-disclosure-button
+            .c-outline-expanded:hover .c-outline-disclosure-button
             {
                 background-image: url(images/disclosureTriangleSmallDownWhite.png);
             }
             
-            .outline-leaf .outline-disclosure-button
+            .c-outline-leaf .c-outline-disclosure-button
             {
                 display: none;
             }
 
-            .item.outline-level-1
+            .item.c-outline-level-1
             {
                 margin-left: 0em;
             }
-            .item.outline-level-2
+            .item.c-outline-level-2
             {
                 margin-left: 20px;
             }
-            .item.outline-level-3
+            .item.c-outline-level-3
             {
                 margin-left: 40px;
             }
-            .item.outline-level-4
+            .item.c-outline-level-4
             {
                 margin-left: 60px;
             }
-            .item.outline-level-5
+            .item.c-outline-level-5
             {
                 margin-left: 80px;
             }
-            .item.outline-level-6
+            .item.c-outline-level-6
             {
                 margin-left: 100px;
             }
-            .item.outline-level-7
+            .item.c-outline-level-7
             {
                 margin-left: 120px;
             }
@@ -294,7 +299,7 @@
         <div id="demo">
             <label>JSON Data Source: <input type="text"></label>
             <ul tabIndex="0" id="list1">
-                <li class="item"><span class="content"><a class="outline-disclosure-button" href="#">+</a><u></u><em class="name"></em></span><b class="value"></b><span class="array-controls"><a href="#" class="prev">previous</a><em class="index"></em>/<em class="count"></em><a href="#" class="next">next</a></span></li>
+                <li class="item"><span class="content"><a class="c-outline-disclosure-button" href="#">+</a><u></u><em class="name"></em></span><b class="value"></b><span class="array-controls"><a href="#" class="prev">previous</a><em class="index"></em>/<em class="count"></em><a href="#" class="next">next</a></span></li>
             </ul>
             
             <div></div>

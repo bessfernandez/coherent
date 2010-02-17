@@ -1,4 +1,5 @@
 /*jsl:import base.js*/
+/*jsl:import es5-additions.js*/
 /*jsl:import string-additions.js*/
 /*jsl:import array-additions.js*/
 /*jsl:import array-additions-ie.js*/

@@ -91,9 +91,9 @@ coherent.Array= Class._create({
         var indexes=[];
         var index;
         
-        for (var i=0; i<len; ++i)
+        while (len--)
         {
-            index= this.indexOfObject(objects.objectAtIndex(i));
+            index= this.indexOfObject(objects.objectAtIndex(len));
             if (-1===index)
                 continue;
             indexes.push(index);

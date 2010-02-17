@@ -165,7 +165,7 @@ var Class= (function(){
                 if (!(this instanceof wrapped))
                     return callFactory(wrapped, arguments);
                     
-                this.__uid= this.__uid||coherent.generateUid();
+                this.__uid= coherent.generateUid();
 
                 var result= construct.apply(this, arguments);
 
@@ -253,11 +253,8 @@ var Class= (function(){
          */
         function wrappedMethod()
         {
-            var prev= this.base;
             this.base= superproto[name]||emptyFn;
-            var ret= method.apply(this, arguments);
-            this.base= prev;
-            return ret;
+            return wrappedMethod.method.apply(this, arguments);
         }
         wrappedMethod.valueOf= function()
         {
@@ -267,6 +264,7 @@ var Class= (function(){
         {
             return String(method);
         }
+        wrappedMethod.method= method;
         
         //  Copy factory function marker
         if ('__factoryFn__' in method)
@@ -278,42 +276,6 @@ var Class= (function(){
         return wrappedMethod;
     }
     
-    /** Add a member to the prototype for a new class. If the value is a
-        function, determine whether it calls 'this.base' to access its ancestor
-        method and if so, wrap it in a closure which provides access to the
-        ancestor method.
-
-        @inner
-        
-        @param {Object} proto - A reference to the prototype to which the member
-               should be added.
-        @param {String} name - The name with which the member should be inserted.
-        @param {Any} value - The value of the new member.
-        
-        @returns The value inserted as the new member (which might have been
-                 wrapped if it was a function)
-     */
-    function addMember(proto, name, value, superproto)
-    {
-        var isFunction= (value instanceof Function);
-
-        if (isFunction)
-        {
-            value.displayName= name;
-            
-            //  wrap the method for calls to base()
-            if (superproto)
-                value= wrapMethodForBase(value, name, superproto);
-                
-            if (value.__factoryFn__)
-                proto.__factories__[name]= value;
-        }
-        
-        proto[name]= value;
-        
-        return value;
-    }
-
     /** Walk the class hierarchy to call the __subclassCreated__ hooks if
         present. Passes a reference to the newClass constructor.
         
@@ -446,9 +408,6 @@ var Class= (function(){
             
             //  Create a unique ID for each class, helps the Dashcode indexer
             construct.__class_id__= coherent.generateUid();
-                
-			// Give the class a UID, for easier lookup
-            proto.__class_id__ = coherent.generateUid();
 
             this.extend(construct, decl);
         
@@ -490,13 +449,53 @@ var Class= (function(){
 
             constructor.prototype= proto;
             constructor.prototype.constructor= constructor;
-            constructor.prototype.superclass= superclass;
+            constructor.superclass= superclass;
+
+			// Give the class a UID, for easier lookup
+            constructor.__class_id__ = coherent.generateUid();
             
             Class.extend(constructor, decl);
             return constructor;
         },
         
         emptyFn: emptyFn,
+
+        /** Add a member to the prototype for a new class. If the value is a
+            function, determine whether it calls 'this.base' to access its ancestor
+            method and if so, wrap it in a closure which provides access to the
+            ancestor method.
+
+            @inner
+        
+            @param {Object} proto - A reference to the prototype to which the member
+                   should be added.
+            @param {String} name - The name with which the member should be inserted.
+            @param {Any} value - The value of the new member.
+        
+            @returns The value inserted as the new member (which might have been
+                     wrapped if it was a function)
+         */
+        addMember: function(proto, name, value, superproto)
+        {
+            var isFunction= (value instanceof Function);
+
+            if (isFunction)
+            {
+                value.displayName= name;
+            
+                //  wrap the method for calls to base()
+                if (superproto)
+                    value= wrapMethodForBase(value, name, superproto);
+                
+                if (value.__factoryFn__)
+                    proto.__factories__[name]= value;
+            }
+        
+            proto[name]= value;
+        
+            return value;
+        },
+
         
         /** Determine the name of the property of an object with the given
             value. Because the property value might appear more than once in
@@ -558,7 +557,7 @@ var Class= (function(){
                                     s && proto.__defineSetter__(p, s);
                                 }
                                 else
-                                    addMember(proto, p, decl[p], superproto);
+                                    Class.addMember(proto, p, decl[p], superproto);
                             }
 
                             return klass;
@@ -569,9 +568,9 @@ var Class= (function(){
                             var proto= klass.prototype;
                             var superproto= klass.superclass && klass.superclass.prototype;
                             for (var p in decl)
-                                addMember(proto, p, decl[p], superproto);
+                                Class.addMember(proto, p, decl[p], superproto);
                             if (decl.toString!=={}.toString)
-                                addMember(proto, 'toString', decl.toString, superproto);
+                                Class.addMember(proto, 'toString', decl.toString, superproto);
                         };
         })()
     };

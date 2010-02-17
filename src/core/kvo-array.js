@@ -46,14 +46,13 @@ Class.extend(Array, {
         
         //  create an array to hold the results
         var value= new Array(this.length);
-        var index;
         var len= this.length;
         var v;
-    
-        for (index=0; index<len; ++index)
+
+        while (len--)
         {
-            v= this[index];
-            value[index]= v?v.valueForKey(key):null;
+            v= this[len];
+            value[len]= v?v.valueForKey(key):null;
         }
         return value;
     },
@@ -70,10 +69,9 @@ Class.extend(Array, {
         if (!key || 0===key.length)
             throw new InvalidArgumentError("key is empty");
 
-        var index;
         var len= this.length;
-        for (index=0; index<len; ++index)
-            this[index].setValueForKey(value, key);
+        while (len--)
+            this[len].setValueForKey(value, key);
     },
 
     /** Retrieve information about the specified key. This **doesn't** actually
@@ -89,22 +87,22 @@ Class.extend(Array, {
     {
         var keyInfo;
 
-        if (!this.__keys)
-            this.__keys= {};
-            
         if (coherent.KVO.kAllPropertiesKey==key)
             return null;
             
-        keyInfo= this.__keys[key];
+        if (!this.__kvo)
+            this.initialiseKeyValueObserving();
+            
+        keyInfo= this.__kvo.keys[key];
     
         if (keyInfo)
             return keyInfo;
 
         var value= new Array(this.length);
-        var index;
         var len= this.length;
-        for (index=0; index<len; ++index)
-            value[index]= this[index].infoForKey(key);
+        
+        while (len--)
+            value[len]= this[len].infoForKey(key);
 
         return null;
     },
@@ -126,8 +124,7 @@ Class.extend(Array, {
     
         for (i=0; i<len; ++i)
         {
-            index= this.indexOf(objects[i]);
-            if (-1===index)
+            if (-1===(index= this.indexOf(objects[i])))
                 continue;
             result.push(index);
         }
@@ -248,7 +245,7 @@ Class.extend(Array, {
         @param object - the new object
         @param {Number} index - the index of the old object to replace
      */
-    replaceObjectAtIndexWithObject: function(object, index)
+    replaceObjectAtIndexWithObject: function(index, object)
     {
         var oldValue= this[index];
         this[index]= object;
@@ -351,6 +348,39 @@ Class.extend(Array, {
         this.notifyObserversOfChangeForKeyPath(change,
                                                coherent.KVO.kAllPropertiesKey);                                               
     },
+
+    removeObjectsInRange: function(location, length)
+    {
+        if (0===length)
+            return;
+        if (!length)
+        {
+            if (location.splice)
+            {
+                length= location[1];
+                location= location[0];
+            }
+            else if (location.location)
+            {
+                length= location.length;
+                location= location.location;
+            }
+        }
+        
+        var end= location+length;
+        var indexes= [];
+        for (var index=location; index<end; ++index)
+        {
+            this.stopObservingElementAtIndex(index);
+            indexes.push(index);
+        }
+        
+        var oldValues= this.splice(location, length);
+        var change= new coherent.ChangeNotification(this, coherent.ChangeType.deletion,
+                                                null, oldValues, indexes);
+        this.notifyObserversOfChangeForKeyPath(change,
+                                               coherent.KVO.kAllPropertiesKey);                                               
+    },
     
     /** Remove an object from the array at the specified index.
       
@@ -431,7 +461,7 @@ Class.extend(Array, {
         if (-1===elementIndex)
         {
             //  no longer actually in the array
-            obj._removeParentLink(this, null, this.__uid);
+            coherent.KVO.unlinkChildFromParent(obj, this, null, this.__uid);
             return;
         }
         
@@ -455,13 +485,13 @@ Class.extend(Array, {
     {
         var value= this[index];
 
-        if (!value || !value._addParentLink)
+        if (!value || !value.addObserverForKeyPath)
             return;
 
         if (!this.__uid)
             this.initialiseKeyValueObserving();
             
-        value._addParentLink(this, null, this.__uid);
+        coherent.KVO.linkChildToParent(value, this, null, this.__uid);
     },
 
     /** Cancel observing change notifications for the specified element.
@@ -473,13 +503,13 @@ Class.extend(Array, {
     {
         var value= this[index];
 
-        if (!value || !value._removeParentLink)
+        if (!value || !value.addObserverForKeyPath)
             return;
 
         if (!this.__uid)
             this.initialiseKeyValueObserving();
 
-        value._removeParentLink(this, null, this.__uid);
+        coherent.KVO.unlinkChildFromParent(value, this, null, this.__uid);
     },
 
     /** Initialise Key Value Observing for this array.
@@ -487,14 +517,13 @@ Class.extend(Array, {
      */
     initialiseKeyValueObserving: function()
     {
+        coherent.KVO.prototype.initialiseKeyValueObserving.call(this);
+        
         /*  This array has never had an observer. I'll probe it to make certain
             the container relationships are established correctly.
          */
         var index;
         var len= this.length;
-    
-        this.__observers= {};
-        this.__uid= this.__uid||coherent.generateUid();
         
         for (index=0; index<len; ++index)
             this.observeElementAtIndex(index);

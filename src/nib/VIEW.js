@@ -15,6 +15,9 @@ function VIEW(markup, structure)
     {
         var view;
 
+        if (markup && 1===markup.nodeType)
+            viewNode= markup;
+            
         if (!viewNode)
         {
             if ("string"!==typeof(markup))

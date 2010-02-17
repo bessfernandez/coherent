@@ -46,7 +46,6 @@ Test.create('kvo-array', {
                 }
             ]
         });
-    
         var observer1= new TestObserver();
         var observer2= new TestObserver();
         
@@ -58,12 +57,12 @@ Test.create('kvo-array', {
         
         f.samples.addObject(coherent.KVO.adaptTree(obj));
 
-        t.assertEqual(1, observer1.count);
+        t.assertEqual(1, observer1.count, "Adding an object to samples");
 
         f.addObserverForKeyPath(observer2, 'observeChange', 'samples.values');
         
         f.samples[1].values.addObject('newstring');
-        t.assertEqual(1, observer2.count);
+        t.assertEqual(1, observer2.count, "Adding an object to samples[1].values");
     }
 
 });

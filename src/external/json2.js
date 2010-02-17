@@ -1,5 +1,6 @@
 /*jsl:ignore*/
 /*jsl:declare JSON*/
+/**#nocode+*/
 
 /*
     http://www.JSON.org/json2.js
@@ -479,3 +480,4 @@ replace(/(?:^|:|,)(?:\s*\[)+/g, ''))) {
 }());
 
 /*jsl:end*/
+/**#nocode-*/

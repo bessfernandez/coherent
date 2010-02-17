@@ -5,7 +5,32 @@
 coherent.Slider= Class.create(coherent.FormControl, {
     
     exposedBindings: ['minValue', 'maxValue'],
+    
+    handleSelector: "a",
+    
+    init: function()
+    {
+        this.base();
+        this.nativeInput= ('INPUT'===this.node.tagName);
+        if (!this.nativeInput)
+            this.handle= Element.query(this.node, this.handleSelector);
+    },
+
+    setValue: function(newValue)
+    {
+        var node= this.node;
         
+        node.value= newValue;
+        if (this.nativeInput)
+            return;
+
+        //  update handle position
+        this.__updateCurrentMetrics();
+        var x= newValue*this.__stepWidth + this.__paddingLeft;
+
+        this.handle.style.left= x.toFixed(3) + "px";
+    },
+    
     /** Callback for tracking changes to the value binding. This method will
         disable the control if the value is undefined (meaning one of the
         objects along the key path doesn't exist). Additionally, the control
@@ -44,7 +69,7 @@ coherent.Slider= Class.create(coherent.FormControl, {
         else
             Element.removeClassName(node, coherent.Style.kDisabledClass);
                 
-        node.value= newValue;
+        this.setValue(newValue);
     },
     
     onchange: function(event)
@@ -66,11 +91,12 @@ coherent.Slider= Class.create(coherent.FormControl, {
         
         node.setAttribute('min',minValue);
         
-        if (this.bindings.value) {
+        if (this.bindings.value)
+        {
             var boundValue = this.bindings.value.value();
             
             if (boundValue > minValue)
-                node.value = boundValue;
+                this.setValue(boundValue);
         }
 
     },
@@ -86,12 +112,87 @@ coherent.Slider= Class.create(coherent.FormControl, {
         
         node.setAttribute('max', maxValue);
         
-        if (this.bindings.value) {
+        if (this.bindings.value)
+        {
             var boundValue = this.bindings.value.value();
             
             if (boundValue < maxValue)
-                node.value = boundValue;
+                this.setValue(boundValue);
         }
+    },
+    
+    updateHandlePosition: function(event)
+    {
+        var rect= this.__currentRect;
+        var x= event.clientX - rect.left - this.__handleWidth/2;
+        
+        if (x<0)
+            x= 0;
+        else if (x+this.__handleWidth>rect.width)
+            x= rect.width-this.__handleWidth;
+        
+        var value= Math.round(x/this.__stepWidth);
+        
+        x= value*this.__stepWidth + this.__paddingLeft;
+
+        this.handle.style.left= x.toFixed(3) + "px";
+        if (this.bindings.value)
+            this.bindings.value.setValue(value);
+    },
+    
+    __updateCurrentMetrics: function()
+    {
+        var node= this.node;
+        var rect= this.__currentRect= Element.getRect(node, true);
+        
+        var padding= Element.getStyles(node, ['paddingRight', 'paddingLeft']);
+        padding.paddingLeft= parseInt(padding.paddingLeft||0, 10);
+        padding.paddingRight= parseInt(padding.paddingRight||0, 10);
+        
+        rect.left += padding.paddingLeft;
+        rect.right-= padding.paddingRight;
+        rect.width-= (padding.paddingLeft + padding.paddingRight);
+        
+        this.__paddingLeft= padding.paddingLeft;
+        this.__handleWidth= this.handle.offsetWidth;
+        this.__stepWidth= (this.__currentRect.width-this.__handleWidth)/(this.maxValue() - this.minValue());
+    },
+    
+    onmousedown: function(event)
+    {
+        var node= this.node;
+        
+        if (this.nativeInput || node.readOnly || node.disabled)
+            return;
+            
+        this.__updateCurrentMetrics();
+        this.updateHandlePosition(event);
+        Event.preventDefault(event);
+    },
+    
+    onmousedrag: function(event)
+    {
+        var node= this.node;
+        
+        if (this.nativeInput || node.readOnly || node.disabled)
+            return;
+            
+        this.updateHandlePosition(event);
+    },
+    
+    onmouseup: function(event)
+    {
+        var node= this.node;
+        
+        if (this.nativeInput || node.readOnly || node.disabled)
+            return;
+        
+        this.updateHandlePosition(event);
+    },
+    
+    onclick: function(event)
+    {
+        Event.preventDefault(event);
     }
     
 });

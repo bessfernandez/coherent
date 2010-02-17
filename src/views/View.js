@@ -802,9 +802,9 @@ coherent.View= Class.create(coherent.Responder, {
         
         if (!this.registeredDraggedTypes)
             this.registeredDraggedTypes= {};
-            
-        for (var i=0; i<len; ++i)
-            this.registeredDraggedTypes[types[i]]= true;
+        
+        while (len--)    
+            this.registeredDraggedTypes[types[len]]= true;
     },
 
     unregisterForDraggedTypes: function(dragTypes)
@@ -818,8 +818,8 @@ coherent.View= Class.create(coherent.Responder, {
         if (!this.registeredDraggedTypes)
             return;
             
-        for (var i=0; i<len; ++i)
-            delete this.registeredDraggedTypes[types[i]];
+        while (len--)
+            delete this.registeredDraggedTypes[types[len]];
     },
     
     /** Kick-start the drag operation */

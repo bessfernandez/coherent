@@ -43,65 +43,70 @@ if (coherent.Browser.IE)
     Element.getStyles= function(element, propsToGet)
     {
         var currentStyle= element.currentStyle;
-        
-        function getDimension(dimension) {
-            var extra = 0;
-            if ('width'===dimension) {
-                extra += parseInt(currentStyle.borderLeftWidth, 10)||0 + 
-                         parseInt(currentStyle.borderRightWidth, 10)||0 +
-                         parseInt(currentStyle.paddingLeft, 10)||0 +
-                         parseInt(currentStyle.paddingRight, 10)||0;
-                return Math.max(0, element.offsetWidth - extra)+'px';
-            } else {
-                extra += parseInt(currentStyle.borderTopWidth, 10)||0 + 
-                         parseInt(currentStyle.borderBottomWidth, 10)||0 +
-                         parseInt(currentStyle.paddingTop, 10)||0 +
-                         parseInt(currentStyle.paddingBottom, 10)||0;
-                return Math.max(0, element.offsetHeight - extra)+'px';
-            }
-        }
-        
         var styles = {};
         var opacity;
+        var extra;
         
         if ('string'===typeof(propsToGet))
-        {
-            if ('opacity'===propsToGet)
+            switch (propsToGet)
             {
-                opacity = currentStyle.filter.match(/opacity=(\d+)/i);
-                return (null===opacity ? 1 : parseInt(opacity[1], 10)/100);
+                case 'opacity':
+                    opacity = currentStyle.filter.match(/opacity=(\d+)/i);
+                    return (null===opacity ? 1 : parseInt(opacity[1], 10)/100);
+                case 'width':
+                    extra += parseInt(currentStyle.borderLeftWidth, 10)||0 + 
+                             parseInt(currentStyle.borderRightWidth, 10)||0 +
+                             parseInt(currentStyle.paddingLeft, 10)||0 +
+                             parseInt(currentStyle.paddingRight, 10)||0;
+                    return Math.max(0, element.offsetWidth - extra) + 'px';
+                case 'height':
+                    extra += parseInt(currentStyle.borderTopWidth, 10)||0 + 
+                             parseInt(currentStyle.borderBottomWidth, 10)||0 +
+                             parseInt(currentStyle.paddingTop, 10)||0 +
+                             parseInt(currentStyle.paddingBottom, 10)||0;
+                    return Math.max(0, element.offsetHeight - extra) + 'px';
+                case 'backgroundPosition':
+                    return currentStyle.backgroundPositionX+' '+
+                           currentStyle.backgroundPositionY;
+                default:
+                    return currentStyle[p];
             }
-            
-            if (propsToGet=='height' || propsToGet=='width')
-                return getDimension(propsToGet);
-            else if (p=='backgroundPosition')
-                return currentStyle.backgroundPositionX+' '+
-                       currentStyle.backgroundPositionY;
-            else
-                return currentStyle[propsToGet];
-        }
         
         propsToGet= propsToGet||Element.PROPERTIES;
 
         var p;
         var len= propsToGet.length;
         
-        for (var i=0; i<len; ++i)
+        while (len--)
         {
-            p= propsToGet[i];
-            if ('opacity'===p) {
-                opacity = currentStyle.filter.match(/opacity=(\d+)/i);
-                styles[p] = (null===opacity ? 1 : parseInt(opacity[1], 10)/100);
-            } 
-            else if (p==='height' || p==='width') {
-                styles[p] = getDimension(p);
-            } 
-            else if (p==='backgroundPosition') {
-                styles[p] = currentStyle.backgroundPositionX+' '+
-                            currentStyle.backgroundPositionY;
-            }
-            else {
-                styles[p] = currentStyle[p];
+            p= propsToGet[len];
+            switch (p)
+            {
+                case 'opacity':
+                    opacity = currentStyle.filter.match(/opacity=(\d+)/i);
+                    styles[p] = (null===opacity ? 1 : parseInt(opacity[1], 10)/100);
+                    break;
+                case 'width':
+                    extra += parseInt(currentStyle.borderLeftWidth, 10)||0 + 
+                             parseInt(currentStyle.borderRightWidth, 10)||0 +
+                             parseInt(currentStyle.paddingLeft, 10)||0 +
+                             parseInt(currentStyle.paddingRight, 10)||0;
+                    styles[p]= Math.max(0, element.offsetWidth - extra) + 'px';
+                    break;
+                case 'height':
+                    extra += parseInt(currentStyle.borderTopWidth, 10)||0 + 
+                             parseInt(currentStyle.borderBottomWidth, 10)||0 +
+                             parseInt(currentStyle.paddingTop, 10)||0 +
+                             parseInt(currentStyle.paddingBottom, 10)||0;
+                    styles[p]= Math.max(0, element.offsetHeight - extra) + 'px';
+                    break;
+                case 'backgroundPosition':
+                    styles[p] = currentStyle.backgroundPositionX+' '+
+                                currentStyle.backgroundPositionY;
+                    break;
+                default:
+                    styles[p] = currentStyle[p];
+                    break;
             }
         }
     

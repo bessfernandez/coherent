@@ -254,6 +254,7 @@ coherent.ArrayController= Class.create(coherent.ObjectController, {
      */
     arrangeObjects: function(objects)
     {
+        objects= objects.copy();
         var filteredObjects= this.filterObjects(objects);
         var sortedObjects= this.sortObjects(filteredObjects);
         return sortedObjects;
@@ -285,7 +286,7 @@ coherent.ArrayController= Class.create(coherent.ObjectController, {
         if (this.selectsInsertedObjects)
             selectedObjects= sorted;
         else if (this.preservesSelection)
-                selectedObjects= this.selectedObjects();
+            selectedObjects= this.selectedObjects();
         
         if (compareFn)
         {
@@ -341,7 +342,7 @@ coherent.ArrayController= Class.create(coherent.ObjectController, {
         var filterPredicate= this.__filterPredicate;
 
         if (!filterPredicate)
-            return objects.copy();
+            return objects;
 
         return objects.filter(filterPredicate);
     },
@@ -354,7 +355,7 @@ coherent.ArrayController= Class.create(coherent.ObjectController, {
     {
         var compareFunction= coherent.SortDescriptor.comparisonFunctionFromDescriptors(this.sortDescriptors());
         if (!compareFunction)
-            return objects.copy();
+            return objects;
             
         return objects.sort(compareFunction);
     },

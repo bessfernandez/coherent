@@ -24,10 +24,10 @@ function Set()
     var args= arguments;
     if (1==args.length && args[0] instanceof Array)
         args= args[0];
-    var i;
+
     var len= args.length;
-    for (i=0; i<len; ++i)
-        s[args[i]]= true;
+    while (len--)
+        s[args[len]]= true;
     return s;
 }
 

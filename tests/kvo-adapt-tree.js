@@ -16,19 +16,13 @@ Test.create('kvo-adapt-tree', {
         };
         
         coherent.KVO.adaptTree(tree);
-        var observer= {};
+        var observer= new TestObserver();
         var value;
-        var called= false;
+        var ob
         
-        function observeChange(change, keyPath, context)
-        {
-            value= change.newValue;
-            called= true;
-        }
-        
-        tree.addObserverForKeyPath(observer, observeChange, "branch.leaf");
+        tree.addObserverForKeyPath(observer, observer.observeChange, "branch.leaf");
         tree.setValueForKeyPath('You are what you eat.', 'branch.leaf');
-        t.assertTrue(called);
+        t.assertTrue(observer.called);
     }
     
 });

@@ -64,7 +64,7 @@ Test.create('kvo-subkey', {
         var dad= new Person('Dad', 'Person');
         var baby= new Person('Baby', 'Person');
         var daughter= new Person('Daughter', 'Person');
-        
+
         mom.setValueForKey(daughter, 'daughter');
         dad.setValueForKey(daughter, 'daughter');
         
@@ -72,7 +72,7 @@ Test.create('kvo-subkey', {
                                   'daughter.baby.firstName');
         dad.addObserverForKeyPath(dadObserver, dadObserver.observeChange,
                                   'daughter.baby.firstName');
-        
+
         daughter.setValueForKey(baby, 'baby');
         
         t.assertEqual(momObserver.count, 1);

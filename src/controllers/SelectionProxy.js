@@ -88,12 +88,13 @@ coherent.SelectionProxy= Class.create(coherent.KVO, {
             return value[0];
         
         var i;
-        var len;
+        var len= value.length;
         var v= value[0];
-    
-        for (i=1, len=value.length; i<len; ++i)
+
+        //  use --len rather than len-- to skip index 0.
+        while (--len)
         {
-            if (0!==coherent.compareValues(v, value[i]))
+            if (0!==coherent.compareValues(v, value[len]))
                 return coherent.Markers.MultipleValues;
         }
     
@@ -119,9 +120,9 @@ coherent.SelectionProxy= Class.create(coherent.KVO, {
             return value;
         
         var validValue;
-        for (i=0; i<len; ++i)
+        while (len--)
         {
-            validValue= selectedObjects[i].validateValueForKey(value, key);
+            validValue= selectedObjects[len].validateValueForKey(value, key);
             if (validValue instanceof coherent.Error)
                 return validValue;
         }
@@ -149,9 +150,9 @@ coherent.SelectionProxy= Class.create(coherent.KVO, {
             return value;
         
         var validValue;
-        for (i=0; i<len; ++i)
+        while (len--)
         {
-            validValue= selectedObjects[i].validateValueForKeyPath(value, keyPath);
+            validValue= selectedObjects[len].validateValueForKeyPath(value, keyPath);
             if (validValue instanceof coherent.Error)
                 return validValue;
         }

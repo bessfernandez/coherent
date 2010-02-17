@@ -66,7 +66,6 @@ Test.create('array-controller', {
                                          'content');
     
         source.array.addObject(new coherent.KVO());
-        
         t.assertTrue(observer.called);
         t.assertEqual(observer.count, 1);
         t.assertEqual(observer.change.changeType, coherent.ChangeType.insertion);
@@ -163,15 +162,6 @@ Test.create('array-controller', {
         t.assertEqual(['zebra'], controller.valueForKeyPath('selectedObjects.name'));
         
         t.assertEqual(1, observer.count);
-    },
-        
-    testSetContentCallCount: function(t)
-    {
-        var ac = new coherent.ArrayController();
-        var counter= new MethodCallCounter(ac, 'setContent');
-    
-        ac.setValueForKey([1,2,3], "content");
-        t.assertEqual(1, counter.count);
     }
     
 });

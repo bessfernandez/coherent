@@ -21,7 +21,7 @@ Object.extend(coherent, {
     @property cachedModelValue - The cached value of the binding in the model context.
     
  */
-coherent.Binding= Class.create({
+coherent.Binding= Class._create({
 
     /** Create a new Binding and associate it with a keypath on a specific
         object.
@@ -80,6 +80,7 @@ coherent.Binding= Class.create({
     refresh: function()
     {
         var newValue= this.object.valueForKeyPath(this.keypath);
+        
         this.cachedModelValue= newValue;
 
         newValue= this.transformedValue(newValue);
@@ -166,7 +167,7 @@ coherent.Binding= Class.create({
         //  nothing to do if the value hasn't changed.
         if (this.cachedValue===newValue)
             return;
-            
+
         this.markerType= this.markerTypeFromValue(newValue);
         
         this.cachedValue= newValue;
@@ -218,7 +219,7 @@ coherent.Binding= Class.create({
                                                     coherent.ChangeType.setting,
                                                     newValue);
         this.updating= true;
-       
+
         try {
             this.observerFn.call(this.observer, change, this.keypath);
         } catch (e) {
@@ -303,7 +304,7 @@ coherent.Binding= Class.create({
             this.cachedModelValue= change.newValue;
 
         var newValue= this.transformedValue(change.newValue);
-        
+
         //  Check for marker values
         this.markerType= this.markerTypeFromValue(newValue);
         if (this.markerType)
@@ -382,3 +383,5 @@ coherent.Binding.bindingInfoFromString= function(bindingString)
 
     return bindingInfo;
 }
+
+Object.markMethods(coherent.Binding);

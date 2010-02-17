@@ -78,7 +78,6 @@ Test.create('kvo-dependent', {
     testObjDependentKeysWithSetValueForKey: function(t)
     {
         var dep= new coherent.KVO();
-        
         dep.firstName='Bozo';
         dep.lastName='Clown';
         
@@ -93,6 +92,7 @@ Test.create('kvo-dependent', {
             
             return [firstName, lastName].join(' ');
         }
+
         dep.setKeysTriggerChangeNotificationsForDependentKey(['firstName', 'lastName'],
                                                              'fullName');
         
@@ -154,7 +154,8 @@ Test.create('kvo-dependent', {
     {
         if (!coherent.Support.Properties)
             t.skip('properties not supported.');
-            
+        
+        console.log('Start testObjDependentKeysWithProperty');    
         var dep= new coherent.KVO();
         
         dep.firstName='Bozo';
@@ -183,6 +184,7 @@ Test.create('kvo-dependent', {
         dep.addObserverForKeyPath(observer, observe, 'fullName');
         dep.firstName='Clarabel';
         t.assertTrue(observeCalled);
+        console.log('End testObjDependentKeysWithProperty');    
     },
 
 

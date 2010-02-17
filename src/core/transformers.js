@@ -320,42 +320,29 @@ coherent.registerTransformerWithName(new coherent.transformer.Truncated(50), "tr
     
     @property {String} key - The key used to reflect the string value.
  */
-coherent.transformer.StringsToObjects= Class.create(coherent.ValueTransformer, {
+coherent.transformer.StringToObject= Class.create(coherent.ValueTransformer, {
 
     constructor: function(key)
     {
         this.key= key||'string';
     },
     
-    transformedValue: function(array)
+    transformedValue: function(value)
     {
-        //  not really an array
-        if (!array || !array.map)
-            return array;
-        
-        function makeObj(string)
-        {
-            var kvo= new coherent.KVO();
-            kvo[this.key]= string;
-            return kvo;
-        }
-        return array.map(makeObj, this);
+        if ('string'!==typeof(value))
+            return value;
+        var kvo= new coherent.KVO();
+        kvo[this.key]= value;
+        return kvo;
     },
     
-    reverseTransformedValue: function(array)
+    reverseTransformedValue: function(value)
     {
-        if (!array || !array.map)
-            return array;
-        
-        function makeString(obj)
-        {
-            return obj[this.key];
-        }
-        return array.map(makeString, this);
+        return value && (this.key in value) ? value[this.key] : value;
     }
     
 });
-coherent.registerTransformerWithName(new coherent.transformer.StringsToObjects('string'), 'StringsToObjects');
+coherent.registerTransformerWithName(new coherent.transformer.StringToObject('string'), 'StringToObject');
 
 
 

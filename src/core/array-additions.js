@@ -38,13 +38,12 @@ Array.prototype.compare= function(a)
     if (0!==lengthDifference)
         return lengthDifference;
     var i;
-    var len;
+    var len= this.length;
     var v;
     
-    for (i=0, len=this.length; i<len; ++i)
+    while (len--)
     {
-        v= coherent.compareValues(this[i], a[i]);
-        if (0!==v)
+        if (0!==(v=coherent.compareValues(this[len], a[len])))
             return v;
     }
     

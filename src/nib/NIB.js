@@ -8,7 +8,15 @@ function NIB(def)
 {
     var oldDataModel= coherent.dataModel;
     var model= coherent.dataModel= NIB.__model;
-
+    
+    //  When there's no model predefined, we default to the application
+    if (!model)
+    {
+        model= coherent.dataModel= new coherent.KVO();
+        model.setValueForKey(coherent.Application.shared, 'owner');
+        model.setValueForKey(coherent.Application.shared, 'application');
+    }
+    
     var v;
     var p;
     var ignore= coherent.KVO.typesOfKeyValuesToIgnore;
@@ -30,7 +38,8 @@ function NIB(def)
         if (v instanceof coherent.Asset)
             v= v.content();
         
-        if (!(ctypeof(v) in ignore) && !('addObserverForKeyPath' in v))
+        var type= ctypeof(v);
+        if ('array'===type || !(type in ignore || 'addObserverForKeyPath' in v))
             coherent.KVO.adaptTree(v);
 
         if (v instanceof coherent.View)

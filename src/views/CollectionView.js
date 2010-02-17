@@ -44,9 +44,21 @@ coherent.CollectionView= Class.create(coherent.View, {
     animationOptions: {
         selection: {
             classname: coherent.Style.kSelectedClass
+        },
+        content: {
+            classname: coherent.Style.kUpdatingClass
+        },
+        insertion: {
+            classname: coherent.Style.kInsertedClass
+        },
+        deletion: {
+            classname: coherent.Style.kDeletedClass
+        },
+        replacement: {
+            classname: coherent.Style.kReplacingClass
         }
     },
-    
+
     exposedBindings: ['content', 'selectionIndexes'],
 
     /** Should the selection be permitted to become empty? If `false`, there
@@ -61,6 +73,12 @@ coherent.CollectionView= Class.create(coherent.View, {
         @default false
      */
     multiple: false,
+
+    /** Should multiple selection require using Cmd/Ctrl or Shift?
+        @type Boolean
+        @default false
+     */
+    multipleSelectWithoutModifiers: false,
     
     /** Initialise the CollectionView instance. This method identifies the 
         templateNode element based on the `tagName` of the view node.
@@ -236,32 +254,57 @@ coherent.CollectionView= Class.create(coherent.View, {
         var newItems;
         var index;
         var len= change.indexes.length;
-        var beforeNode;
         var nodeIndex;
         var indexes= change.indexes;
+        var item;
+        var animationOptions;
+        var animated;
+        var animator= coherent.Animator;
+        var _this= this;
         
         switch (change.changeType)
         {
             case coherent.ChangeType.insertion:
+                animationOptions= this.__animationOptionsForProperty('insertion');
+                animationOptions.reverse= true;
+                animated= !!animationOptions.duration;
+                
                 newItems= change.newValue.map(this.newItemForRepresentedObject, this);
                 
                 //  add the specific indexes.
                 for (index=0; index<len; ++index)
                 {
                     nodeIndex= indexes[index];
-                    beforeNode= nodeIndex<len ? items[nodeIndex].node : null;
-                    container.insertBefore(newItems[index].node, beforeNode);
+                    item= items[nodeIndex];
+                    // beforeNode= nodeIndex<numberOfItems ? items[nodeIndex].node : null;
+                    if (animated)
+                        Element.addClassName(newItems[index].node, animationOptions.classname);
+                    container.insertBefore(newItems[index].node, item?item.node:null);
+                    if (animated)
+                        animator.animateClassName(newItems[index].node, animationOptions);
                 }
                 this.__content.insertObjectsAtIndexes(change.newValue, indexes);
                 items.insertObjectsAtIndexes(newItems, indexes);
                 break;
 
             case coherent.ChangeType.deletion:
+                animationOptions= this.__animationOptionsForProperty('deletion');
+                animationOptions.callback= function(node)
+                    {
+                        node.style.display='none';
+                        Element.removeClassName(node, animationOptions.classname);
+                        _this.removeChild(node);
+                    }
+                animated= !!animationOptions.duration;
+                    
                 indexes.sort(coherent.reverseCompareNumbers);
                 for (index=0; index<len; ++index)
                 {
                     nodeIndex= indexes[index];
-                    this.removeChild(items[nodeIndex].node);
+                    if (animated)
+                        animator.animateClassName(items[nodeIndex].node, animationOptions);
+                    else
+                        this.removeChild(items[nodeIndex].node);
                 }
                 items.removeObjectsAtIndexes(indexes);
                 this.__content.removeObjectsAtIndexes(indexes);
@@ -516,7 +559,7 @@ coherent.CollectionView= Class.create(coherent.View, {
         
         this.extendIndex= itemIndex;
         
-        if (ctrlKeyDown)
+        if (this.multipleSelectWithoutModifiers || ctrlKeyDown)
         {
             this.anchorIndex= itemIndex;
             

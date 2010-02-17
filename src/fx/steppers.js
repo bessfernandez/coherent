@@ -85,7 +85,7 @@ coherent.fx= coherent.fx||{};
             this.element.style[this.property]= rgb;
         },
     
-        step: function(t)
+        stepRGBA: function(t)
         {
             if (this.curve)
                 t= this.curve(t);

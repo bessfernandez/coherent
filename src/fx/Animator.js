@@ -9,6 +9,17 @@
 /** @name coherent.Animator
     @namespace The animator
 */
+coherent.Animator= {
+    MORPH_NODE    : 0x01,
+    IGNORE_NODE   : 0x12,
+    FADE_NODE     : 0x13,
+    FADE_IN_NODE  : 0x14,
+    FADE_OUT_NODE : 0x15,
+    MORPH_NODE_IGNORE_CHILDREN : 0x16,
+
+    IGNORE_CHILDREN_MASK : 0x10
+};
+
 (function() {
 
     var fx= coherent.fx;
@@ -25,16 +36,32 @@
     var lastStep   = 0;
     
     var getStyles= Element.getStyles;
-    
-    function getStylesForTree(node, propsToGet)
+
+    function getStylesForTreeNodeVisitor(node)
     {
-        var info= {};
-        function visitNode(node)
+        var id= getStylesForTreeNodeVisitor.assignId(node);
+        var action= getStylesForTreeNodeVisitor.actions[id] || getStylesForTreeNodeVisitor.MORPH_NODE;
+
+        if (getStylesForTreeNodeVisitor.MORPH_NODE===action || getStylesForTreeNodeVisitor.MORPH_NODE_IGNORE_CHILDREN===action)
         {
-            var id= Element.assignId(node);
-            info[id]= getStyles(node, propsToGet);
+            getStylesForTreeNodeVisitor.info.__count++;
+            getStylesForTreeNodeVisitor.info[id]= getStylesForTreeNodeVisitor.getStyles(node, getStylesForTreeNodeVisitor.propsToGet);
         }
-        Element.depthFirstTraversal(node, visitNode);
+        return (action & getStylesForTreeNodeVisitor.IGNORE_CHILDREN_MASK)?false:true;
+    }
+    getStylesForTreeNodeVisitor.getStyles= Element.getStyles;
+    getStylesForTreeNodeVisitor.assignId= Element.assignId;
+    getStylesForTreeNodeVisitor.MORPH_NODE= coherent.Animator.MORPH_NODE;
+    getStylesForTreeNodeVisitor.MORPH_NODE_IGNORE_CHILDREN= coherent.Animator.MORPH_NODE_IGNORE_CHILDREN;
+    getStylesForTreeNodeVisitor.IGNORE_CHILDREN_MASK= coherent.Animator.IGNORE_CHILDREN_MASK;
+    
+    function getStylesForTree(node, propsToGet, actions)
+    {
+        var info={};
+        getStylesForTreeNodeVisitor.propsToGet= propsToGet;
+        getStylesForTreeNodeVisitor.actions= actions||{};
+        getStylesForTreeNodeVisitor.info= info;
+        Element.depthFirstTraversal(node, getStylesForTreeNodeVisitor);
         return info;
     }
     
@@ -80,6 +107,7 @@
             return;
         window.clearInterval(timer);
         timer= null;
+        actors= {};
     }
     
     function step()
@@ -284,7 +312,7 @@
         
         var propsToGet = options.only;
         // get old styles
-        var startStyles = getStylesForTree(element, propsToGet);
+        var startStyles = getStylesForTree(element, propsToGet, options.actions);
         
         // set className and clear any styles that we're currently animating on
         // to remove any conflicts with the new className
@@ -303,7 +331,7 @@
         }
 
         // get destination styles
-        var endStyles = getStylesForTree(element, propsToGet);
+        var endStyles = getStylesForTree(element, propsToGet, options.actions);
         element.className = oldClassName;
 
         /* If there is a callback supplied for this class transition, 
@@ -426,7 +454,7 @@
                                 thingsToAnimate[id][p] = finalValue;
                         }
                     }
-                    return true;
+                    return (nodeAction & coherent.Animator.IGNORE_CHILDREN_MASK)?false:true;
             }
         }
         
@@ -464,7 +492,7 @@
     
     // Return Object
     
-    coherent.Animator = /** @scope coherent.Animator */ {
+    Object.extend(coherent.Animator, {
     
         /** Animate adding a class name to an element.
             @param {Element} element - The DOM element to animate.
@@ -613,11 +641,5 @@
             actors = {};
             stopAnimator();
         }
-    };
+    });
 })();
-
-coherent.Animator.FADE_NODE     = "fade";
-coherent.Animator.FADE_IN_NODE  = "fade_in";
-coherent.Animator.FADE_OUT_NODE = "fade_out";
-coherent.Animator.IGNORE_NODE   = "ignore";
-coherent.Animator.MORPH_NODE    = "morph";

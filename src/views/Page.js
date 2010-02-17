@@ -43,7 +43,12 @@ coherent.Page= Class.create(coherent.Responder, {
             this.firstResponder.removeClassName(coherent.Style.kFocusClass);
         
         if (view && !view.becomeFirstResponder())
+        {
+            this.willChangeValueForKey('firstResponder');
+            this.firstResponder= null;
+            this.didChangeValueForKey('firstResponder');
             return false;
+        }
 
         this.willChangeValueForKey('firstResponder');
         this.firstResponder= view;
@@ -199,10 +204,10 @@ coherent.Page= Class.create(coherent.Responder, {
             //  Fire any onmouseenter callbacks in trackingIds
             callbacks= trackingIds[id];
             len= callbacks.length;
-            
-            for (i=0; i<len; ++i)
+
+            while (len--)
             {
-                c= callbacks[i];
+                c= callbacks[len];
                 if (c.onmouseenter)
                     c.onmouseenter.call(c.owner, e, c.ownerInfo);
             }
@@ -220,9 +225,9 @@ coherent.Page= Class.create(coherent.Responder, {
             //  Fire any onmouseleave callbacks in trackingIds
             callbacks= trackingIds[id];
             len= callbacks.length;
-            for (i=0; i<len; ++i)
+            while (len--)
             {
-                c= callbacks[i];
+                c= callbacks[len];
                 if (c.onmouseleave)
                     c.onmouseleave.call(c.owner, e, c.ownerInfo);
             }
@@ -686,16 +691,14 @@ coherent.Page= Class.create(coherent.Responder, {
         while (view)
         {
             if (view.registeredDraggedTypes)
-            {
-                for (i=0; i<len; ++i)
+                while (len--)
                 {
-                    if (types[i] in view.registeredDraggedTypes)
+                    if (types[len] in view.registeredDraggedTypes)
                     {
                         foundView= view;
                         break;
                     }
                 }
-            }
             view= view.superview();
         }
         
