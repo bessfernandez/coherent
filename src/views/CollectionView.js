@@ -49,10 +49,12 @@ coherent.CollectionView= Class.create(coherent.View, {
             classname: coherent.Style.kUpdatingClass
         },
         insertion: {
-            classname: coherent.Style.kInsertedClass
+            classname: coherent.Style.kInsertedClass,
+            duration: 100
         },
         deletion: {
-            classname: coherent.Style.kDeletedClass
+            classname: coherent.Style.kDeletedClass,
+            duration: 100
         },
         replacement: {
             classname: coherent.Style.kReplacingClass
@@ -186,7 +188,7 @@ coherent.CollectionView= Class.create(coherent.View, {
      
         @param {coherent.KVO[]} newContent - The new content.
      */
-    setContent: function(newContent)
+    setContentStatic: function(newContent)
     {
         var container= this.container();
 
@@ -235,6 +237,125 @@ coherent.CollectionView= Class.create(coherent.View, {
         }
     },
 
+    setContent: function(newContent)
+    {
+        var _this= this;
+        var animator= coherent.Animator;
+        var container= this.container();
+
+        var insertionAnimationOptions= this.__animationOptionsForProperty('insertion');
+        insertionAnimationOptions.reverse= true;
+
+        var deletionAnimationOptions= this.__animationOptionsForProperty('deletion');
+        deletionAnimationOptions.callback= function(node)
+        {
+            node.style.display='none';
+            Element.removeClassName(node, deletionAnimationOptions.classname);
+            _this.removeChild(node);
+        }
+        
+        if (!insertionAnimationOptions.duration && !deletionAnimationOptions.duration)
+        {
+            this.setContentStatic(newContent);
+            return;
+        }
+
+        newContent= newContent ? newContent.copy() : [];        
+        var oldContent= this.__content;
+        
+        var oldLen= oldContent.length;
+        var newLen= newContent.length;
+        var oldIndex= 0;
+        var newIndex= 0;
+        var newPosition;
+        
+        var oldItems= this.__items;
+        var newItems= [];
+        var newSelectionIndexes= [];
+        var item;
+        var newItem;
+        
+        while (oldIndex<oldLen && newIndex<newLen)
+        {
+            item= oldItems[oldIndex];
+            
+            //  same element, don't need to do anything
+            if (newContent[newIndex]===oldContent[oldIndex])
+            {
+                if (item.selected)
+                    newSelectionIndexes.push(newIndex);
+                newItems.push(item);
+                newIndex++;
+                oldIndex++;
+                continue;
+            }
+            
+            newPosition= newContent.indexOf(oldContent[oldIndex], newIndex+1);
+            
+            //  The old content item doesn't appear in the new content after the
+            //  current position, delete it
+            if (-1===newPosition)
+            {
+                //  move to the next old content item, but keep the current position
+                //  in the new content.
+                oldIndex++;
+                animator.animateClassName(item.node, deletionAnimationOptions);
+                continue;
+            }
+            
+            //  The old content item appears later in the new content, insert
+            //  all the new items between the current newIndex and the position
+            //  of the old content item: [newIndex, newPosition)
+            while (newIndex<newPosition)
+            {
+                newItem= this.newItemForRepresentedObject(newContent[newIndex]);
+                newItems.push(newItem);
+                Element.addClassName(newItem.node, insertionAnimationOptions.classname);
+                container.insertBefore(newItem.node, item?item.node:null);
+                animator.animateClassName(newItem.node, insertionAnimationOptions);
+                
+                newIndex++;
+            }
+
+            //  newIndex now equals newPosition, and the content items should be
+            //  the same. So I don't have to make any checks...
+            if (item.selected)
+                newSelectionIndexes.push(newIndex);
+            newItems.push(item);
+            newIndex++;
+            oldIndex++;
+        }
+        
+        //  If I've run off the end of the newContent array, then delete all the
+        //  remaining oldContent items
+        while (oldIndex<oldLen)
+        {
+            item= oldItems[oldIndex];
+            oldIndex++;
+            animator.animateClassName(item.node, deletionAnimationOptions);
+        }
+        
+        //  If I've run off the end of the oldContent array, then add all the
+        //  remaining newContent items
+        while (newIndex<newLen)
+        {
+            newItem= this.newItemForRepresentedObject(newContent[newIndex]);
+            newItems.push(newItem);
+            Element.addClassName(newItem.node, insertionAnimationOptions.classname);
+            container.insertBefore(newItem.node, null);
+            animator.animateClassName(newItem.node, insertionAnimationOptions);
+            
+            newIndex++;
+        }
+        
+        //  All done updating the dom
+        this.willChangeValueForKey('selectionIndexes');
+        this.__content= newContent;
+        this.__items= newItems;
+        this.__selectionIndexes= newSelectionIndexes;
+        this.didChangeValueForKey('selectionIndexes');
+    },
+    
     /** Track changes to the bound content value.
     
         @private
@@ -276,7 +397,6 @@ coherent.CollectionView= Class.create(coherent.View, {
                 {
                     nodeIndex= indexes[index];
                     item= items[nodeIndex];
-                    // beforeNode= nodeIndex<numberOfItems ? items[nodeIndex].node : null;
                     if (animated)
                         Element.addClassName(newItems[index].node, animationOptions.classname);
                     container.insertBefore(newItems[index].node, item?item.node:null);

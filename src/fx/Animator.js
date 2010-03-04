@@ -293,7 +293,9 @@ coherent.Animator= {
         var node;
         var style;
         
-        options = Object.applyDefaults(options, DEFAULTS);
+        //  Create a local copy of the options rather than using what was passed
+        //  to the method, because we'll be changing some stuff.
+        options = Object.applyDefaults(Object.clone(options), DEFAULTS);
         
         if (options.delay)
         {
@@ -306,7 +308,7 @@ coherent.Animator= {
         {
             element.className= newClassName;
             if (options.callback)
-                options.callback();
+                options.callback(element);
             return;
         }
         
@@ -346,8 +348,8 @@ coherent.Animator= {
                 duration: options.duration,
                 callback: options.callback
             }
-        };        
-        delete options.callback;
+        };
+        options.callback=null;
         
         function animateNode(node)
         {
