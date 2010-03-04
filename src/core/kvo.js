@@ -399,58 +399,6 @@ coherent.KVO= Class.create({
         }
     },
 
-    /** Determine the list of mutable keys.
-        @returns {String[]} an array of the names of the mutable keys.
-     */
-    mutableKeys: function()
-    {
-        var keys=[];
-        var k;
-        var v;
-        var firstChar;
-
-        //  If there is a __mutableKeys property, return that instead of calculating
-        //  the list of mutable keys.
-        if ("__mutableKeys" in this && this.__mutableKeys.concat)
-            return this.__mutableKeys;
-    
-        var keysToIgnore= Set.union(coherent.KVO.keysToIgnore, this.__keysToIgnore);
-
-        for (k in this)
-        {
-            if (k in keysToIgnore || '__'===k.substr(0,2))
-                continue;
-        
-            v= this[k];
-            //  If it isn't a function, then it is inherently mutable.
-            if ('function'!==typeof(v))
-            {
-                keys.push(k);
-                continue;
-            }
-    
-            //  Setters must have only one argument and begin with 'set',
-            //  ignore everything else.
-            if (1!==v.length || 'set'!==k.substr(0,3))
-                continue;
-
-            //  Setters must have a uppercase letter following the 'set' prefix.
-            firstChar= k.charAt(3);
-            if (firstChar!==firstChar.toUpperCase())
-                continue;
-
-            //  Keys begin with a lowercase letter.
-            k= firstChar.toLowerCase() + k.substr(4);
-    
-            //  Only add the key if I didn't already see a non-function property
-            //  with the same name.
-            if (-1===keys.indexOf(k))
-                keys.push(k);
-        }
-
-        return keys;
-    },
-
     /** Initialise Key Value Observing for this object.
      */
     initialiseKeyValueObserving: function()
@@ -858,6 +806,57 @@ coherent.KVO.adaptTree= function(obj)
     return obj;
 }
 
+/** Determine the list of mutable keys.
+    @returns {String[]} an array of the names of the mutable keys.
+ */
+coherent.KVO.mutableKeys= function(kvo)
+{
+    var keys=[];
+    var k;
+    var v;
+    var firstChar;
+
+    //  If there is a __mutableKeys property, return that instead of calculating
+    //  the list of mutable keys.
+    if ("__mutableKeys" in kvo && kvo.__mutableKeys.concat)
+        return kvo.__mutableKeys;
+
+    var keysToIgnore= Set.union(coherent.KVO.keysToIgnore, kvo.__keysToIgnore);
+
+    for (k in kvo)
+    {
+        if (k in keysToIgnore || '__'===k.substr(0,2))
+            continue;
+    
+        v= kvo[k];
+        //  If it isn't a function, then it is inherently mutable.
+        if ('function'!==typeof(v))
+        {
+            keys.push(k);
+            continue;
+        }
+
+        //  Setters must have only one argument and begin with 'set',
+        //  ignore everything else.
+        if (1!==v.length || 'set'!==k.substr(0,3))
+            continue;
+
+        //  Setters must have a uppercase letter following the 'set' prefix.
+        firstChar= k.charAt(3);
+        if (firstChar!==firstChar.toUpperCase())
+            continue;
+
+        //  Keys begin with a lowercase letter.
+        k= firstChar.toLowerCase() + k.substr(4);
+
+        //  Only add the key if I didn't already see a non-function property
+        //  with the same name.
+        if (-1===keys.indexOf(k))
+            keys.push(k);
+    }
+
+    return keys;
+}
 
 /** Perform magic to automatically create key dependencies when a subclass of
     KVO is created.

@@ -57,10 +57,10 @@ coherent.Application= Class.create(coherent.Responder, {
             href+= ".jsnib";
             
         var d= NIB.load(href, this);
-        d.addCallback(this.__mainBundleLoaded.bind(this));
+        d.addCallback(this.__bundleLoaded.bind(this));
     },
     
-    __mainBundleLoaded: function(model)
+    __bundleLoaded: function(model)
     {
         var body= document.body;
         var views= model.__views;
@@ -70,7 +70,8 @@ coherent.Application= Class.create(coherent.Responder, {
         for (var i=0; i<numberOfViews; ++i)
         {
             view= views[i];
-            body.appendChild(view.node);
+            if (!view.node.parentNode || view.node.parentNode===coherent.View.__holdingArea)
+                body.appendChild(view.node);
         }
     }
     

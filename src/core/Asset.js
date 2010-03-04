@@ -96,7 +96,7 @@
             function received(data)
             {
                 _this.setContent(data);
-                return data;
+                return _this.__content;
             }
             d.addCallback(received);
             return d;

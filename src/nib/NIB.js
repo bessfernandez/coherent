@@ -8,9 +8,10 @@ function NIB(def)
 {
     var oldDataModel= coherent.dataModel;
     var model= coherent.dataModel= NIB.__model;
+    var applicationNib= !model;
     
     //  When there's no model predefined, we default to the application
-    if (!model)
+    if (applicationNib)
     {
         model= coherent.dataModel= new coherent.KVO();
         model.setValueForKey(coherent.Application.shared, 'owner');
@@ -23,7 +24,8 @@ function NIB(def)
     var ctypeof= coherent.typeOf;
     var views= [];
     var specialKeys= NIB.specialKeys;
-
+    var awake= [];
+    
     for (p in def)
     {
         //  Skip owner, because it's special
@@ -44,6 +46,8 @@ function NIB(def)
 
         if (v instanceof coherent.View)
             views.push(v);
+        if ('awakeFromNib' in v)
+            awake.push(v);
         model.setValueForKey(v, p);
     }
 
@@ -80,7 +84,14 @@ function NIB(def)
         }
     }
 
+    var len= awake.length;
+    while (len--)
+        awake[len].awakeFromNib();
+
     coherent.dataModel= oldDataModel;
+    
+    if (applicationNib)
+        coherent.Application.shared.__bundleLoaded(model);
 }
 
 Object.extend(NIB, {
@@ -97,7 +108,7 @@ Object.extend(NIB, {
         script.type = 'text/javascript';
         script.defer = false;
 
-        window.__filename__= href;
+        window.__filename__= String(href);
         var model= NIB.__model= new coherent.KVO();
 
         NIB.__model.setValueForKey(owner, 'owner');

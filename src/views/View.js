@@ -104,8 +104,6 @@ coherent.View= Class.create(coherent.Responder, {
      */
     constructor: function(node, parameters)
     {
-        this.base(parameters);
-        
         if ((null===node || 'undefined'===typeof(node)) && this.markup)
         {
             this.node= coherent.View.createNodeFromMarkup(this.markup);
@@ -127,9 +125,7 @@ coherent.View= Class.create(coherent.Responder, {
             throw new Error('Unexpected value for node: ', + node);
             
         if (this.id in coherent.View.viewLookup)
-        {
             throw new Error('Two views share the same ID: ' + this.id);
-        }
 
         this.node.object= this;
         
@@ -143,6 +139,8 @@ coherent.View= Class.create(coherent.Responder, {
             else
                 this.formatter= new (this.formatter)();
         }
+
+        this.base(parameters);
 
         this.__createStructure();
     },
@@ -363,6 +361,40 @@ coherent.View= Class.create(coherent.Responder, {
         return this.__nextResponder||this.superview();
     },
     
+    delegate: function()
+    {
+        return this.__delegate;
+    },
+    
+    setDelegate: function(newDelegate)
+    {
+        if ('string'!==typeof(newDelegate))
+        {
+            this.__delegate= newDelegate;
+            return;
+        }
+        
+        //  Need some extra trickery for string delegates...
+        var delegate= this.__context && this.__context.valueForKey(newDelegate);
+        if (delegate)
+        {
+            this.__delegate= delegate;
+            return;
+        }
+        
+        /*  The delegate wasn't found in the context yet... so create a
+            temporary function which will look it up later. Note, the temporary
+            function will delete itself and return the object to using the
+            prototype delegate method.
+         */
+        this.delegate= function()
+        {
+            this.__delegate= (this.__context && this.__context.valueForKey(newDelegate));
+            delete this.delegate;
+            return this.__delegate;
+        }
+    },
+    
     /** Set the focus to the view.
      */
     focus: function()
@@ -385,7 +417,8 @@ coherent.View= Class.create(coherent.Responder, {
     setClass: function(newClassName)
     {
         var node= this.node;
-        var oldClasses= $S(node.className.split(" "));
+        var originalClassName= node.className;
+        var oldClasses= $S(originalClassName.split(" "));
         var newClasses= $S((newClassName||"").split(" "));
     
         //  reset any state classes
@@ -398,6 +431,9 @@ coherent.View= Class.create(coherent.Responder, {
         
         newClassName = Set.join(newClasses, ' ');
         
+        if (newClassName===originalClassName)
+            return;
+            
         var animationOptions= this.__animationOptionsForProperty('class');
         if (animationOptions.duration)
             coherent.Animator.setClassName(node, newClassName, animationOptions);
@@ -881,33 +917,51 @@ coherent.View= Class.create(coherent.Responder, {
     /** Return the acceptable drop operations for the view. Default is none. */
     draggingEntered: function(dragInfo)
     {
+        var delegate= this.delegate();
+        if (delegate && 'draggingEntered' in delegate)
+            return delegate.draggingEntered(dragInfo);
         return "none";
     },
     
     draggingExited: function(dragInfo)
     {
+        var delegate= this.delegate();
+        if (delegate && 'draggingExited' in delegate)
+            delegate.draggingExited(dragInfo);
     },
     
     /** Return the acceptable drop operations for the view. Default is none. */
     draggingUpdated: function(dragInfo)
     {
+        var delegate= this.delegate();
+        if (delegate && 'draggingUpdated' in delegate)
+            return delegate.draggingUpdated(dragInfo);
         return null;
     },
     
     /** Return true if the view is willing to accept the drop. */
     prepareForDragOperation: function(dragInfo)
     {
+        var delegate= this.delegate();
+        if (delegate && 'prepareForDragOperation' in delegate)
+            return delegate.prepareForDragOperation(dragInfo);
         return false;
     },
     
     /** Return true if the view was able to perform the drag. */
     performDragOperation: function(dragInfo)
     {
+        var delegate= this.delegate();
+        if (delegate && 'performDragOperation' in delegate)
+            return delegate.performDragOperation(dragInfo);
         return false;
     },
     
     concludeDragOperation: function(dragInfo)
     {
+        var delegate= this.delegate();
+        if (delegate && 'concludeDragOperation' in delegate)
+            delegate.concludeDragOperation(dragInfo);
     }
     
 });

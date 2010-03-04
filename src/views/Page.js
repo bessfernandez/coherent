@@ -670,7 +670,6 @@ coherent.Page= Class.create(coherent.Responder, {
     
     _ondragenter: function(event)
     {
-        console.log('drag enter');
         var view= this.targetViewForEvent(event);
         if (!view)
         {
@@ -684,7 +683,6 @@ coherent.Page= Class.create(coherent.Responder, {
         var len= info.types.length;
         var i;
         var foundView;
-        
         
         //  Scan up the view hierarchy to find a view with matching registered
         //  drag types.
@@ -914,11 +912,11 @@ coherent.Page= Class.create(coherent.Responder, {
         window.addEventListener('focus', wrapEventHandler("_onfocus"), false);
         window.addEventListener('blur', wrapEventHandler("_onblur"), false);
 
-        if (!coherent.Browser.MobileSafari)
-        {
+        // if (!coherent.Browser.MobileSafari)
+        // {
             document.addEventListener('click', wrapEventHandler("_onclick"), false);
             document.addEventListener('dblclick', wrapEventHandler("_ondblclick"), false);
-        }
+        // }
         if (coherent.Support.Touches)
         {
             document.addEventListener('touchstart', wrapEventHandler("_ontouchstart"), true);

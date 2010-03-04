@@ -19,8 +19,8 @@ coherent.Bindable= Class.create(coherent.KVO, {
     constructor: function(parameters)
     {
         this.bindings={};
-        this.__copyParameters(parameters||{});
         this.__context= coherent.dataModel;
+        this.__copyParameters(parameters||{});
     },
 
     /** Create factory objects for instances of this class. Because Bindable

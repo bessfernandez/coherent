@@ -91,7 +91,7 @@ coherent.AjaxController= Class.create(coherent.ObjectController, {
     fullURL: function()
     {
         var params = {};
-        var keys= this.parameters.mutableKeys();
+        var keys= coherent.KVO.mutableKeys(this.parameters);
         var len= keys.length;
         var url = this.url;
         var parameters;
@@ -146,7 +146,7 @@ coherent.AjaxController= Class.create(coherent.ObjectController, {
     {        
         //  build the Ajax request
         var parameters= {};
-        var keys= this.parameters.mutableKeys();
+        var keys= coherent.KVO.mutableKeys(this.parameters);
         var len= keys.length;
         var p;
         var v;

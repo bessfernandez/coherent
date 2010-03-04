@@ -146,7 +146,7 @@ coherent.ArrayController= Class.create(coherent.ObjectController, {
     setSortDescriptors: function(descriptors)
     {
         //  copy the array
-        descriptors= descriptors.copy();
+        descriptors= descriptors ? descriptors.copy() : [];
         this.__sortDescriptors= descriptors;
         
         if (this.bindings.sortDescriptors)

@@ -77,6 +77,29 @@ Object.extend(Event, {
 	KEY_NUM_LOCK: 144,
 	KEY_SCROLL_LOCK: 145,
 
+    isNumpadNumKey: function(keyCode)
+    {
+        return keyCode >= 96 && keyCode <= 111;
+    },
+
+    isAlphaNumKey: function(keyCode)
+    {
+        if (!this._reverseKeys)
+            this._reverseKeys= (function() {
+                    var keys= {};
+                    var originalKeys = Event;
+                    
+                    for (var key in originalKeys)
+                    {
+                        if ('KEY_'!==key.slice(0,4))
+                            continue;
+                        keys[originalKeys[key]] = key;
+                    }
+                    return keys;
+                })();
+        return this.isNumpadNumKey(keyCode) || !this._reverseKeys[keyCode];
+    },
+    
     /** Trigger the event handlers for DOM ready.
      */
     _domHasFinishedLoading: function()
