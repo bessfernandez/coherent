@@ -225,6 +225,64 @@ coherent.TextField= Class.create(coherent.FormControl, {
         Element.removeClassName(view, coherent.Style.kMarkerClass);
     },
 
+    /** Return the starting and ending selection point.
+     */
+    selectedRange: function()
+    {
+        var node= this.node;
+        if (!node)
+            return {
+                start: 0,
+                end: 0
+            };
+        
+        if (coherent.Browser.IE)
+        {
+            var selectedRange = document.selection.createRange();
+            var range= selectedRange.duplicate();
+            range.moveToElementText(node);
+            range.setEndPoint('EndToStart', selectedRange);
+            var start= range.text.length;
+            var end= start + selectedRange.text.length;
+
+            return {
+                start: start,
+                end: end
+            };
+        }
+        else
+        {
+            return {
+                start: node.selectionStart,
+                end: node.selectionEnd
+            };
+        }
+    },
+    
+    setSelectedRange: function(start, end)
+    {
+        var node= this.node;
+        if (!node)
+            return;
+        
+        end= Math.max(start, end);
+        
+        if (coherent.Browser.IE)
+        {
+            var selection= node.createTextRange();
+            selection.moveStart('textedit', -1);
+            selection.moveEnd('textedit', -1);
+            selection.moveStart('character', start);
+            selection.moveEnd('character', end-start);
+            selection.select();
+        }
+        else
+        {
+            node.selectionStart= start;
+            node.selectionEnd= end;
+        }
+    },
+    
     /** Value change handler for edit fields. It this handler was triggered via
      *  a timer event (or if a timer event is pending), the timer is cleared.
      *  If the new value isn't one of the marker values, then pass it along to

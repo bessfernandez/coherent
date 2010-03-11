@@ -16,18 +16,23 @@ coherent.Slider= Class.create(coherent.FormControl, {
             this.handle= Element.query(this.node, this.handleSelector);
     },
 
+    value: function()
+    {
+        return parseInt(this.node.value||0,10);
+    },
+    
     setValue: function(newValue)
     {
         var node= this.node;
+        newValue= parseInt(newValue||0,10);
         
         node.value= newValue;
         if (this.nativeInput)
             return;
-
+        
         //  update handle position
         this.__updateCurrentMetrics();
         var x= newValue*this.__stepWidth + this.__paddingLeft;
-
         this.handle.style.left= x.toFixed(3) + "px";
     },
     
@@ -88,6 +93,8 @@ coherent.Slider= Class.create(coherent.FormControl, {
     setMinValue: function(minValue)
     {
         var node= this.node;
+
+        minValue= parseInt(minValue||0,10);
         
         node.setAttribute('min',minValue);
         
@@ -109,6 +116,8 @@ coherent.Slider= Class.create(coherent.FormControl, {
     setMaxValue: function(maxValue)
     {
         var node= this.node;
+
+        maxValue= parseInt(maxValue||0,10);
         
         node.setAttribute('max', maxValue);
         
@@ -156,6 +165,8 @@ coherent.Slider= Class.create(coherent.FormControl, {
         this.__paddingLeft= padding.paddingLeft;
         this.__handleWidth= this.handle.offsetWidth;
         this.__stepWidth= (this.__currentRect.width-this.__handleWidth)/(this.maxValue() - this.minValue());
+        if (isNaN(this.__stepWidth))
+            this.__stepWidth=1;
     },
     
     onmousedown: function(event)

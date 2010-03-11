@@ -440,10 +440,6 @@ coherent.ArrayController= Class.create(coherent.ObjectController, {
         if (this.avoidsEmptySelection && !selectionIndexes.length && this.__content.length)
             selectionIndexes= [0];
             
-        //  If the selected indexes are the same, then don't bother changing them
-        if (!this.__selectionIndexes.compare(selectionIndexes))
-            return false;
-
         this.willChangeValueForKey('selectionIndex');
         this.willChangeValueForKey('selectedObjects');
         this.willChangeValueForKey('hasSelection');
@@ -451,7 +447,10 @@ coherent.ArrayController= Class.create(coherent.ObjectController, {
         this.willChangeValueForKey('canSelectPrevious');
         this.willChangeValueForKey('canRemove');
         
-        this.__selectionIndexes= selectionIndexes.copy();
+        //  If the selected indexes are the same, then don't bother changing them
+        if (this.__selectionIndexes.compare(selectionIndexes))
+            this.__selectionIndexes= selectionIndexes.copy();
+
         this.__selectedObjects= this.__arrangedObjects.objectsAtIndexes(selectionIndexes);
         
         if (this.bindings.selectionIndexes)

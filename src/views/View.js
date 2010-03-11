@@ -31,7 +31,8 @@
  */
 coherent.View= Class.create(coherent.Responder, {
 
-    exposedBindings: ['visible', 'class', 'enabled', 'editable', 'html', 'text', 'toolTip'],
+    exposedBindings: ['visible', 'class', 'enabled', 'editable', 'html', 'text',
+                      'toolTip', 'actionData'],
     
     defaultPlaceholders: {
         text: {
@@ -470,7 +471,6 @@ coherent.View= Class.create(coherent.Responder, {
         if (!this.action)
             return;
 
-        var event= coherent.EventLoop.currentEvent;
         var responder= this.target||this;
         
         /*  If the target is FIRST_RESPONDER (a string), then determine what is
@@ -482,13 +482,15 @@ coherent.View= Class.create(coherent.Responder, {
         else if ('string'===typeof(responder))
             responder= this.__context.valueForKeyPath(responder);
 
+        var actionData= this.actionData||null;
+        
         /*  When an explicit target is specified and the action is not a string,
             the action function can be invoked directly. There's no need (and no
             capactiy) to pass the action up the chain.
          */
         if ('string'!==typeof(this.action))
         {
-            this.action.call(responder, this, event);
+            this.action.call(responder, this, actionData);
             return;
         }
         
@@ -501,7 +503,7 @@ coherent.View= Class.create(coherent.Responder, {
         {
             if (action in responder)
             {
-                responder[action](this, event);
+                responder[action](this, actionData);
                 return;
             }
             

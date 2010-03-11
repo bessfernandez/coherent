@@ -153,20 +153,18 @@ coherent.CollectionView= Class.create(coherent.View, {
     newItemForRepresentedObject: function(representedObject)
     {
         var oldDataModel= coherent.dataModel;
-        var item= Object.clone(this.__context);
+        var item= new coherent.KVO.Proxy(this.__context);
         
-        item.initialiseKeyValueObserving();
-        item.__keys= {};
         coherent.dataModel= item;
         
         var node;
         if (this.templateNode)
             node= Element.clone(this.templateNode);
-        
-        item.representedObject= representedObject;
-        item.view= this.viewTemplate(node, null);
-        item.node= node||item.view.node;
 
+        item.setValueForKey(representedObject, 'representedObject');
+        item.setValueForKey(this.viewTemplate(node, null), 'view');
+        item.setValueForKey(node||item.view.node, 'node');
+        
         coherent.dataModel= oldDataModel;
         
         return item;

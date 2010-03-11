@@ -741,6 +741,26 @@ coherent.KVO.typesOfKeyValuesToIgnore= $S("string", "number", "boolean", "date",
                                           "regexp", "function");
 
 
+
+coherent.KVO.Proxy= Class._create(coherent.KVO, {
+    
+    constructor: function(original)
+    {
+        this.__original= original;
+        this.initialiseKeyValueObserving();
+    },
+    
+    valueForKey: function(key)
+    {
+        var keys= this.__kvo.keys;
+        if (key in keys)
+            return keys[key].get(this);
+
+        return this.__original.valueForKey(key);
+    }
+
+});
+    
 /** Add KVO methods to an object that doesn't already have them.
  *  
  *  @param obj  the object to add the methods to

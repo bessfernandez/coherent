@@ -3,7 +3,7 @@ version: 3.0.0
 notice: src/NOTICE
 output-folder: build
 browsers: firefox
-class list: classes.js
+# class list: classes.js
 
 # browsers: [safari, firefox, ie]
 

@@ -44,9 +44,11 @@ function NIB(def)
         if ('array'===type || !(type in ignore || 'addObserverForKeyPath' in v))
             coherent.KVO.adaptTree(v);
 
+        //  Remember all the views we've created, but don't add them to the list
+        //  of things to awake, because we special process views.
         if (v instanceof coherent.View)
             views.push(v);
-        if ('awakeFromNib' in v)
+        else if ('awakeFromNib' in v)
             awake.push(v);
         model.setValueForKey(v, p);
     }
@@ -88,6 +90,10 @@ function NIB(def)
     while (len--)
         awake[len].awakeFromNib();
 
+    len= views.length;
+    while (len--)
+        NIB.__awakeViewsFromNib(views[len]);
+        
     coherent.dataModel= oldDataModel;
     
     if (applicationNib)
@@ -101,6 +107,48 @@ Object.extend(NIB, {
         return new coherent.Asset(href, content);
     },
 
+    /** Visit all elements in the node tree rooted at the view in depth first
+        order. Call the view's awakeFromNib method only after calling the
+        awakeFromNib method for all its subviews.
+     */
+    __awakeViewsFromNib: function(view)
+    {
+        var node= view.node;
+        
+        if (!node)
+            return;
+        var end= node.nextSibling||node.parentNode;
+        var viewFromNode= coherent.View.fromNode;
+        
+        while (node!==end)
+        {
+            if (1===node.nodeType && node.firstChild)
+            {
+                node= node.firstChild;
+                continue;
+            }
+
+            while (!node.nextSibling)
+            {
+                // if (1===node.nodeType)
+                //     console.log('awakeViewsFromNib: ', node);
+                // 
+                if (1===node.nodeType && (view= viewFromNode(node)) && view.awakeFromNib)
+                    view.awakeFromNib();
+                node= node.parentNode;
+                if (node===end)
+                    return;
+            }
+
+            // if (1===node.nodeType)
+            //     console.log('awakeViewsFromNib: ', node);
+            // 
+            if (1===node.nodeType && (view= viewFromNode(node)) && view.awakeFromNib)
+                view.awakeFromNib();
+            node= node.nextSibling;
+        }
+    },
+    
     __scriptLoaded: function(href, owner, source)
     {
         var head= document.getElementsByTagName('head')[0];

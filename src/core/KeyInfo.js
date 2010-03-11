@@ -261,7 +261,7 @@ coherent.KeyInfo.getInfoForKeyOnObject= function(key, object)
             if (methods.get.__key===key)
             {
                 wrappedMethods.get= methods.get;
-                methods.get= methods.get.valueOf();
+                methods.get= methods.get.originalMethod;
             }
             else
             {
@@ -273,7 +273,7 @@ coherent.KeyInfo.getInfoForKeyOnObject= function(key, object)
             if (methods.set.__key===key)
             {
                 wrappedMethods.set= methods.set;
-                methods.set= methods.set.valueOf();
+                methods.set= methods.set.originalMethod;
             }
             else
             {
@@ -383,10 +383,11 @@ coherent.KeyInfo.createWrappedPropertyMethodsForKey= function(methods, key)
 
 coherent.KeyInfo.wrapMethod= function(wrapper, originalMethod, key)
 {
-    var newMethod= wrapper(originalMethod, key);
+    var newMethod= wrapper();
     newMethod.valueOf= function() { return originalMethod; }
     newMethod.toString= function() { return String(originalMethod); }
     newMethod.__key= key;
+    newMethod.originalMethod= originalMethod;
     return newMethod;
 }
 
@@ -395,13 +396,11 @@ coherent.KeyInfo.wrapMethod= function(wrapper, originalMethod, key)
     calling the original setter and didChange after calling the
     original setter.
     
-    @param setter  the original setter function to wrap
-    @param key      the name of the key
-    @returns a wrapped function
+    @type Function
     
     @inner
  */
-coherent.KeyInfo.wrapSetMethod= function(setter, key)
+coherent.KeyInfo.wrapSetMethod= function()
 {
     /** A wrapper around a KVO setter method that calls willChangeValueForKey
         before calling the setter and didChangeValueForKey after calling.
@@ -410,25 +409,21 @@ coherent.KeyInfo.wrapSetMethod= function(setter, key)
     {
         var keyInfo= this.infoForKey(wrappedSetter.__key);
         this.willChangeValueForKey(wrappedSetter.__key, keyInfo);
-        var result= wrappedSetter.original.call(this, value);
+        var result= wrappedSetter.originalMethod.call(this, value);
         this.didChangeValueForKey(wrappedSetter.__key, keyInfo);
         return result;
     }
-
-    wrappedSetter.original= setter;
     return wrappedSetter;
 }
 
 /** Create a wrapped getter function which will ensure that the parent link
     is added to all property values.
     
-    @param getter   the original getter function to wrap
-    @param key      the name of the key
-    @returns a wrapped function
+    @type Function
     
     @inner
  */
-coherent.KeyInfo.wrapGetMethod= function(getter, key)
+coherent.KeyInfo.wrapGetMethod= function()
 {
     /** A wrapper around the KVO object's getter method that will add a
         link back to the KVO object from the value returned. This allows
@@ -438,7 +433,7 @@ coherent.KeyInfo.wrapGetMethod= function(getter, key)
      */
     function wrappedGetter()
     {
-        var value= wrappedGetter.original.call(this);
+        var value= wrappedGetter.originalMethod.call(this);
         
         var keyInfo= this.__kvo.keys[wrappedGetter.__key];
         if (!keyInfo)
@@ -451,7 +446,6 @@ coherent.KeyInfo.wrapGetMethod= function(getter, key)
             
         return value;
     }
-    wrappedGetter.original= getter;
     return wrappedGetter;
 }
 
