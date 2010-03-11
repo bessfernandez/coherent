@@ -1,0 +1,11 @@
+/*jsl:import foundation/core/base.js*/
+/*jsl:import foundation/core/es5-additions.js*/
+/*jsl:import foundation/core/string-additions.js*/
+/*jsl:import foundation/core/array-additions.js*/
+/*jsl:import foundation/core/array-additions-ie.js*/
+/*jsl:import foundation/core/function-additions.js*/
+/*jsl:import foundation/core/set.js*/
+/*jsl:import foundation/core/object-additions.js*/
+/*jsl:import foundation/core/regex-additions.js*/
+/*jsl:import foundation/core/oop.js*/
+/*jsl:import foundation/net/XHR.js*/

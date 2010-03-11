@@ -7,11 +7,16 @@ browsers: firefox
 
 # browsers: [safari, firefox, ie]
 
-js:
-    - src/core/startup.js
-    - src
-
-
+coherent.js:
+    include:
+        - src/foundation.js
+        - src/foundation
+        - src/ui
+        
+coherent-data.js:
+    include:
+        - src/data
+        
 test:
     tests:
         - tests/factory.js
