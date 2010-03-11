@@ -8,9 +8,10 @@ browsers: firefox
 # browsers: [safari, firefox, ie]
 
 js:
-    - src/core/startup.js
-    - src
-
+    - src/foundation.js
+    - src/foundation
+    - src/ui.js
+    - src/ui
 
 test:
     tests:
