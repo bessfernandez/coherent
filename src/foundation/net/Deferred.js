@@ -28,20 +28,16 @@ var InvalidStateError= coherent.defineError('InvalidStateError');
                 this._status= (result instanceof Error)?FAILURE:SUCCESS;
                 this._result= result;
                 
-                var fn= this._callbacks.shift()[this._status];
+                var methods= this._callbacks.shift();
+                var fn= methods[this._status];
+                var scope= methods[2];
                 if (!fn)
                     continue;
                 
-                result= fn(result);
+                result= fn.call(scope, result);
                 if (result instanceof coherent.Deferred)
                 {
-                    var me= this;
-                    function callback(result)
-                    {
-                        me._fire(result);
-                        return result;
-                    }
-                    result.addMethods(callback, callback);
+                    result.addMethods(this._fire, this._fire, this);
                     return;
                 }
             }
@@ -65,23 +61,23 @@ var InvalidStateError= coherent.defineError('InvalidStateError');
             this.failure(cancelResult);
         },
         
-        addMethods: function(newCallback, newErrorHandler)
+        addMethods: function(newCallback, newErrorHandler, scope)
         {
-            this._callbacks.push([newCallback, newErrorHandler]);
+            this._callbacks.push([newCallback, newErrorHandler, scope]);
             if (NOTFIRED===this._status)
                 return this;
             this._fire(this._result);
             return this;
         },
 
-        addCallback: function(newCallback)
+        addCallback: function(newCallback, scope)
         {
-            return this.addMethods(newCallback, null);
+            return this.addMethods(newCallback, null, scope);
         },
         
-        addErrorHandler: function(newErrorHandler)
+        addErrorHandler: function(newErrorHandler, scope)
         {
-            return this.addMethods(null, newErrorHandler);
+            return this.addMethods(null, newErrorHandler, scope);
         },
             
         callback: function(result)

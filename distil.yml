@@ -13,6 +13,10 @@ js:
     - src/ui.js
     - src/ui
 
+externals:
+    remove prefix: src/external
+    copy: src/external/*
+
 test:
     tests:
         - tests/factory.js

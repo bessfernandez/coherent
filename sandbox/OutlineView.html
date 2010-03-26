@@ -43,12 +43,12 @@
                 color: HighlightText;
             }
 */            
-            .c-updating
+            .ui-updating
             {
                 color: rgba(0,0,0,0);
             }
             
-            .c-placeholder
+            .ui-placeholder
             {
                 color: #999;
             }
@@ -90,7 +90,7 @@
                 padding-left: 16px;
             }
 
-            .item.c-outline-leaf .content
+            .item.ui-outline-leaf .content
             {
                 margin-left: 11px;
                 padding-left: 5px;
@@ -228,7 +228,7 @@
                 background-image: url(images/arrowRight_pressed.png);
             }
             
-            .item .c-outline-disclosure-button
+            .item .ui-outline-disclosure-button
             {
                 position: absolute;
                 left: 3px;
@@ -243,51 +243,51 @@
                 background-position: 0px 0px;
             }
 
-            .c-outline-expanded .c-outline-disclosure-button
+            .ui-outline-expanded .ui-outline-disclosure-button
             {
                 background-image: url(images/disclosureTriangleSmallDown.png);
             }
 
-            .item:hover .c-outline-disclosure-button
+            .item:hover .ui-outline-disclosure-button
             {
                 background-image: url(images/disclosureTriangleSmallRightWhite.png);
             }
 
-            .c-outline-expanded:hover .c-outline-disclosure-button
+            .ui-outline-expanded:hover .ui-outline-disclosure-button
             {
                 background-image: url(images/disclosureTriangleSmallDownWhite.png);
             }
             
-            .c-outline-leaf .c-outline-disclosure-button
+            .ui-outline-leaf .ui-outline-disclosure-button
             {
                 display: none;
             }
 
-            .item.c-outline-level-1
+            .item.ui-outline-level-1
             {
                 margin-left: 0em;
             }
-            .item.c-outline-level-2
+            .item.ui-outline-level-2
             {
                 margin-left: 20px;
             }
-            .item.c-outline-level-3
+            .item.ui-outline-level-3
             {
                 margin-left: 40px;
             }
-            .item.c-outline-level-4
+            .item.ui-outline-level-4
             {
                 margin-left: 60px;
             }
-            .item.c-outline-level-5
+            .item.ui-outline-level-5
             {
                 margin-left: 80px;
             }
-            .item.c-outline-level-6
+            .item.ui-outline-level-6
             {
                 margin-left: 100px;
             }
-            .item.c-outline-level-7
+            .item.ui-outline-level-7
             {
                 margin-left: 120px;
             }
@@ -379,7 +379,7 @@
                         return;
                     this.url= url;
                     var d= XHR.get(url);
-                    d.addCallback(this.updateData.bind(this));
+                    d.addCallback(this.updateData, this);
                 }
                 
             });

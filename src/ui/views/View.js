@@ -31,7 +31,7 @@
 coherent.View= Class.create(coherent.Responder, {
 
     exposedBindings: ['visible', 'class', 'enabled', 'editable', 'html', 'text',
-                      'toolTip', 'actionData'],
+                      'toolTip', 'argument'],
     
     defaultPlaceholders: {
         text: {
@@ -49,13 +49,19 @@ coherent.View= Class.create(coherent.Responder, {
     animationOptions: {
         'class': {},
         visible: {
-            classname: coherent.Style.kFadingClass
+            classname: coherent.Style.kFadingClass,
+            reverse: true
         },
         enabled: {
-            classname: coherent.Style.kDisabledClass
+            classname: coherent.Style.kDisabledClass,
+            reverse: true
         },
         editable: {
-            classname: coherent.Style.kReadOnlyClass
+            classname: coherent.Style.kReadOnlyClass,
+            reverse: true
+        },
+        focus: {
+            classname: coherent.Style.kFocusClass
         },
         text: {
             classname: coherent.Style.kUpdatingClass
@@ -293,6 +299,17 @@ coherent.View= Class.create(coherent.Responder, {
         return newContainer;
     },
     
+    wrap: function(tagName, classname)
+    {
+        var node= this.node;
+        var container= document.createElement(tagName||'span');
+        container.classname= classname;
+        
+        node.parentNode.replaceChild(container, node);
+        container.appendChild(node);
+        return (this.__container= container);
+    },
+    
     /** Find the parent view in the DOM heirarchy...
      */
     superview: function()
@@ -326,14 +343,7 @@ coherent.View= Class.create(coherent.Responder, {
         var parentNode= parent.node;
         var node= this.node;
         
-        while (node && node!==document.body)
-        {
-            if (node.id===parentNode.id)
-                return true;
-            node= node.parentNode;
-        }
-        
-        return false;
+        return Element.contains(parentNode, node);
     },
     
     /** Add a view as a child of this view. This simply calls appendChild on
@@ -390,7 +400,8 @@ coherent.View= Class.create(coherent.Responder, {
         this.delegate= function()
         {
             this.__delegate= (this.__context && this.__context.valueForKey(newDelegate));
-            delete this.delegate;
+            if (this.__delegate)
+                delete this.delegate;
             return this.__delegate;
         }
     },
@@ -418,16 +429,16 @@ coherent.View= Class.create(coherent.Responder, {
     {
         var node= this.node;
         var originalClassName= node.className;
-        var oldClasses= $S(originalClassName.split(" "));
         var newClasses= $S((newClassName||"").split(" "));
-    
+        var prefixLen= coherent.Style.PREFIX.length;
+        
         //  reset any state classes
         function reapplyStyle(classname)
         {
-            if (classname in oldClasses)
+            if (classname.slice(0,prefixLen)===coherent.Style.PREFIX)
                 Set.add(newClasses, classname);
         }
-        coherent.Style.__styles.forEach(reapplyStyle);
+        originalClassName.split(" ").forEach(reapplyStyle);
         
         newClassName = Set.join(newClasses, ' ');
         
@@ -459,8 +470,22 @@ coherent.View= Class.create(coherent.Responder, {
     
     animateClassName: function(animationOptions, reverse)
     {
-        animationOptions.reverse= !!reverse;
+        var hasReverse= ('reverse' in animationOptions);
+        
+        if (hasReverse)
+        {
+            var originalReverse= animationOptions.reverse;
+            animationOptions.reverse= reverse?!animationOptions.reverse:animationOptions.reverse;
+        }
+        else
+            animationOptions.reverse= !!reverse;
+            
         coherent.Animator.animateClassName(this.node, animationOptions);
+
+        if (!hasReverse)
+            delete animationOptions.reverse;
+        else
+            animationOptions.reverse= originalReverse;
     },
     
     /** Send the action message to the target.
@@ -481,7 +506,7 @@ coherent.View= Class.create(coherent.Responder, {
         else if ('string'===typeof(responder))
             responder= this.__context.valueForKeyPath(responder);
 
-        var actionData= this.actionData||null;
+        var argument= this.argument||null;
         
         /*  When an explicit target is specified and the action is not a string,
             the action function can be invoked directly. There's no need (and no
@@ -489,7 +514,7 @@ coherent.View= Class.create(coherent.Responder, {
          */
         if ('string'!==typeof(this.action))
         {
-            this.action.call(responder, this, actionData);
+            this.action.call(responder, this, argument);
             return;
         }
         
@@ -502,7 +527,7 @@ coherent.View= Class.create(coherent.Responder, {
         {
             if (action in responder)
             {
-                responder[action](this, actionData);
+                responder[action](this, argument);
                 return;
             }
             
@@ -611,8 +636,14 @@ coherent.View= Class.create(coherent.Responder, {
             if (options.setup)
                 options.setup.call(_this, node, animationOptions);
 
-            animationOptions.reverse= !!options.reverse;
-            
+            if ('reverse' in animationOptions)
+            {
+                if (options.reverse)
+                    animationOptions.reverse= !animationOptions.reverse;
+            }
+            else
+                animationOptions.reverse= !!options.reverse;
+
             if (options.update)
                 animationOptions.callback= update;
             else
@@ -653,7 +684,7 @@ coherent.View= Class.create(coherent.Responder, {
                     if (options.duration)
                         Element.removeClassName(node, options.classname||options.add);
                 },
-                reverse: visible
+                reverse: !visible
             });
     },
 
@@ -673,7 +704,7 @@ coherent.View= Class.create(coherent.Responder, {
     setEnabled: function(isEnabled)
     {
         this.__animatePropertyChange('enabled', {
-                reverse: isEnabled,
+                reverse: !isEnabled,
                 cleanup: function(node)
                 {
                     node.disabled= !isEnabled;
@@ -689,7 +720,7 @@ coherent.View= Class.create(coherent.Responder, {
     setEditable: function(isEditable)
     {
         this.__animatePropertyChange('editable', {
-                reverse: isEditable,
+                reverse: !isEditable,
                 cleanup: function(node)
                 {
                     node.readOnly= !isEditable;

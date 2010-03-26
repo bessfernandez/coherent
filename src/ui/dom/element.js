@@ -36,6 +36,11 @@ Object.extend(Element, {
                (element.id=('coherent_id_' + Element.assignId.uniqueId++));
     },
 
+    contains: function(parent, child)
+    {
+        return parent==child || !!(parent.compareDocumentPosition(child) & 16);
+    },
+    
     /** Create a regular expression that will match a particular class name
         @param {String} className - The classname that the regular expression
             should match
@@ -660,9 +665,12 @@ Element.getStyle= Element.getStyles;
 
 Element.assignId.uniqueId= 1;
 
-
 //  Provide support for legacy browsers that don't implement the W3C selector API
 if (!coherent.Support.QuerySelector)
+{
+    //  Force a synchronous load of sizzle.js to provide selector engine.
+    coherent.Asset('sizzle.js').load();
+    
     Object.extend(Element, {
     
         query: function(node, selector)
@@ -684,6 +692,7 @@ if (!coherent.Support.QuerySelector)
         }
         
     });
+}
 
 /*jsl:declare HTMLElement*/
 /*jsl:declare Node*/

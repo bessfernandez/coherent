@@ -11,6 +11,7 @@ coherent.Page= Class.create(coherent.Responder, {
     constructor: function()
     {
         this.firstResponder= null;
+        this.__mouseEventListeners=[];
         this.__hoverTrackingIds={};
     },
     
@@ -33,14 +34,15 @@ coherent.Page= Class.create(coherent.Responder, {
         if (this.firstResponder==view)
             return true;
 
+        var firstResponder= this.firstResponder;
+        
         //  Ask previous first responder to resign
-        if (this.firstResponder &&
-            !this.firstResponder.resignFirstResponder())
+        if (firstResponder && !firstResponder.resignFirstResponder())
             return false;
 
         //  Remove focus class from old firstResponder
-        if (this.firstResponder)
-            this.firstResponder.removeClassName(coherent.Style.kFocusClass);
+        if (firstResponder)
+            firstResponder.animateClassName(firstResponder.__animationOptionsForProperty('focus'), true);
         
         if (view && !view.becomeFirstResponder())
         {
@@ -54,10 +56,12 @@ coherent.Page= Class.create(coherent.Responder, {
         this.firstResponder= view;
         this.didChangeValueForKey('firstResponder');
         
+        // console.log('makeFirstResponder: ', view?view.node.tagName:view);
+        
         if (view)
         {
             view.focus();
-            view.addClassName(coherent.Style.kFocusClass);
+            view.animateClassName(view.__animationOptionsForProperty('focus'));
         }
 
         return true;
@@ -101,7 +105,8 @@ coherent.Page= Class.create(coherent.Responder, {
     _findFirstResponder: function(view)
     {
         while (view && !view.acceptsFirstResponder())
-            view= view.superview();
+            // view= view.superview();
+            view= view.nextResponder();
         if (!view)
             return;
         this.makeFirstResponder(view);
@@ -110,6 +115,10 @@ coherent.Page= Class.create(coherent.Responder, {
     _onmousedown: function(event)
     {
         var view= this.targetViewForEvent(event);
+        
+        if (this.__mouseEventListeners.length)
+            this.__mouseEventListeners.forEach(function(l) { l.onmousedown(event); });
+            
         if (view)
         {
             this._findFirstResponder(view);
@@ -136,6 +145,9 @@ coherent.Page= Class.create(coherent.Responder, {
         }
         else if (this._mousedownView)
             this._mousedownView.onmouseup(event);
+
+        if (this.__mouseEventListeners.length)
+            this.__mouseEventListeners.forEach(function(l) { l.onmouseup(event); });
             
         this._mousedownView= null;
         Event.stopObserving(document, 'mousemove', this._onmousedragHandler);
@@ -248,6 +260,9 @@ coherent.Page= Class.create(coherent.Responder, {
         if (coherent.Browser.Mozilla && event.button===2)
             return;
             
+        if (this.__mouseEventListeners.length)
+            this.__mouseEventListeners.forEach(function(l) { l.onclick(event); });
+
         var view= this.targetViewForEvent(event);
         if (view)
             view.onclick(event);
@@ -258,6 +273,9 @@ coherent.Page= Class.create(coherent.Responder, {
 
     _ondblclick: function(event)
     {
+        if (this.__mouseEventListeners.length)
+            this.__mouseEventListeners.forEach(function(l) { l.ondblclick(event); });
+            
         if (this._mousedownView)
             this._mousedownView.ondblclick(event);
     },
@@ -285,21 +303,28 @@ coherent.Page= Class.create(coherent.Responder, {
     
     _onfocus: function(event)
     {
-        var isDocument= (event.target||event.srcElement)==window;
+        var target= (event.target||event.srcElement);
+        if (!target)
+            return;
+
+        var isDocument= (target===window);
+            
+        // console.log('focus: target=', target?target.tagName:target, 'is window=', isDocument);
         
-        if (coherent.Browser.IE && document.activeElement==this.focusedElement)
-            isDocument = true;
+        // if (coherent.Browser.IE && document.activeElement==this.focusedElement)
+        //     isDocument = true;
+
+        // console.log('focus: is document=', isDocument);
         
         if (isDocument)
         {
+            if (window.dashcode && !window.dashcode.inDesign && document.body)
+                Element.removeClassName(document.body, coherent.Style.kInactiveWindow);
+
             if (!this._documentFocused)
             {
                 this.makeFirstResponder(this._previousFirstResponder || null);
                 this._previousFirstResponder = null;
-                this._documentFocused = true;
-                
-                if (window.dashcode && !window.dashcode.inDesign && document.body)
-                    Element.removeClassName(document.body, coherent.Style.kInactiveWindow);
             }
         }
         else
@@ -308,7 +333,8 @@ coherent.Page= Class.create(coherent.Responder, {
 
             if (view)
                 view.onfocus(event);
-            
+
+            // console.log('focus: view=', view);
             if (view && view.acceptsFirstResponder())
                 this.makeFirstResponder(view);
             else
@@ -316,14 +342,24 @@ coherent.Page= Class.create(coherent.Responder, {
                 
             this.focusedElement = event.target||event.srcElement;
         }
+        
+        this._documentFocused = true;
     },
     
     _onblur: function(event)
     {
-        var isDocument= (event.target||event.srcElement)==window;
+        var target= (event.target||event.srcElement);
+        if (!target)
+            return;
 
-        if (coherent.Browser.IE && document.activeElement==this.focusedElement)
-            isDocument = true;
+        var isDocument= (target===window);
+
+        // console.log('blur: target=', target?target.tagName:target, 'is window=', isDocument);
+
+        // if (coherent.Browser.IE && document.activeElement==this.focusedElement)
+        //     isDocument = true;
+
+        // console.log('blur: is document=', isDocument);
         
         if (isDocument)
         {
@@ -341,6 +377,8 @@ coherent.Page= Class.create(coherent.Responder, {
             if (view)
                 view.onblur(event);
 
+            // console.log('blur: view=', view);
+                
             this.focusedElement = null;
         
             if (view && view.acceptsFirstResponder())

@@ -13,34 +13,35 @@ coherent.fx= coherent.fx||{};
         cleanup: function()
         {
             this.element.style[this.property]= '';
-        }
-    });
-
-    function convertKeywords(keywords)
-    {
-        switch (keywords)
+        },
+        
+        convertKeywords: function(keywords)
         {
-            case 'top':
-                return '0% 50%';
-            case 'right':
-                return '100% 50%';
-            case 'bottom':
-                return '50% 100%';
-            case 'left':
-                return '0% 50%';
-            case 'center':
-                return '50% 50%';
-            default:
-                keywords = keywords.replace(/top|left/g, '0%');
-                keywords = keywords.replace(/bottom|right/g, '100%');
-                return keywords;   
+            switch (keywords)
+            {
+                case 'top':
+                    return '0% 50%';
+                case 'right':
+                    return '100% 50%';
+                case 'bottom':
+                    return '50% 100%';
+                case 'left':
+                    return '0% 50%';
+                case 'center':
+                    return '50% 50%';
+                default:
+                    keywords = keywords.replace(/top|left/g, '0%');
+                    keywords = keywords.replace(/bottom|right/g, '100%');
+                    return keywords;   
+            }
+        },
+        
+        stripUnits: function(item)
+        {
+            return parseInt(item, 10);
         }
-    }
-
-    function stripUnits(item)
-    {
-        return parseInt(item, 10);
-    }
+        
+    });
 
     /** An animation stepper for colour properties.
         @constructor
@@ -207,7 +208,6 @@ coherent.fx= coherent.fx||{};
         }
     });
 
-
     /** An animation stepper for the class name of a node.
         @constructor
      */
@@ -241,8 +241,8 @@ coherent.fx= coherent.fx||{};
     coherent.fx.BackgroundPositionStepper= Class._create(coherent.fx.StepperBase, {
         constructor: function(element, start, end, shouldCleanup)
         {
-            start = convertKeywords(start);
-            end = convertKeywords(end);
+            start = this.convertKeywords(start);
+            end = this.convertKeywords(end);
     
             var startUnit = start.match(/%|px/)[0];
             var endUnit = end.match(/%|px/)[0];
@@ -252,8 +252,8 @@ coherent.fx= coherent.fx||{};
     
             this.element = element;
             this.unit = startUnit;
-            this.start = Array.map(start.split(' '), stripUnits);
-            this.end = Array.map(end.split(' '), stripUnits);
+            this.start = Array.map(start.split(' '), this.stripUnits);
+            this.end = Array.map(end.split(' '), this.stripUnits);
             this.delta = [this.end[0]-this.start[0], this.end[1]-this.start[1]];
             this.shouldCleanup= !!shouldCleanup;
     
@@ -270,10 +270,13 @@ coherent.fx= coherent.fx||{};
         
         cleanup: function()
         {
-            if (coherent.Browser.IE) {
+            if (coherent.Browser.IE)
+            {
                 this.element.style.backgroundPositionX = '';
                 this.element.style.backgroundPositionY = '';
-            } else {
+            }
+            else
+            {
                 this.element.style.backgroundPosition = '';
             }
         }

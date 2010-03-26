@@ -15,45 +15,64 @@ coherent.FormControl= Class.create(coherent.View, {
 
     value: function()
     {
+        if (this.formatter)
+            return this.formatter.valueForString(this.node.value);
+            
         return this.node.value;
     },
     
     setValue: function(newValue)
     {
+        var markerType= this.bindings.value && this.bindings.value.markerType;
+
+        if (!markerType && this.formatter)
+            newValue= this.formatter.stringForValue(newValue);
+            
         this.node.value= newValue;
     },
     
-    /** Callback for tracking changes to the value binding. This updates the
-        value that the form control will send to the server.
-        
-        @param change   a ChangeNotification with the new value for the field
+    /** Callback for tracking changes to the value binding. This method will
+        disable the control if the value is undefined (meaning one of the
+        objects along the key path doesn't exist). Additionally, the control
+        will be set to readonly if the value binding isn't mutable or if the new
+        value is one of the marker values (MultipleValuesMarker or
+        NoSelectionMarker).
+      
+        @param {coherent.ChangeNotification} change - an object with the newValue
+            and oldValue for the binding.
       */
     observeValueChange: function(change)
     {
-        var node= this.node;
+        var newValue= change.newValue;
 
+        if (coherent.ChangeType.validationError===change.changeType)
+        {
+            this.presentError(newValue);
+            return;
+        }
+        
         //  determine whether this value is a marker
         var markerType= this.bindings.value && this.bindings.value.markerType;
+
+        if (!markerType && this.formatter)
+            newValue= this.formatter.stringForValue(newValue);
         
         if (coherent.NoSelectionMarkerType===markerType)
-            node.disabled= true;
+            this.setEnabled(false);
         else if (!this.bindings.enabled)
-            node.disabled= false;
+            this.setEnabled(true);
     
         if (!this.bindings.editable)
-            node.readOnly= !this.bindings.value.mutable();
+            this.setEditable(this.bindings.value.mutable());
 
-        if (node.readOnly)
-            Element.addClassName(node, coherent.Style.kReadOnlyClass);
-        else
-            Element.removeClassName(node, coherent.Style.kReadOnlyClass);
+        if (!this.bindings.errorMessage)
+            this.clearAllErrors();
 
-        if (node.disabled)
-            Element.addClassName(node, coherent.Style.kDisabledClass);
-        else
-            Element.removeClassName(node, coherent.Style.kDisabledClass);
-            
-        this.setValue(change.newValue);
+        //  don't change the value if the field has the focus
+        if (this.hasFocus)
+            return;
+
+        this.setValue(newValue);
     },
     
     name: function()
@@ -66,9 +85,41 @@ coherent.FormControl= Class.create(coherent.View, {
         this.node.name= newName;
     },
     
+    /** Check the value of the FormControl to see if it is valid. If the value
+        is not valid, this will present the error and return it. Otherwise, the
+        method will return the valid value.
+        @type {coherent.Error|Any}
+     */
     validate: function()
     {
-        return this.node.value;
+        var value= this.node.value;
+        
+        /*  TODO: the placeholder bit is from the TextField... */
+        if (this.__showingPlaceholder)
+            value= "";
+            
+        if (this.formatter)
+        {
+            var err= this.formatter.isStringValid(value);
+            if (err instanceof coherent.Error)
+            {
+                this.presentError(err);
+                return err;
+            }
+            value= this.formatter.valueForString(value);
+        }
+        
+        if (this.bindings.value)
+        {
+            value= this.bindings.value.validateProposedValue(value);
+            if (value instanceof coherent.Error)
+            {
+                this.presentError(value);
+                return value;
+            }
+        }
+        
+        return value;
     }
     
 });

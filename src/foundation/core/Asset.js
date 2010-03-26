@@ -87,7 +87,6 @@
 
         load: function(sync)
         {
-            var _this= this;    
             var d= XHR.get(this.href, null, {
                                 sync: sync,
                                 responseContentType: 'text/plain'
@@ -95,10 +94,10 @@
         
             function received(data)
             {
-                _this.setContent(data);
-                return _this.__content;
+                this.setContent(data);
+                return this.__content;
             }
-            d.addCallback(received);
+            d.addCallback(received, this);
             return d;
         },
         

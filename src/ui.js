@@ -13,5 +13,7 @@
 /*jsl:import ui/controllers/Controller.js*/
 /*jsl:import ui/dom/element.js*/
 /*jsl:import ui/dom/event.js*/
+
+/*jsl:import ui/views/theme.js*/
 /*jsl:import ui/views/View.js*/
 /*jsl:import ui/nib/VIEW.js*/

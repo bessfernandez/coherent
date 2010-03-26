@@ -1,4 +1,4 @@
-/*jsl:import ../src/net/XHR.js*/
+/*jsl:import ../foundation/net/XHR.js*/
 
 function JSONRPC(method, url, parameters, options)
 {
@@ -54,24 +54,27 @@ Object.extend(JSONRPC, {
     {
         var url= response.head.location;
         var method= response.head.method;
+        var target= response.head.target;
         var args= response.head.args;
     
         if ('post'===method)
-            JSONRPC.issuePostRedirect(url, args);
+            JSONRPC.issuePostRedirect(url, args, target);
         else
-            JSONRPC.issueGetRedirect(url, args);
+            JSONRPC.issueGetRedirect(url, args, target);
         
         return true;
     },
     
-    issuePostRedirect: function(url, args)
+    issuePostRedirect: function(url, args, target)
     {
 		//build the form
 		var form = document.createElement("form");
 
 		form.action = url;
 		form.method = "post";
-
+        if (target)
+            form.target= target;
+            
 		//generate hidden
 		var p;
 	    var v;
@@ -110,7 +113,7 @@ Object.extend(JSONRPC, {
 		form.submit();
     },
 
-    issueGetRedirect: function(url, args)
+    issueGetRedirect: function(url, args, target)
     {
     	if (!url)
     	    return;
@@ -119,20 +122,13 @@ Object.extend(JSONRPC, {
 
         if (args)
         {
-            if (url.indexOf('?'))
-                url+= '&';
-            else
+            if (-1===url.indexOf('?'))
                 url+= '?';
+            else
+                url+= '&';
             url+= args;
         }
 
-		/*
-		WebKit will not add the current page to the page history when doing
-		a window.location.href to change the browser location. It requires a
-		user interaction (such as a mouse click on a link). To work around this
-		we do a window open to _top.
-		http://bugs.webkit.org/show_bug.cgi?id=9148
-		*/
-		window.open(url, "_top");
+		window.open(url, target?target:"_top");
     }
 });

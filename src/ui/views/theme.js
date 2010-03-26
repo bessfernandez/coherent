@@ -6,39 +6,36 @@
  *  @namespace
  */
 coherent.Style= {
-    kSelectedClass: "c-selected",
-    kDisabledClass: "c-disabled",
-    kReadOnlyClass: "c-read-only",
-    kMarkerClass: "c-placeholder",
-    kFocusClass: "c-focused",
-    kHoverClass: "c-hover",
-    kAscendingClass: "c-asc",
-    kDescendingClass: "c-desc",
-    kActiveClass: "c-active",
-    kUpdatingClass: "c-updating",
-    kFadingClass: "c-invisible",
-    kInvalidValueClass: "c-invalid",
-    kInsertedClass: "c-inserted",
-    kDeletedClass: "c-deleted",
-    kReplacingClass: "c-replacing",
-    kLoadingClass: "c-loading",
-    kFirstClass: "c-first",
-    kLastClass: "c-last",
-    kDragAndDropCopy: "c-drag-and-drop-copy",
-    kDragAndDropMove: "c-drag-and-drop-move",
-    kDragAndDropLink: "c-drag-and-drop-link",
-    kDragAndDropNo: "c-drag-and-drop-no",
-    kInactiveWindow: 'c-window-inactive',
-    kOutlineExpanded: 'c-outline-expanded',
-    kOutlineLeaf: 'c-outline-leaf',
-    kOutlineLevelPrefix: 'c-outline-level-',
-    kOutlineDisclosureButton: 'c-outline-disclosure-button'
+    PREFIX: 'ui-',
+    kSelectedClass: "ui-selected",
+    kDisabledClass: "ui-disabled",
+    kReadOnlyClass: "ui-readonly",
+    kMarkerClass: "ui-placeholder",
+    kFocusClass: "ui-focused",
+    kHoverClass: "ui-hover",
+    kAscendingClass: "ui-sort-ascending",
+    kDescendingClass: "ui-sort-descending",
+    kActiveClass: "ui-active",
+    kUpdatingClass: "ui-updating",
+    kFadingClass: "ui-hidden",
+    kInvalidValueClass: "ui-invalid",
+    kInsertedClass: "ui-inserted",
+    kDeletedClass: "ui-deleted",
+    kReplacingClass: "ui-replacing",
+    kLoadingClass: "ui-loading",
+    kFirstClass: "ui-first",
+    kLastClass: "ui-last",
+    kDragAndDropCopy: "ui-drag-and-drop-copy",
+    kDragAndDropMove: "ui-drag-and-drop-move",
+    kDragAndDropLink: "ui-drag-and-drop-link",
+    kDragAndDropNo: "ui-drag-and-drop-no",
+    kInactiveWindow: 'ui-window-inactive',
+    kOutlineExpanded: 'ui-outline-expanded',
+    kOutlineLeaf: 'ui-outline-leaf',
+    kOutlineLevelPrefix: 'ui-outline-level-',
+    kOutlineDisclosureButton: 'ui-outline-disclosure-button',
+    kOverlayAbove: 'ui-overlay-above',
+    kOverlayBelow: 'ui-overlay-below',
+    kOverlayLeft: 'ui-overlay-left',
+    kOverlayRight: 'ui-overlay-right'
 };
-
-coherent.Style.__styles= (function(){
-        var s= [];
-        var styles= coherent.Style;
-        for (var p in styles)
-            s.push(styles[p]);
-        return s;
-    })();

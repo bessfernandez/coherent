@@ -5,20 +5,20 @@
     
     The default mark up for a Bubble is:
 
-        <div class="bubble">
-            <span class="chrome tl"></span>
-            <span class="chrome tr"></span>
-            <span class="chrome top"></span>
-            <span class="chrome left"></span>
-            <span class="chrome right"></span>
-            <span class="chrome bottom"></span>
-            <span class="chrome bl"></span>
-            <span class="chrome br"></span>
-            <span class="chrome center"></span>
-            <div class="container">
-                <div class="content"></div>
+        <div class="ui-bubble">
+            <span class="ui-bubble-chrome ui-bubble-tl"></span>
+            <span class="ui-bubble-chrome ui-bubble-tr"></span>
+            <span class="ui-bubble-chrome ui-bubble-top"></span>
+            <span class="ui-bubble-chrome ui-bubble-left"></span>
+            <span class="ui-bubble-chrome ui-bubble-right"></span>
+            <span class="ui-bubble-chrome ui-bubble-bottom"></span>
+            <span class="ui-bubble-chrome ui-bubble-bl"></span>
+            <span class="ui-bubble-chrome ui-bubble-br"></span>
+            <span class="ui-bubble-chrome ui-bubble-center"></span>
+            <div class="ui-bubble-container">
+                <div class="ui-bubble-content"></div>
             </div>
-            <span class="chrome arrow"></span>
+            <span class="ui-bubble-chrome ui-bubble-arrow"></span>
         </div>
 
     In the absense of multiple CSS background images or the border image property,
@@ -36,7 +36,7 @@
 
     An example of the CSS rules for a bubble follow:
     
-        .bubble .arrow
+        .ui-bubble .ui-bubble-arrow
         {
             position: absolute;
             background-image: url(images/bubble-arrow-bottom.png);
@@ -47,7 +47,7 @@
             bottom: -14px;
         }
 
-        .bubble.below .arrow
+        .ui-bubble.ui-overlay-below .ui-bubble-arrow
         {
             background-image: url(images/bubble-arrow-top.png);
             top: -14px;
@@ -69,11 +69,11 @@ coherent.Bubble= Class.create(coherent.Overlay, {
         may be necessary to use a number of extra elements. So the content might
         not be directly below the bubble's DOM node.
      */
-    contentSelector: '.content',
+    contentSelector: '.ui-bubble-content',
     
-    markup: '<div class="bubble"></div>',
+    markup: '<div class="ui-bubble"></div>',
     
-    innerHTML: '<span class="chrome tl"></span><span class="chrome tr"></span><span class="chrome top"></span><span class="chrome left"></span><span class="chrome right"></span><span class="chrome bottom"></span><span class="chrome bl"></span><span class="chrome br"></span><span class="chrome center"></span><div class="container"><div class="content"></div></div><span class="chrome arrow"></span>',
+    innerHTML: '<span class="ui-bubble-chrome ui-bubble-tl"></span><span class="ui-bubble-chrome ui-bubble-tr"></span><span class="ui-bubble-chrome ui-bubble-top"></span><span class="ui-bubble-chrome ui-bubble-left"></span><span class="ui-bubble-chrome ui-bubble-right"></span><span class="ui-bubble-chrome ui-bubble-bottom"></span><span class="ui-bubble-chrome ui-bubble-bl"></span><span class="ui-bubble-chrome ui-bubble-br"></span><span class="ui-bubble-chrome ui-bubble-center"></span><div class="ui-bubble-container"><div class="ui-bubble-content"></div></div><span class="ui-bubble-chrome ui-bubble-arrow"></span>',
 
     /** The visual position for the Bubble relative to the anchor view. This
         relative position is used as a classname added to the Bubble's DOM node
@@ -81,14 +81,14 @@ coherent.Bubble= Class.create(coherent.Overlay, {
         `above` and `below`.
         @type String
      */
-    relativePosition: 'above',
+    relativePosition: coherent.Overlay.Position.ABOVE,
 
     /** The CSS selector used to locate the arrow DOM node within the Bubble. If
         the bubble can't locate the arrow, {@link #updatePosition} will throw an
         error.
         @type String
      */
-    arrowSelector: '.arrow',
+    arrowSelector: '.ui-bubble-arrow',
 
     /** In order to know how wide to make a bubble, it's useful to constrain it
         within the bounds of another node.
@@ -130,16 +130,16 @@ coherent.Bubble= Class.create(coherent.Overlay, {
     {
         var node= this.node;
         var arrow= Element.query(node, this.arrowSelector);
-        if (!arrow)
-            throw new Error('No arrow element in Bubble: selector="' + this.arrowSelector + '"');
+        // if (!arrow)
+        //     throw new Error('No arrow element in Bubble: selector="' + this.arrowSelector + '"');
             
         var targetRect= Element.getRect(this.anchor);
         var viewport= Element.getViewport();
         var withinRect;
-        var _opacity= node.style.opacity;
+        var _visibility= node.style.visibility;
         var _display= node.style.display;
-        
-        Element.setStyle(node, 'opacity', 0);
+
+        node.style.visibility='hidden';
         node.style.display='';
         
         if (this.within)
@@ -158,26 +158,51 @@ coherent.Bubble= Class.create(coherent.Overlay, {
     
         node.style.left= withinRect.left + 'px';
         node.style.width= withinRect.width + 'px';
-
-        Element.removeClassName(node, 'below');
-        var arrowHeight= arrow.offsetHeight;
-        var topOffset= arrowHeight + parseInt(Element.getStyle(arrow, 'marginBottom')||0,10);
+        //  quick adjust width to account for border and padding
+        node.style.width= (withinRect.width - (node.offsetWidth-withinRect.width)) + 'px';
         
-        var top= parseInt(targetRect.top,10) - node.offsetHeight - topOffset;
+        Element.removeClassName(node, 'below');
+        
+        var arrowHeight;
+        var marginNode;
+        
+        if (arrow)
+        {
+            arrowHeight= arrow.offsetHeight;
+            marginNode= arrow;
+        }
+        else
+        {
+            arrowHeight= 0;
+            marginNode= node;
+        }
+        
+        var topOffset= arrowHeight + parseInt(Element.getStyle(marginNode, 'marginBottom')||0,10);
+        var top= targetRect.top - node.offsetHeight - topOffset;
     
-        if (top < viewport.top || 'below'==this.relativePosition)
+        if (top < viewport.top || 'below'===this.relativePosition)
         {
             Element.addClassName(node, 'below');
-            topOffset= arrowHeight + parseInt(Element.getStyle(arrow, 'marginTop')||0,10);
-            top= parseInt(targetRect.bottom,10) + topOffset;
+            topOffset= arrowHeight + parseInt(Element.getStyle(marginNode, 'marginTop')||0,10);
+            top= targetRect.bottom + topOffset;
         }
         
         node.style.top= top + 'px';
         
         arrow.style.left= (targetRect.left - withinRect.left + targetRect.width/2) + 'px';
         
-        node.style.opacity= _opacity;
+        node.style.visibility= _visibility;
         node.style.display= _display;
+    },
+
+    onmouseup: function(event)
+    {
+        var target= event.target||event.srcElement;
+        if (Element.contains(this.anchor, target) || Element.contains(this.node, target))
+            return;
+        if (this.clickOutsideToDismiss)
+            this.setVisible(false);
     }
     
 });
+

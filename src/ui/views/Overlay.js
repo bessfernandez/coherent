@@ -14,6 +14,8 @@ coherent.Overlay= Class.create(coherent.View, {
 
     modal: false,
     
+    clickOutsideToDismiss: false,
+    
     backdropClassName: "modal-overlay-backdrop",
     guardClassName: "modal-overlay-guard",
     
@@ -91,16 +93,35 @@ coherent.Overlay= Class.create(coherent.View, {
     {
     },
     
+    onmouseup: function(event)
+    {
+        var target= event.target||event.srcElement;
+        if (Element.contains(this.node, target))
+            return;
+        if (this.clickOutsideToDismiss)
+            this.setVisible(false);
+    },
+    
     setVisible: function(isVisible)
     {
         document.body.appendChild(this.node);
         
         isVisible= !!isVisible;
 
+        var listeners= coherent.page.__mouseEventListeners;
+        var index= listeners.indexOf(this);
+        
         if (isVisible)
         {
             this.updateContent();
             this.updatePosition();
+            
+            if (this.clickOutsideToDismiss && -1===index)
+                coherent.page.__mouseEventListeners.push(this);
+        }
+        else
+        {
+            coherent.page.__mouseEventListeners.removeObjectAtIndex(index);
         }
         
         //  If the overlay is already visible, there's nothing more to do
@@ -132,3 +153,10 @@ coherent.Overlay= Class.create(coherent.View, {
 });
 
 coherent.Overlay.numberOfModalOverlays=0;
+
+coherent.Overlay.Position= {
+    ABOVE: coherent.Style.kOverlayAbove,
+    BELOW: coherent.Style.kOverlayBelow,
+    LEFT: coherent.Style.kOverlayLeft,
+    RIGHT: coherent.Style.kOverlayRight
+};

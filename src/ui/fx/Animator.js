@@ -292,7 +292,7 @@ coherent.Animator= {
     {
         var node;
         var style;
-        
+
         //  Create a local copy of the options rather than using what was passed
         //  to the method, because we'll be changing some stuff.
         options = Object.applyDefaults(Object.clone(options), DEFAULTS);
@@ -334,8 +334,8 @@ coherent.Animator= {
 
         // get destination styles
         var endStyles = getStylesForTree(element, propsToGet, options.actions);
-        element.className = oldClassName;
-
+        element.className= oldClassName;
+        
         /* If there is a callback supplied for this class transition, 
            move it to the classname property rather than the animation itself.
            This way, if the class transition is interrupted by another (without
@@ -460,6 +460,27 @@ coherent.Animator= {
             }
         }
         
+        // if (options.logStyles)
+        // {
+        //     (function(){
+        //         var stuff={};
+        //         for (var nodeId in startStyles)
+        //         {
+        //             var nodeInfo= stuff[nodeId]= {};
+        //             var start= startStyles[nodeId];
+        //             var end= endStyles[nodeId];
+        //             
+        //             for (var p in start)
+        //             {
+        //                 if (String(start[p])===String(end[p]))
+        //                     continue;
+        //                 nodeInfo[p]= [start[p], end[p]].join(' => ');
+        //             }
+        //         }
+        //         console.log('animateClassName: ', oldClassName, ' => ', newClassName, ': ', stuff);
+        //     })();
+        // }
+        // 
         Element.depthFirstTraversal(element, animateNode);
         
         options.stepBackToZero = true;
@@ -512,17 +533,17 @@ coherent.Animator= {
             }
             
             var regex= Element.regexForClassName(className);
-            
-            var elementClassName = element.className;
+            var elementClasses= coherent.Animator.classname(element);
 
-            if (!regex.test(elementClassName)) {
-                if (elementClassName)
-                    elementClassName += ' ' + className;
+            if (!regex.test(elementClasses))
+            {
+                if (elementClasses)
+                    elementClasses += ' ' + className;
                 else
-                    elementClassName= className;
+                    elementClasses= className;
             }
 
-            animateClassName(element, elementClassName, options);
+            animateClassName(element, elementClasses, options);
         },
         
         /** Animate removing a class name from an element.
@@ -532,7 +553,7 @@ coherent.Animator= {
          */
         removeClassName: function(element, className, options)
         {
-            var elementClasses= element.className;
+            var elementClasses= coherent.Animator.classname(element);
             var regex;
 
             if ('object'===typeof(className) && 'classname' in className)
@@ -563,7 +584,6 @@ coherent.Animator= {
          */
         setClassName: function(element, className, options)
         {
-            var elementClassName= element.className;
             animateClassName(element, className, options);
         },
         
@@ -576,14 +596,16 @@ coherent.Animator= {
          */
         replaceClassName: function(element, oldClassName, newClassName, options) 
         {
+            var elementClasses= coherent.Animator.classname(element);
+            
             if (oldClassName)
             {
                 var regex = Element.regexForClassName(oldClassName);
-                newClassName= element.className.replace(regex, "$1"+newClassName+"$2");
+                newClassName= elementClasses.replace(regex, "$1"+newClassName+"$2");
             }
             else
             {
-                newClassName = element.className + ' ' + newClassName;
+                newClassName = elementClasses + ' ' + newClassName;
             }
             animateClassName(element, newClassName, options);
         },
@@ -599,7 +621,8 @@ coherent.Animator= {
          */
         animateClassName: function(element, options)
         {
-            var elementClasses= (element.className||"").split(" ");
+            var elementClasses= coherent.Animator.classname(element).split(" ");
+            
             var reverse= options.reverse;
             var add= reverse ? options.remove : (options.add||options.classname);
             var remove= reverse ? (options.add||options.classname) : options.remove;
@@ -618,15 +641,30 @@ coherent.Animator= {
                 else
                     elementClasses= remove.reduce(_removeClassName, elementClasses);
             }
-
+            
             if (options.duration)
+            {
                 animateClassName(element, elementClasses.join(" "), options);
+            }
             else
             {
                 element.className= elementClasses.join(" ");
                 if (options.callback)
                     options.callback(element);
             }
+        },
+        
+        classname: function(element)
+        {
+            var id= Element.assignId(element);
+            var actor;
+            var elementClasses;
+            var classname;
+            
+            if ((actor=actors[id]) && (classname=actor.properties.classname))
+                return classname[0].end;
+            else
+                return (element.className||"");
         },
         
         /**

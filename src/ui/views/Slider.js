@@ -4,7 +4,7 @@
  **/
 coherent.Slider= Class.create(coherent.FormControl, {
     
-    exposedBindings: ['minValue', 'maxValue'],
+    exposedBindings: ['minValue', 'maxValue', 'incrementValue'],
     
     handleSelector: "a",
     
@@ -24,7 +24,8 @@ coherent.Slider= Class.create(coherent.FormControl, {
     setValue: function(newValue)
     {
         var node= this.node;
-        newValue= parseInt(newValue||0,10);
+        var increment= this.incrementValue();
+        newValue= Math.floor(parseInt(newValue||0,10)/increment)*increment;
         
         node.value= newValue;
         if (this.nativeInput)
@@ -32,49 +33,10 @@ coherent.Slider= Class.create(coherent.FormControl, {
         
         //  update handle position
         this.__updateCurrentMetrics();
-        var x= newValue*this.__stepWidth + this.__paddingLeft;
-        this.handle.style.left= x.toFixed(3) + "px";
-    },
-    
-    /** Callback for tracking changes to the value binding. This method will
-        disable the control if the value is undefined (meaning one of the
-        objects along the key path doesn't exist). Additionally, the control
-        will be set to readonly if the value binding isn't mutable or if the new
-        value is one of the marker values (MultipleValuesMarker or
-        NoSelectionMarker).
-      
-        @param change   a ChangeNotification with the new value for the slider
-      */
-    observeValueChange: function(change)
-    {
-        var node= this.node;
-        var newValue= change.newValue;
 
-        //  determine whether this value is a marker
-        var markerType= this.bindings.value && this.bindings.value.markerType;
+        var x= (newValue-this.minValue())/increment*this.__stepWidth + this.__paddingLeft;
         
-        if (!markerType && this.formatter)
-            newValue= this.formatter.stringForValue(newValue);
-
-        if (coherent.NoSelectionMarkerType===markerType)
-            node.disabled= true;
-        else if (!this.bindings.enabled)
-            node.disabled= false;
-    
-        if (!this.bindings.editable)
-            node.readOnly= !this.bindings.value.mutable();
-
-        if (node.readOnly)
-            Element.addClassName(node, coherent.Style.kReadOnlyClass);
-        else
-            Element.removeClassName(node, coherent.Style.kReadOnlyClass);
-
-        if (node.disabled)
-            Element.addClassName(node, coherent.Style.kDisabledClass);
-        else
-            Element.removeClassName(node, coherent.Style.kDisabledClass);
-                
-        this.setValue(newValue);
+        this.handle.style.left= x.toFixed(3) + "px";
     },
     
     onchange: function(event)
@@ -130,6 +92,23 @@ coherent.Slider= Class.create(coherent.FormControl, {
         }
     },
     
+    incrementValue: function()
+    {
+        return parseInt(this.node.getAttribute('step'), 10)||1;
+    },
+    
+    setIncrementValue: function(incrementValue)
+    {
+        var node= this.node;
+        var value= this.value();
+
+        incrementValue= parseInt(incrementValue||0, 10)||1;
+        
+        node.setAttribute('step', incrementValue);
+        value= Math.floor(value/incrementValue)*incrementValue;
+        this.setValue(value);
+    },
+    
     updateHandlePosition: function(event)
     {
         var rect= this.__currentRect;
@@ -146,7 +125,7 @@ coherent.Slider= Class.create(coherent.FormControl, {
 
         this.handle.style.left= x.toFixed(3) + "px";
         if (this.bindings.value)
-            this.bindings.value.setValue(value);
+            this.bindings.value.setValue(value*this.incrementValue()+this.minValue());
     },
     
     __updateCurrentMetrics: function()
@@ -164,7 +143,7 @@ coherent.Slider= Class.create(coherent.FormControl, {
         
         this.__paddingLeft= padding.paddingLeft;
         this.__handleWidth= this.handle.offsetWidth;
-        this.__stepWidth= (this.__currentRect.width-this.__handleWidth)/(this.maxValue() - this.minValue());
+        this.__stepWidth= (this.__currentRect.width-this.__handleWidth)/(this.maxValue() - this.minValue())*this.incrementValue();
         if (isNaN(this.__stepWidth))
             this.__stepWidth=1;
     },

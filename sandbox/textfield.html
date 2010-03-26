@@ -1,0 +1,99 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <link rel="stylesheet" href="reset.css" type="text/css" title="no title" charset="utf-8">
+        <script src="../build/coherent-debug.js" type="text/javascript" charset="utf-8"></script>
+        <script src="states.js" type="text/javascript" charset="utf-8"></script>
+        <style>
+            input.ui-placeholder
+            {
+                color: #777;
+            }
+            input.ui-focused.ui-placeholder
+            {
+                color: #bbb;
+            }
+            
+            .ui-bubble
+            {
+                position: absolute;
+                border: 1px solid #ccc;
+                -webkit-box-shadow: 0px 3px 5px rgba(0,0,0,0.5);
+/*                -webkit-border-bottom-left-radius: 10px;*/
+/*                -webkit-border-bottom-right-radius: 10px;*/
+            }
+                        
+            .ui-bubble li.ui-selected
+            {
+                background-color: highlight;
+            }
+            
+            .ui-bubble li
+            {
+                cursor: default;
+                padding: 0 10px;
+            }
+            
+            .ui-bubble-arrow
+            {
+                position: absolute;
+            }
+            
+            .ui-bubble ul
+            {
+                padding: 10px 0;
+                max-height: 200px;
+                overflow-y: auto;
+                overflow-x: hidden;
+            }
+            
+            .container
+            {
+                margin: 50px;
+            }
+            
+        </style>
+    </head>
+    
+    <body>
+        <div class="container">
+            <input tabIndex="1" id="control" type="text">
+            <span id="value"></span>
+            <!-- <input tabIndex="2" id="other" type="text"> -->
+        </div>
+    </body>
+    <script type="text/javascript" charset="utf-8">
+        NIB({
+            'sample': VIEW(document.body, {
+                        'input#control': coherent.TextField({
+                                                delegate: 'data',
+                                                valueBinding: {
+                                                    keypath: 'data.value',
+                                                    nullValuePlaceholder: 'Zebras!'
+                                                },
+                                                animate: {
+                                                    focus: {
+                                                        duration: 200,
+                                                        only: ['color']
+                                                    },
+                                                    placeholder: {
+                                                        duration: 200,
+                                                        only: ['color']
+                                                    }
+                                                }
+                                            })
+                        }),
+            'data': coherent.KVO({
+            
+                        value: null,
+                        completionsForFieldWithText: function(field, text)
+                        {
+                            text= text.toLowerCase();
+                            var words= kNamesOfTheStates.filter(function(t) { return t.toLowerCase().beginsWith(text); });
+                            return words;
+                        }
+                        
+                    })
+        });
+    </script>
+</html>

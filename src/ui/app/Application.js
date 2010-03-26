@@ -57,7 +57,7 @@ coherent.Application= Class.create(coherent.Responder, {
             href+= ".jsnib";
             
         var d= NIB.load(href, this);
-        d.addCallback(this.__bundleLoaded.bind(this));
+        d.addCallback(this.__bundleLoaded, this);
     },
     
     __bundleLoaded: function(model)

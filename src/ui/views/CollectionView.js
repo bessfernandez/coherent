@@ -486,9 +486,10 @@ coherent.CollectionView= Class.create(coherent.View, {
         for (index=0; index<len; ++index)
         {
             item= items[index];
+            
             if ((item.selected= (index===nextSelected)))
                 nextSelected= selection.shift();
-
+                
             item.view.animateClassName(animationOptions, !item.selected);
         }
     },

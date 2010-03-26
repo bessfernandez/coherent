@@ -45,6 +45,65 @@ if (!Function.prototype.bindAsEventListener)
         };
     }
 
+
+if (!Function.delay)
+    Function.delay= function(fn, delay, scope, args)
+    {
+        function delayedFnWrapper()
+        {
+            delayedFnWrapper.timer= 0;
+            delayedFnWrapper.fn.apply(delayedFnWrapper.scope,
+                                      delayedFnWrapper.args);
+        }
+        function cancel()
+        {
+            if (!delayedFnWrapper.timer)
+                return;
+            window.clearTimeout(delayedFnWrapper.timer);
+            delayedFnWrapper.timer= 0;
+        }
+        delayedFnWrapper.fn= fn;
+        delayedFnWrapper.args= args||[];
+        delayedFnWrapper.scope= scope||fn;
+        delayedFnWrapper.cancel= cancel;
+        delayedFnWrapper.timer= window.setTimeout(delayedFnWrapper, delay);
+        return delayedFnWrapper;
+    }
+
+if (!Function.repeating)
+    Function.repeat= function(fn, delay, scope, args)
+    {
+        function repeatingFnWrapper()
+        {
+            repeatingFnWrapper.timer= 0;
+            repeatingFnWrapper.fn.apply(repeatingFnWrapper.scope,
+                                      repeatingFnWrapper.args);
+            repeatingFnWrapper.start();
+        }
+        function cancel()
+        {
+            if (!repeatingFnWrapper.timer)
+                return;
+            window.clearTimeout(repeatingFnWrapper.timer);
+            repeatingFnWrapper.timer= 0;
+        }
+        function start(delay)
+        {
+            if (repeatingFnWrapper.timer)
+                repeatingFnWrapper.cancel();
+            if (!isNaN(delay))
+                repeatingFnWrapper.delay= delay;
+            repeatingFnWrapper.timer= window.setTimeout(repeatingFnWrapper, repeatingFnWrapper.delay);
+        }
+        repeatingFnWrapper.fn= fn;
+        repeatingFnWrapper.args= args||[];
+        repeatingFnWrapper.scope= scope||fn;
+        repeatingFnWrapper.delay= delay;
+        repeatingFnWrapper.cancel= cancel;
+        repeatingFnWrapper.start= start;
+        start();
+        return repeatingFnWrapper;
+    }
     
 if (!Function.prototype.delay)
     Function.prototype.delay= function(delay)

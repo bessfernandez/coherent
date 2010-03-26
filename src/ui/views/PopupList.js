@@ -254,10 +254,10 @@ coherent.PopupList= Class.create(coherent.FormControl, {
     {
         if (this.__updateTimer)
         {
-            window.clearTimeout(this.__updateTimer);
-            this.__updateTimer= null;
+            this.__updateTimer.cancel();
+            this.__updateTimer=null;
         }
-            
+
         var content= this.content() || [];
         var contentObjects= this.contentObjects() || content;
         var contentValues= this.contentValues() || content.valueForKey('description');
@@ -298,7 +298,7 @@ coherent.PopupList= Class.create(coherent.FormControl, {
     {
         if (this.__updateTimer)
             return;
-        this.__updateTimer= this.__updateOptions.bindAndDelay(this, 0);
+        this.__updateTimer= Function.delay(this.__updateOptions, 0, this);
     }
     
 });
