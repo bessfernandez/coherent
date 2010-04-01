@@ -10,14 +10,39 @@
     @namespace The animator
 */
 coherent.Animator= {
-    MORPH_NODE    : 0x01,
-    IGNORE_NODE   : 0x12,
-    FADE_NODE     : 0x13,
-    FADE_IN_NODE  : 0x14,
-    FADE_OUT_NODE : 0x15,
-    MORPH_NODE_IGNORE_CHILDREN : 0x16,
+    /** @namespace
+        An enumeration of the available values for class animations.
+     */
+    Action: {
+        /** The node and its children should be animated. All available CSS
+            properties will be animated.
+         */
+        MORPH_NODE    : 0x01,
+        
+        /** Don't animate the node or its children.
+         */
+        IGNORE_NODE   : 0x12,
+        
+        /** Fade out the node, change the classname, and fade the node back in.
+            Child nodes will be ignored.
+         */
+        FADE_NODE     : 0x13,
+        
+        /** Change the classname, then fade the node in. Child nodes will not
+            be animated.
+         */
+        FADE_IN_NODE  : 0x14,
+        
+        /** Fade the node out, then change the classname. Ignores child nodes.
+         */
+        FADE_OUT_NODE : 0x15,
+        
+        /** Animate any available properties on the node, but ignore child nodes.
+         */
+        MORPH_NODE_IGNORE_CHILDREN : 0x16,
 
-    IGNORE_CHILDREN_MASK : 0x10
+        IGNORE_CHILDREN_MASK : 0x10
+    }
 };
 
 (function() {
@@ -51,9 +76,9 @@ coherent.Animator= {
     }
     getStylesForTreeNodeVisitor.getStyles= Element.getStyles;
     getStylesForTreeNodeVisitor.assignId= Element.assignId;
-    getStylesForTreeNodeVisitor.MORPH_NODE= coherent.Animator.MORPH_NODE;
-    getStylesForTreeNodeVisitor.MORPH_NODE_IGNORE_CHILDREN= coherent.Animator.MORPH_NODE_IGNORE_CHILDREN;
-    getStylesForTreeNodeVisitor.IGNORE_CHILDREN_MASK= coherent.Animator.IGNORE_CHILDREN_MASK;
+    getStylesForTreeNodeVisitor.MORPH_NODE= coherent.Animator.Action.MORPH_NODE;
+    getStylesForTreeNodeVisitor.MORPH_NODE_IGNORE_CHILDREN= coherent.Animator.Action.MORPH_NODE_IGNORE_CHILDREN;
+    getStylesForTreeNodeVisitor.IGNORE_CHILDREN_MASK= coherent.Animator.Action.IGNORE_CHILDREN_MASK;
     
     function getStylesForTree(node, propsToGet, actions)
     {
@@ -97,7 +122,7 @@ coherent.Animator= {
         if (timer)
             return;
         
-        lastStep = (new Date()).getTime();
+        lastStep = Date.now();
         timer = window.setInterval(step, 10);
     }
     
@@ -365,13 +390,13 @@ coherent.Animator= {
                 var toDisplay= to.display;
                 
                 if (fromDisplay=='none' && toDisplay=='none')
-                    nodeAction = coherent.Animator.IGNORE_NODE;
+                    nodeAction = coherent.Animator.Action.IGNORE_NODE;
 
                 if (fromDisplay=='none' && toDisplay!=='none')
-                    nodeAction = coherent.Animator.FADE_IN_NODE;
+                    nodeAction = coherent.Animator.Action.FADE_IN_NODE;
 
                 if (fromDisplay!=='none' && toDisplay=='none')
-                    nodeAction = coherent.Animator.FADE_OUT_NODE;
+                    nodeAction = coherent.Animator.Action.FADE_OUT_NODE;
             }
             
             // If nodeAction is a function, it should be executed.
@@ -382,16 +407,16 @@ coherent.Animator= {
             if ('object'===typeof(nodeAction))
             {
                adjusted= nodeAction;
-               nodeAction= coherent.Animator.MORPH_NODE;
+               nodeAction= coherent.Animator.Action.MORPH_NODE;
             }
             
             switch (nodeAction)
             {
-                case coherent.Animator.IGNORE_NODE:
+                case coherent.Animator.Action.IGNORE_NODE:
                     //  Skip child nodes because this node should be ignored
                     return false;
                     
-                case coherent.Animator.FADE_NODE:
+                case coherent.Animator.Action.FADE_NODE:
                     // do animations
                     thingsToAnimate[id] = thingsToAnimate[id] || {};
                     thingsToAnimate[id].opacity = {
@@ -403,7 +428,7 @@ coherent.Animator= {
                     //  and will fade in with the new class name
                     return false;
                     
-                case coherent.Animator.FADE_OUT_NODE:
+                case coherent.Animator.Action.FADE_OUT_NODE:
                     // don't need to consider child nodes, because they won't be
                     // visible after self node fades out
                     thingsToAnimate[id] = thingsToAnimate[id] || {};
@@ -416,7 +441,7 @@ coherent.Animator= {
                     //  class changes.
                     return false;
                     
-                case coherent.Animator.FADE_IN_NODE:
+                case coherent.Animator.Action.FADE_IN_NODE:
                     // don't need to consider child nodes, because they'll have their
                     // new style when fading in.
                     from.opacity = 0;
@@ -428,7 +453,7 @@ coherent.Animator= {
                     };
                     return false;
                     
-                case coherent.Animator.MORPH_NODE:
+                case coherent.Animator.Action.MORPH_NODE:
                 default:
                     // calculate differences
                     for (var p in from)
@@ -456,7 +481,7 @@ coherent.Animator= {
                                 thingsToAnimate[id][p] = finalValue;
                         }
                     }
-                    return (nodeAction & coherent.Animator.IGNORE_CHILDREN_MASK)?false:true;
+                    return (nodeAction & coherent.Animator.Action.IGNORE_CHILDREN_MASK)?false:true;
             }
         }
         

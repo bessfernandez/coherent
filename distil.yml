@@ -2,12 +2,9 @@ name: coherent
 version: 3.0.0
 notice: src/NOTICE
 output-folder: build
-browsers: firefox
-# class list: classes.js
+generate import: true
 
-# browsers: [safari, firefox, ie]
-
-js:
+coherent.js:
     - src/foundation.js
     - src/foundation
     - src/ui.js
@@ -18,6 +15,8 @@ externals:
     copy: src/external/*
 
 test:
+    # browsers: [safari, firefox, ie]
+    browsers: firefox
     tests:
         - tests/factory.js
         - tests/array-controller.js

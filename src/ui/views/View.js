@@ -2,7 +2,8 @@
 /*jsl:import ../app/Responder.js*/
 /*jsl:import DragAndDropHelper.js*/
 
-/** A View is a Bindable object.
+/** A View is wrapper for DOM nodes providing event responder and data model
+    binding behaviour.
 
     Note: Views can define a container element (`this.container`) which is the
     _real_ container of its child nodes. For example, when using a View with
@@ -10,22 +11,52 @@
     allows you to specify something clever in the THEAD that doesn't get stomped
     on by the body content.
 
-    @binding {Boolean} visible
-        Controls whether this view is visible or not. This binding updates the
-        display style of the DOM node associated with the view. When the value
-        of the binding is `false`, the display style is set to `none`. When
-        the value of the binding is `true`, the display style is cleared.
+    ## Animation ##
+    
+    Views feature sophisticated built-in support for animating property
+    transitions. For example, if a view should animate its transition from
+    enabled to disabled, the view might be defined as follows:
+    
+        'myview': coherent.View({
+                            animate: {
+                                enabled: true
+                            },
+                            ...
+                        })
+    
+    This would animate the transition from enabled to disabled over a duration
+    of 200ms. By default, the animation would add the class defined in
+    {@link coherent.Style.kDisabledClass} to the underlying DOM node associated
+    with the view.
+    
+    @binding {Boolean} visible - Controls whether this view is visible or not.
+        This binding updates the display style of the DOM node associated with
+        the view. When the value of the binding is `false`, the display style is
+        set to `none`. When the value of the binding is `true`, the display
+        style is cleared.
         
-    @binding {String} class
-        The `class` binding modifies the class property of the DOM node for this
-        view. If the view is {@link #animated}, then the class will be changed
-        using the {@link coherent.Animator#setClassName} method.
+    @binding {String} class - The `class` binding modifies the class property of
+        the DOM node for this view. Any internal class names will be reapplied
+        after changing the node's class name.
         
-    @binding {Boolean} enabled
+    @binding {Boolean} enabled - Is this view enabled? This is most useful for
+        instances of {@link coherent.FormControl} which represent browser-native
+        controls that may refuse input when disabled. In addition, custom
+        controls can behave differently when enabled and disabled.
         
-    @binding {Boolean} editable
-    @binding {String} html
-    @binding {String} text
+    @binding {Boolean} editable - Is the value of this view editable? Like the
+        binding for `enabled`, the `editable` binding is most useful for 
+        instances of {@link coherent.FormControl}, however, custom controls that
+        allow editing values may also use this binding.
+        
+    @binding {String} html - The HTML content displayed within this view.
+    @binding {String} text - The text content displayed within this view.
+    @binding {String} toolTip - The text displayed when the visitor hovers the
+        mouse over this view, provided the DOM node supports this behaviour.
+    @binding {Any} argument - The second parameter value passed when invoking
+        the action method on the target. This is useful for passing along a
+        deeply nested data value that would be incovenient to retrieve in any
+        other fashion.
     
  */
 coherent.View= Class.create(coherent.Responder, {
@@ -33,6 +64,10 @@ coherent.View= Class.create(coherent.Responder, {
     exposedBindings: ['visible', 'class', 'enabled', 'editable', 'html', 'text',
                       'toolTip', 'argument'],
     
+    /** The default placeholder values for various bindings. Each entry should
+        consist of an object literal with keys for `multipleValues`, `nullValue`,
+        and `noSelection`.
+     */
     defaultPlaceholders: {
         text: {
             multipleValues: _('marker.text.multipleValues'),
@@ -46,6 +81,44 @@ coherent.View= Class.create(coherent.Responder, {
         }
     },
     
+    /** @interface coherent.AnimationOptions The properties of an
+        AnimationOptions dictionary control how animations of a view will be
+        performed.
+        
+        @property {String} classname - The class name to add (or remove).
+        @property {String} add - The class name to add. The `add` property will
+            take precedence over the `classname` property if both are specified.
+        @property {String} remove - The class name to remove. The `remove`
+            property takes precedence over the `classname` property when both
+            are specified and the animation is reversed.
+        @property {Boolean} reverse - Should the direction of animation be
+            reversed? When the animation is reversed, the sense of the values
+            specified for `add` and `remove` is reversed: the class in `add` is
+            removed from the node and the class in `remove` is added.
+        @property {Number} duration - The number of milliseconds the animation
+            should take from beginning to end. If this value is 0, the node is
+            updated immediately and the callback method (if present) called.
+        @property {Number} delay - The number of milliseconds to wait before
+            starting the animation.
+        @property {String[]} only - An array of CSS properties to animate. If
+            no value is specified for `only`, then all CSS properties will be
+            animated.
+        @property {Number} discreteTransitionPoint - The point at which
+            properties with discrete values will change. This value should be
+            between 0 and 1. The default is 0.5.
+        @property {Function} callback - A method which will be invoked when the
+            animation has completed. If the animation is interrupted, the method
+            will not be called.
+        @property {Dictionary} actions - A dictionary specifying how individual
+            nodes should be handled. The keys in this dictionary are IDs and the
+            values should either be a {@link coherent.Animator.Action} or a
+            animation action function.
+     */
+     
+    /** The animation options for views. Entries in this dictionary represent
+        properties (or property-like values) that should be animated. Each entry
+        should be a dictionary with keys from {@link coherent.AnimationOptions}.
+     */
     animationOptions: {
         'class': {},
         visible: {
@@ -71,6 +144,13 @@ coherent.View= Class.create(coherent.Responder, {
         }
     },
     
+    /** The default animation option values that will be used if a property
+        doesn't specify a value for a particular key in the AnimationOptions
+        dictionary. Presently, this specifies the default duration of all
+        animations: 200ms.
+        
+        @type coherent.AnimationOptions
+     */
     defaultAnimationOptions: {
         duration: 200
     },
@@ -266,9 +346,9 @@ coherent.View= Class.create(coherent.Responder, {
     {
     },
 
-    /** Return the declarative structure of the View.
-        @returns an object with keys representing CSS queries for the views to
-                 set up.
+    /** Return the declarative structure of the View, where the keys are CSS
+        selectors used to find the DOM nodes that should be attached to views.
+        @type Object
      */
     structure: function()
     {
@@ -276,6 +356,7 @@ coherent.View= Class.create(coherent.Responder, {
     },
     
     /** Return the view element
+        @type Element
      */
     viewElement: function()
     {
@@ -284,6 +365,7 @@ coherent.View= Class.create(coherent.Responder, {
 
     /** Return the container element, which may be different from the view
         itself in lists or tables.
+        @type Element
      */
     container: function()
     {
@@ -291,7 +373,7 @@ coherent.View= Class.create(coherent.Responder, {
     },
     
     /** Set the container for the view.
-        @param newContainer a reference to the new container node for the view
+        @param {Element} newContainer a reference to the new container node for the view
      */
     setContainer: function(newContainer)
     {
@@ -311,6 +393,7 @@ coherent.View= Class.create(coherent.Responder, {
     },
     
     /** Find the parent view in the DOM heirarchy...
+        @type coherent.View
      */
     superview: function()
     {
@@ -334,6 +417,9 @@ coherent.View= Class.create(coherent.Responder, {
     },
 
     /** Determine whether this view is a decendant of the specified parent view.
+        @param {coherent.View} parent - The view that should be tested to
+            determine whether this view is a descendant.
+        @type Boolean
      */
     isDescendantOf: function(parent)
     {
@@ -348,6 +434,7 @@ coherent.View= Class.create(coherent.Responder, {
     
     /** Add a view as a child of this view. This simply calls appendChild on
         this view's DOM node with the DOM node of the subview.
+        @param {coherent.View} subview - The view to add.
      */
     addSubview: function(subview)
     {
@@ -355,27 +442,48 @@ coherent.View= Class.create(coherent.Responder, {
         container.appendChild(subview.node);
     },
 
-    /** Find the first view that matches the given CSS selector.
+    /** Find the first view that matches the given CSS selector. If no views
+        match the selector, this method returns `null`.
+        @param {String} selector - A CSS selector rooted at the node for this
+            view.
+        @type coherent.View
      */
     viewWithSelector: function(selector)
     {
         var node= Element.query(this.node, selector);
-        var view= coherent.View.fromNode(node);
-        return view;
+        return coherent.View.fromNode(node);
     },
     
     /** The default value for nextResponder for a View is the super view.
+        @type coherent.View
      */
     nextResponder: function()
     {
         return this.__nextResponder||this.superview();
     },
     
+    /** Return the delegate associated with this view. Rather than subclass a
+        view, it is often more appropriate to respond to the view's delegate
+        methods.
+        @see #setDelegate for a discussion of how this method __really__ works.
+        @type Object
+     */
     delegate: function()
     {
         return this.__delegate;
     },
     
+    /** Set the delegate for this view. This method is a bit tricky, because the
+        value for the delegate might be a string representing the name of the
+        delegate in the view's context. However, there might not be a value for
+        that key when this method is called. In that case, a temporary method
+        will be installed to override {@link #delegate}. This temporary method
+        will look up the name of the delegate and return that value. Once a
+        delegate is found, the temporary method is removed and the value found
+        will be returned immediately when calling {@link #delegate}.
+        
+        @param {Object|String} newDelegate - The value to use for the delegate.
+     */
     setDelegate: function(newDelegate)
     {
         if ('string'!==typeof(newDelegate))
@@ -420,11 +528,43 @@ coherent.View= Class.create(coherent.Responder, {
         this.node.blur();
     },
     
+    /** Retrieve the class name associated with this view.
+        @type String
+     */
     'class': function()
     {
         return this.node.className;
     },
-    
+
+    /** Modify the class name of this view. This method takes care to leave any
+        theme class names in place. Principally this method is used to update
+        the class based on model data rather than ui state. Changing UI state
+        should be done via {@link #addClassName} or {@link #removeClassName}.
+        
+        The class name change will be animated according to the rules specified
+        for the `class` property. Therefore to enable animations for changes to
+        the `class` property, add the following to a View's paramters:
+        
+            animate: {
+                'class': true
+            }
+        
+        Or to set the duration of the animation to something other than the
+        default 200ms value, use the following:
+        
+            animate: {
+                'class': 500
+            }
+            
+        Note: It is necessary to quote the property name, because `class` is a
+        reserved word in ES3 and might cause problems for older browsers.
+        
+        It is also possible to specify a dictionary matching the
+        {@link coherent.AnimationOptions} interface. This permits developers to
+        have complete control over the animation process.
+        
+        @param {String} newClassName - the new class name to apply to this view.
+     */
     setClass: function(newClassName)
     {
         var node= this.node;
