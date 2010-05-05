@@ -2,14 +2,14 @@ name: coherent
 version: 3.0.0
 notice: src/NOTICE
 output-folder: build
-generate import: true
 
 coherent.js:
     - src/foundation.js
     - src/foundation
+    - src/external/sizzle.js
     - src/ui.js
     - src/ui
-
+    
 externals:
     remove prefix: src/external
     copy: src/external/*
