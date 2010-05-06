@@ -1,7 +1,7 @@
 /*jsl:import event.js*/
 
 //  IE does things different, of course.
-if (coherent.Browser.IE)
+if (!coherent.Support.StandardEventModel)
 {
     Object.extend(Event, {
     

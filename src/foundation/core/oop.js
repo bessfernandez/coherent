@@ -497,32 +497,6 @@ var Class= (function(){
         },
 
         
-        /** Determine the name of the property of an object with the given
-            value. Because the property value might appear more than once in
-            a given object, this function might not be definitive. But for
-            things like methods (which seldom appear more than once), it
-            should be good enough.
-            
-            @param {Object} obj - The object to search for the propertyValue
-            @param propertyValue - The property value to find within `obj`.
-            
-            @returns {String} the name of the property having the given value or
-                     `null` if the name could not be determined.
-         */
-        findPropertyName: function(obj, propertyValue)
-        {
-            var v;
-            
-            for (var p in obj)
-            {
-                v= obj[p];
-                if (v===propertyValue ||
-                    ('function'===typeof(v) && v.valueOf()===propertyValue))
-                    return p;
-            }
-            return null;
-        },
-        
         /** Extend a class definition with the elements of an object literal.
             If the host JavaScript environment supports getters and setters
             (Firefox 2.0, Safari 3, SpiderMonkey, and Rhino) then this function

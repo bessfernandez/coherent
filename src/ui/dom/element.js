@@ -404,6 +404,11 @@ Object.extend(Element, {
         }
     },
     
+    match: function(selector, nodes, resultArray)
+    {
+        throw new Error('Requires Sizzle selector engine.');
+    },
+    
     /** Wrapper method for querySelector. This wrapper enables using a helper
         library for browsers that don't support the W3C query API.
         
@@ -646,8 +651,8 @@ Object.extend(Element, {
             var docElement= document.documentElement;
             var body= document.body;
             
-            clientX+= window.scrollLeft||docElement.scrollLeft||body.scrollLeft;
-            clientY+= window.scrollTop||docElement.scrollTop||body.scrollTop;
+            clientX+= Math.max(window.scrollLeft, docElement.scrollLeft, body.scrollLeft);
+            clientY+= Math.max(window.scrollTop, docElement.scrollTop, body.scrollTop);
         }
         
         var e= document.elementFromPoint(clientX, clientY);
@@ -666,13 +671,18 @@ Element.getStyle= Element.getStyles;
 Element.assignId.uniqueId= 1;
 
 //  Provide support for legacy browsers that don't implement the W3C selector API
-if (!coherent.Support.QuerySelector)
-{
-    //  Force a synchronous load of sizzle.js to provide selector engine.
-    coherent.Asset('sizzle.js').load();
-    
+if (!coherent.Support.QuerySelector && 'undefined'===typeof(Sizzle))
+    coherent.Asset('sizzle.js').load(true);
+
+if ('undefined'!==typeof(Sizzle))
+{    
     Object.extend(Element, {
     
+        match: function(selector, nodes, resultArray)
+        {
+            return Sizzle(selector, null, resultArray||null, nodes);
+        },
+        
         query: function(node, selector)
         {
             if (1==arguments.length) {
@@ -724,7 +734,6 @@ if ('undefined'===typeof(document.documentElement.children))
 // Firefox doesn't know (as of FF3.5) Element.innerText , emulate it here.
 if ('undefined'===typeof(document.documentElement.innerText))
 {
-
     HTMLElement.prototype.__defineGetter__("innerText", function () {
         return this.textContent;
     });
@@ -734,3 +743,10 @@ if ('undefined'===typeof(document.documentElement.innerText))
     });
 
 }
+
+//  Firefox doesn't do Node.contains
+if (window.Node && Node.prototype && !Node.prototype.contains)
+	Node.prototype.contains = function (arg)
+	{
+		return !!(this.compareDocumentPosition(arg) & 16);
+	}

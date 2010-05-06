@@ -7,12 +7,12 @@
     
     - {@link coherent.transformer.Not} `not` - A transformer that reverses the
         logical value. This applies to truthy and falsy values as well.
-    - {@link coherent.transformer.Truncated} `truncated` - A transformer that
+    - {@link coherent.transformer.Truncate} `truncated` - A transformer that
         will shorten a string longer than 50 characters.
-    - {@link coherent.transformer.StringsToObjects} `StringsToObjects` - A
+    - {@link coherent.transformer.StringToObject} `StringToObject` - A
         transformer that will convert an array of strings into an array of
         objects with each object having a key `string`.
-    - {@link coherent.transformer.Trimmed} `trim` - A transformer that will
+    - {@link coherent.transformer.Trim} `trim` - A transformer that will
         remove the spaces at the beginning and end of a string.
  */
 coherent.ValueTransformer = Class.create({

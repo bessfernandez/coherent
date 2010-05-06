@@ -54,16 +54,6 @@ coherent.fx= coherent.fx||{};
             this.start= Colour.fromString(start);
             this.end= Colour.fromString(end);
     
-            if (coherent.Support.CSS3ColorModel)
-            {
-
-                this.step = this.stepRGBA;
-            }
-            else
-            {
-                this.step = this.stepRGB;
-            }
-    
             this.delta= {
                 r: this.end.r-this.start.r,
                 g: this.end.g-this.start.g,
@@ -118,7 +108,9 @@ coherent.fx= coherent.fx||{};
     
     });
 
-    if (!coherent.Support.CSS3ColorModel)
+    if (coherent.Support.CSS3ColorModel)
+        coherent.fx.ColourStepper.prototype.step= coherent.fx.ColourStepper.prototype.stepRGBA;
+    else
     {
         coherent.fx.ColourStepper.prototype.step= coherent.fx.ColourStepper.prototype.stepRGB;
         coherent.fx.ColourStepper.prototype.normaliseAlpha= Class.emptyFn;

@@ -67,15 +67,10 @@ coherent.Page= Class.create(coherent.Responder, {
         return true;
     },
     
-    addTrackingInfo: function(id, info)
+    addTrackingInfo: function(info)
     {
-        if ('string'!==typeof(id))
-            id= Element.assignId(id);
-
-        var trackingCallbacks= this.__hoverTrackingIds[id];
-        if (!trackingCallbacks)
-            trackingCallbacks= this.__hoverTrackingIds[id]= [];
-        trackingCallbacks.push(info);
+        var hooks= this.__hoverTrackingHooks || (this.__hoverTrackingHooks=[]);
+        hooks.push(info);
     },
     
     presentError: function(error)
@@ -184,45 +179,58 @@ coherent.Page= Class.create(coherent.Responder, {
 
     _onmouseover: function(event)
     {
-        var trackingIds= this.__hoverTrackingIds||{};
+        var hooks= this.__hoverTrackingHooks||[];
         var mouseOverIds= this.__mouseOverIds||{};
         var newMouseOverIds= {};
         
         var e= event.target||event.srcElement;
         var body= document.body;
-        var callbacks;
-        var view;
         var id;
-        var i;
         var len;
-        var c;
+        var trackingInfo;
         
-        for (; e && e!=body; e=e.parentNode)
+        var matchingNodes= [];
+        var nodes= [];
+        var matches= [];
+        
+        //  capture the node and its parent nodes up to the body, exclude any
+        //  nodes that have already received mouseenter notifications
+        while (e && e!=body)
         {
-            id= e.id;
-            
-            //  Only consider nodes that have an ID that is being tracked
-            if (!id || !(id in trackingIds))
+            id= Element.assignId(e);
+            if (!(id in mouseOverIds))
+                nodes.push(e);
+            e= e.parentNode;
+        }
+        
+        len= hooks.length;
+        while (len--)
+        {
+            trackingInfo= hooks[len];
+            if (!trackingInfo.selector)
                 continue;
 
-            //  keep track of this id
-            newMouseOverIds[id]= true;
-            
-            //  If the node has already been tracked as containing the mouse,
-            //  we don't need to notify it
-            if (id in mouseOverIds)
+            matchingNodes= Element.match(trackingInfo.selector, nodes);
+            if (!matchingNodes.length)
                 continue;
-
-            //  Fire any onmouseenter callbacks in trackingIds
-            callbacks= trackingIds[id];
-            len= callbacks.length;
-
-            while (len--)
-            {
-                c= callbacks[len];
-                if (c.onmouseenter)
-                    c.onmouseenter.call(c.owner, e, c.ownerInfo);
-            }
+                
+            matches.push({
+                trackingInfo: trackingInfo,
+                nodes: matchingNodes
+            });
+        }
+        
+        //  All the matching nodes have been found
+        len= matches.length;
+        while (len--)
+        {
+            trackingInfo= matches[len].trackingInfo;
+            
+            matches[len].nodes.forEach(function(node) {
+                if (this.onmouseenter)
+                    this.onmouseenter.call(this.owner, node, this.ownerInfo);
+                newMouseOverIds[node.id]= this;
+            }, trackingInfo);
         }
         
         for (id in mouseOverIds)
@@ -233,16 +241,10 @@ coherent.Page= Class.create(coherent.Responder, {
             e= document.getElementById(id);
             if (!e)
                 continue;
-                
-            //  Fire any onmouseleave callbacks in trackingIds
-            callbacks= trackingIds[id];
-            len= callbacks.length;
-            while (len--)
-            {
-                c= callbacks[len];
-                if (c.onmouseleave)
-                    c.onmouseleave.call(c.owner, e, c.ownerInfo);
-            }
+             
+            trackingInfo= mouseOverIds[id];
+            if (trackingInfo.onmouseleave)
+                trackingInfo.onmouseleave.call(trackingInfo.owner, e, trackingInfo.ownerInfo);
         }
 
         this.__mouseOverIds= newMouseOverIds;
@@ -257,7 +259,7 @@ coherent.Page= Class.create(coherent.Responder, {
         // Mozilla likes to fire an onclick when right-clicking the page,
         // (as opposed to oncontextmenu). We think this is wrong, and so 
         // we'll quit if this is the case.
-        if (coherent.Browser.Mozilla && event.button===2)
+        if (2===event.button)
             return;
             
         if (this.__mouseEventListeners.length)
@@ -880,7 +882,7 @@ coherent.Page= Class.create(coherent.Responder, {
     var p= coherent.page;
     var wrapEventHandler;
     
-    if (coherent.Browser.IE)
+    if (!coherent.Support.StandardEventModel)
     {
         /** @ignore */
         wrapEventHandler=function(fn)
@@ -896,7 +898,7 @@ coherent.Page= Class.create(coherent.Responder, {
         p._onmousedragHandler= wrapEventHandler("_onmousedrag");
 
         document.attachEvent('onmouseover', wrapEventHandler("_onmouseover"));
-        document.attachEvent('onmouseout', wrapEventHandler("_onmouseout"));
+        // document.attachEvent('onmouseout', wrapEventHandler("_onmouseout"));
         document.attachEvent('onmousedown', wrapEventHandler("_onmousedown"));
         document.attachEvent('onmouseup', wrapEventHandler("_onmouseup"));
         document.attachEvent('onclick', wrapEventHandler("_onclick"));
@@ -936,7 +938,7 @@ coherent.Page= Class.create(coherent.Responder, {
         p._onmousedragHandler= wrapEventHandler("_onmousedrag");
     
         document.addEventListener('mouseover', wrapEventHandler("_onmouseover"), false);
-        document.addEventListener('mouseout', wrapEventHandler("_onmouseout"), false);
+        // document.addEventListener('mouseout', wrapEventHandler("_onmouseout"), false);
         document.addEventListener('mousedown', wrapEventHandler("_onmousedown"), false);
         document.addEventListener('mouseup', wrapEventHandler("_onmouseup"), false);
         document.addEventListener('keydown', wrapEventHandler("_onkeydown"), false);

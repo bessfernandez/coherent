@@ -1,7 +1,7 @@
 /*jsl:import ../../ui.js*/
 /**#nocode+*/
 
-    if (coherent.Browser.IE)
+    if (!coherent.Support.Opacity)
         Class.extend(coherent.fx.OpacityStepper, {
             step: function(t)
             {

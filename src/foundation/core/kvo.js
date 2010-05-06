@@ -932,7 +932,7 @@ coherent.KVO.getClassInfoForObject= function(kvo)
 coherent.KVO.createInstanceDataForObject= function(kvo)
 {
     var classInfo= coherent.KVO.getClassInfoForObject(kvo);
-    if (Object.getPrototypeOf(kvo)===kvo)
+    if (kvo.constructor.prototype===kvo)
         throw new Error('creating instance data for a prototype');
     var info= kvo.__kvo= Object.clone(classInfo);
     

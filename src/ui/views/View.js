@@ -705,7 +705,10 @@ coherent.View= Class.create(coherent.Responder, {
     /** @name TrackingInfo
         @class This is an adhoc structure expected by {@link coherent.View#addTrackingInfo}.
         @memberOf coherent
-        @property {Element} owner - The scope in which to invoke the callbacks
+        @property {String} selector - To track mouse enter/leave events for
+            sub-views, set this to the CSS selector of the sub-view. Leave blank
+            if you wish to have onmouseenter/onmouseleave called for the view.
+        @property {coherent.View} owner - The scope in which to invoke the callbacks
         @property {Function} onmouseenter - The callback to invoke when the mouse
             enters the view.
         @property {Function} onmouseleave - The callback to invoke when the mouse
@@ -720,7 +723,8 @@ coherent.View= Class.create(coherent.Responder, {
      */
     addTrackingInfo: function(trackingInfo)
     {
-        coherent.page.addTrackingInfo(this.id, trackingInfo);
+        trackingInfo.selector= ['#', this.id, ' ', trackingInfo.selector].join('');
+        coherent.page.addTrackingInfo(trackingInfo);
     },
 
     __animationOptionsForProperty: function(property)

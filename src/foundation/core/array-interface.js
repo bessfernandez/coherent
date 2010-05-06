@@ -56,6 +56,7 @@ coherent.Array= Class._create({
         throw new Error("Unimplemented");
     },
 
+    /** Create a copy of the array. */
     copy: function()
     {
         throw new Error("Unimplemented");
@@ -150,6 +151,10 @@ coherent.Array= Class._create({
         return -1!==this.indexOfObject(object);
     },
     
+    /** Execute a function for each element in this array.
+        @param {Function} f - The function to execute
+        @param {Object} obj - The scope for the function to execute in
+     */
 	forEach: function(f, obj)
 	{
 		var len= this.count();

@@ -1,4 +1,5 @@
 /*jsl:import foundation/core/base.js*/
+/*jsl:import foundation/core/support.js*/
 /*jsl:import foundation/additions/es5-additions.js*/
 /*jsl:import foundation/additions/string-additions.js*/
 /*jsl:import foundation/additions/array-additions.js*/

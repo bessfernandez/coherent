@@ -31,14 +31,14 @@ function NIB(def)
             continue;
     
         v= def[p];
+        var type= ctypeof(v);
 
-        if (v && 'function'===typeof(v) && v.__factoryFn__)
+        if (v && 'function'===type && v.__factoryFn__)
             v= v.call(model);
 
         if (v instanceof coherent.Asset)
             v= v.content();
         
-        var type= ctypeof(v);
         if ('array'===type || !(type in ignore || 'addObserverForKeyPath' in v))
             coherent.KVO.adaptTree(v);
 
@@ -160,10 +160,10 @@ Object.extend(NIB, {
         NIB.__model.setValueForKey(owner, 'owner');
         NIB.__model.setValueForKey(coherent.Application.shared, 'application');
 
-        if (coherent.Browser.IE)
-            script.text= source;
-        else
+        if (coherent.Support.AssetsEvaluateChildren)
             script.appendChild(document.createTextNode(source));
+        else
+            script.text= source;
         head.appendChild(script);
 
         NIB.__model= null;

@@ -1,0 +1,202 @@
+/*jsl:import ../core/kvo.js*/
+
+(function(){
+
+    /** Original KVO#valueForKey method. This is captured because ManagedObject
+        uses a replacement valueForKey that triggers when the object is a fault.
+     */
+    var __valueForKey= coherent.KVO.prototype.valueForKey;
+
+    var primitiveTypes= [Number, String, Boolean, Date];
+
+
+    function primitiveFromLiteral(literalValue, context)
+    {
+        var value;
+        
+        if (null===literalValue)
+            value= new (this.type)();
+        else
+            value= new (this.type)(literalValue);
+        
+        /*  new Number(500) yields an object rather than a primitive number.
+            Calling valueOf will yield a primitive value. This works for all
+            primitives except Date.
+         */
+        if (this.primitive && Date!==this.type)
+            value=value.valueOf();
+            
+        return value;
+    }
+
+    function managedObjectFromLiteral(literalValue, context)
+    {
+        var value;
+        
+        if (null===literalValue || 'undefined'===typeof(literalValue))
+            return literalValue;
+            
+        if ('object'!==coherent.typeOf(literalValue))
+        {
+            value= new this.type(literalValue);
+            value.setManagedObjectContext(context);
+            return value;
+        }
+
+        value= new this.type();
+        value.setManagedObjectContext(context);
+        value.fromLiteral(literalValue);
+        value.awakeFromFetch();
+        return value;
+    }
+    
+    function copyManagedObject(obj, context)
+    {
+        var value= new this.type();
+        value.setManagedObjectContext(context);
+        value.copyFrom(obj);
+        return value;
+    }
+    
+    function relationFromJSON(literalValue, context)
+    {
+        if (!literalValue)
+            return literalValue;
+            
+        var self= this;
+        return literalValue.map(function(v) { return self.fromLiteralValue(v, context); });
+    }
+    
+    /*  @TODO: Should this be a shallow or deep copy?
+     */
+    function copyRelation(original, context)
+    {
+        if (!original)
+            return original;
+        
+        //  create a copy of the array with references to the original objects...
+        return original.concat();
+    }
+    
+    coherent.PROPERTY= function(jsonKey, type, options)
+    {
+        if ('string'!==typeof(jsonKey))
+        {
+            options= type;
+            type= jsonKey;
+            jsonKey=null;
+        }
+
+        var primitive= (-1!==primitiveTypes.indexOf(type));
+        var managedObjectType= (coherent.ManagedObject.prototype.isPrototypeOf(type.prototype));
+        
+        options= Object.applyDefaults(options, {
+            inline: false,
+            readonly: false
+        });
+        
+        function makePropertyInfo(key)
+        {
+            return {
+                jsonKey: jsonKey||key,
+                key: key||jsonKey,
+                type: type,
+                primitive: primitive,
+                inline: (!!options.inline),
+                readonly: (!!options.readonly),
+                defaultValue: options.defaultValue,
+                fromLiteral: managedObjectType?managedObjectFromLiteral:primitiveFromLiteral,
+                copyFrom: managedObjectType?copyManagedObject:primitiveFromLiteral
+            };
+        }
+        
+        makePropertyInfo.__factoryFn__= true;
+        return makePropertyInfo;
+    }
+    
+    coherent.RELATION= function(jsonKey, type, options)
+    {
+        if ('string'!==typeof(jsonKey))
+        {
+            options= type;
+            type= jsonKey;
+            jsonKey=null;
+        }
+
+        var primitive= (-1!==primitiveTypes.indexOf(type));
+        var managedObjectType= (coherent.ManagedObject.prototype.isPrototypeOf(type.prototype));
+
+        options= Object.applyDefaults(options, {
+                        lazy: false,
+                        inline: false,
+                        readonly: false
+                    });
+                    
+        function makeRelationInfo(key)
+        {
+            return {
+                jsonKey: jsonKey||key,
+                key: key||jsonKey,
+                type: type,
+                relation: true,
+                primitive: primitive,
+                lazy: !!options.lazy,
+                inline: !!options.inline,
+                readonly: !!options.readonly,
+                fromLiteralValue: managedObjectType?managedObjectFromLiteral:primitiveFromLiteral,
+                fromLiteral: relationFromJSON,
+                copyFrom: copyRelation
+            };
+        }
+        makeRelationInfo.__factoryFn__= true;
+        return makeRelationInfo;
+    }
+
+    coherent.ManagedObject.__subclassCreated__= function(subclass)
+    {
+        var proto= subclass.prototype;
+        var baseproto= subclass.superclass.prototype;
+
+        subclass.__typename__= proto.__typename__;
+        
+        //  Allow inheritance of __schema__ definitions from base classes
+        if (proto.__schema__!==baseproto.__schema__)
+        {
+            var schema= Object.clone(baseproto.__schema__);
+            var protoSchema= proto.__schema__;
+            var s;
+            
+            var scalarFields= (baseproto.__scalarFields||[]).concat();
+            var relationFields= (baseproto.__relationFields||[]).concat();
+            var f;
+            
+            for (var p in protoSchema)
+            {
+                s= protoSchema[p];
+                if ('function'===typeof(s))
+                {
+                    if (s.__factoryFn__)
+                        s= s(p);
+                    else
+                        s= coherent.PROPERTY(p, s)(p);
+                }
+                schema[p]=s;
+                if (s.relation && s.lazy)
+                    relationFields.push(p);
+                else if (s.inline)
+                {
+                    f= ["{", s.jsonKey, ":[", s.type.prototype.__scalarFields.join(','),
+                        "]}"].join("");
+                    scalarFields.push(f);
+                }
+                else
+                    scalarFields.push(s.jsonKey);
+            }
+            
+            proto.__scalarFields= scalarFields;
+            proto.__relationFields= relationFields;
+            proto.__schema__= schema;
+        }
+    }
+
+})();

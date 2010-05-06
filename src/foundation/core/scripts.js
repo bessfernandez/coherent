@@ -38,10 +38,10 @@ coherent.Scripts = {
         var head = document.getElementsByTagName('head').item(0);
         var script = document.createElement('script');
         
-        if (coherent.Browser.IE)
-            script.text= source;
-        else
+        if (coherent.Support.AssetsEvaluateChildren)
             script.appendChild(document.createTextNode(source));
+        else
+            script.text= source;
 
         script.type = 'text/javascript';
         script.defer = false;

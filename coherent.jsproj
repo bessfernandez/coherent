@@ -1,0 +1,16 @@
+name: coherent
+type: framework
+version: 3.0.0
+notice: src/NOTICE
+bootstrap: true
+# output: build/$(mode)
+# validate: true
+# mode: debug
+# generate docs: true
+
+js:
+  - src/foundation.js
+  - src/foundation
+  - src/external/sizzle.js
+  - src/ui.js
+  - src/ui

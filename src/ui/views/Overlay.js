@@ -119,7 +119,7 @@ coherent.Overlay= Class.create(coherent.View, {
             if (this.clickOutsideToDismiss && -1===index)
                 coherent.page.__mouseEventListeners.push(this);
         }
-        else
+        else if (-1!==index)
         {
             coherent.page.__mouseEventListeners.removeObjectAtIndex(index);
         }

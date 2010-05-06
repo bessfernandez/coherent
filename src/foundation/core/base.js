@@ -6,7 +6,7 @@ if ("undefined"!==typeof(coherent))
  */
 var coherent= {
     /** The version of the Coherent library. */
-    version: "@VERSION@",
+    version: "3.0.0",
     
     /** Helper method to generate an unique ID. Basically this is a simply
         increasing value. It's not really unique outside of the page, so you
@@ -50,100 +50,12 @@ coherent.Browser= {
     Mozilla:  navigator.userAgent.indexOf('Gecko') > -1 &&
               navigator.userAgent.indexOf('KHTML') == -1,
     /** Is the browser Mobile Safari (iPhone or iPod Touch) */
-    MobileSafari: !!navigator.userAgent.match(/Apple.*Mobile.*Safari/),
-    /** Is the application running under Selenium tests? */
-    SeleniumActive: (-1!==window.name.indexOf('selenium'))
+    MobileSafari: !!navigator.userAgent.match(/Apple.*Mobile.*Safari/)
 };
 
 
 
 
-/** Boolean flags to indicate various language & DOM support options. This is
- *  in lieu of simply sniffing the browser, because sometimes that works better.
- *  
- *  @namespace
- */
-coherent.Support= {
-    /** Does the browser support JavaScript getters & setters? */
-    Properties: ('__defineGetter__' in Object.prototype),
-    /** Does the browser support native query selector? */
-    QuerySelector: ('querySelector' in document),
-    /** Does the browser support touch events? */
-    Touches: !!document.createTouch,
-    /** Does the browser support RGBA colors? */
-    CSS3ColorModel: false,
-    /** Initial value for whether the browser supports CSS transitions. If the
-        browser supports Properties, this will be updated later when you actually
-        ask for the value. Otherwise, the browser definitely doesn't support
-        CSS transitions.
-     */
-    CSSTransitions: false,
-    /** Initial value for whether the browser supports CSS3 border images. If
-        the browser supports properties, this will be updated when the code
-        actually asks for the value. There are no browsers that support border
-        images but do not support properties.
-     */
-    BorderImage: false,
-    /** Determine whether the browser supports Drag & Drop properly. Mozilla
-        prior to 3.5 doesn't work correctly. When running under Selenium, native
-        drag and drop is disabled.
-     */
-    DragAndDrop: !coherent.Browser.SeleniumActive &&
-                 ((coherent.Browser.Safari && !coherent.Browser.MobileSafari) ||
-                   coherent.Browser.IE ||
-                  (coherent.Browser.Mozilla && !!window.localStorage))
-};
-
-
-
-
-if (coherent.Support.Properties)
-{
-    /*  Define a getter function that will determine whether the CSS3 Color Model
-        is available. When invoked, this function will replace itself with the
-        correct value.
-     */    
-    coherent.Support.__defineGetter__('CSS3ColorModel', function()
-        {
-            delete this.CSS3ColorModel;
-            var test = document.createElement("span");
-            try {
-                test.style.backgroundColor = "rgba(100,100,100,0.5)";
-                return this.CSS3ColorModel=(test.style.length === 1);
-            } catch(e) {}
-            return (this.CSS3ColorModel=false);
-         });
-
-    /*  Define a getter function that will determine whether CSSTransitions are
-        available only when actually asked. When invoked, this function will
-        replace itself with the correct value.
-     */
-    coherent.Support.__defineGetter__('CSSTransitions', function()
-        {
-            delete this.CSSTransitions;
-            var test = document.createElement("span");
-            try {
-                test.style.setProperty("-webkit-transition-duration", "1ms", "");
-                return this.CSSTransitions=(test.style.length === 1);
-            } catch(e) {}
-            return (this.CSSTransitions=false);
-        });
-        
-    /*  Define a getter function that will determine whether CSS3 Border Images
-        are available only when actually asked. When invoked, this function will
-        replace itself with the correct value.
-     */
-    coherent.Support.__defineGetter__('BorderImage', function()
-        {
-            delete this.BorderImage;
-            var style = document.createElement('div').style;
-            try {
-                style.cssText = '-webkit-border-image: inherit; -moz-border-image: inherit;';
-                return this.BorderImage=((style.WebkitBorderImage == 'inherit') || (style.MozBorderImage == 'inherit'));
-            } catch (e) {}
-            return (this.BorderImage=false);
-        });
-}
 
 
 

@@ -108,8 +108,6 @@ Object.extend(Event, {
             return;
         arguments.callee.done= true;
 
-        if (this._domLoadedTimer)
-            window.clearInterval(this._domLoadedTimer);
         Event.stopObserving(window, 'load', Event._domHasFinishedLoading);
         
         var callbacks= Event._readyCallbacks;
@@ -225,9 +223,6 @@ Object.extend(Event, {
                 if ((/loaded|complete/).test(document.readyState))
                     Event._domHasFinishedLoading();
             }
-        
-            if (coherent.Browser.Safari)
-                Event._domLoadedTimer = window.setInterval(checkReadyState, 10);
         
             Event.observe(window, 'load', Event._domHasFinishedLoading);
             Event._readyCallbacks= [];

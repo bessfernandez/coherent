@@ -49,7 +49,7 @@ coherent.Form= Class.create(coherent.FieldGroup, {
 
 });
 
-if (coherent.Browser.IE)
+if (!coherent.Support.SubmitBubbles)
     Class.extend(coherent.Form, {
 
         onfocus: function(event)

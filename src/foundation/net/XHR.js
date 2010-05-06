@@ -20,7 +20,7 @@
                       };
     
     //  Everything but IE gets the native XMLHttpRequest
-    if (!coherent.Browser.IE)
+    if ('undefined'!==typeof(window.XMLHttpRequest))
         getTransport= function ()
         {
             return new XMLHttpRequest();

@@ -65,7 +65,7 @@ coherent.Animator= {
     function getStylesForTreeNodeVisitor(node)
     {
         var id= getStylesForTreeNodeVisitor.assignId(node);
-        var action= getStylesForTreeNodeVisitor.actions[id] || getStylesForTreeNodeVisitor.MORPH_NODE;
+        var action= +getStylesForTreeNodeVisitor.actions[id] || getStylesForTreeNodeVisitor.MORPH_NODE;
 
         if (getStylesForTreeNodeVisitor.MORPH_NODE===action || getStylesForTreeNodeVisitor.MORPH_NODE_IGNORE_CHILDREN===action)
         {
@@ -325,7 +325,7 @@ coherent.Animator= {
         if (options.delay)
         {
             animateClassName.delay(options.delay, element, newClassName, options);
-            delete options.delay;
+            options.delay=false;
             return;
         }
         
@@ -337,6 +337,9 @@ coherent.Animator= {
             return;
         }
         
+        if (options.setup)
+            options= options.setup(element, options, newClassName);
+            
         var propsToGet = options.only;
         // get old styles
         var startStyles = getStylesForTree(element, propsToGet, options.actions);
@@ -406,8 +409,12 @@ coherent.Animator= {
             
             if ('object'===typeof(nodeAction))
             {
-               adjusted= nodeAction;
-               nodeAction= coherent.Animator.Action.MORPH_NODE;
+                adjusted= nodeAction;
+                
+                if (adjusted.ignoreChildren)
+                    nodeAction= coherent.Animator.Action.MORPH_NODE_IGNORE_CHILDREN;
+                else
+                    nodeAction= coherent.Animator.Action.MORPH_NODE;
             }
             
             switch (nodeAction)
@@ -469,8 +476,12 @@ coherent.Animator= {
                             thingsToAnimate[id] = thingsToAnimate[id] || {};
                             if (p in adjusted)
                             {
-                                if (adjustedValue.value)
+                                if ('object'===typeof(adjustedValue))
+                                {
+                                    if (!('value' in adjustedValue))
+                                        adjustedValue.value= to[p];
                                     thingsToAnimate[id][p]= adjustedValue;
+                                }
                                 else
                                     thingsToAnimate[id][p]= {
                                         value: adjustedValue

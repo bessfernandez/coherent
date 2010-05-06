@@ -135,7 +135,7 @@ Test.create('oop', {
         t.assertEqual(c.a, 5);
     },
 
-    testConstructor: function(t)
+    testConstructorReturnValue: function(t)
     {
         var MyOtherClass= Class.create({
             
