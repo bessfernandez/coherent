@@ -96,7 +96,7 @@ coherent.Overlay= Class.create(coherent.View, {
     onmouseup: function(event)
     {
         var target= event.target||event.srcElement;
-        if (Element.contains(this.node, target))
+        if (this.node.contains(target))
             return;
         if (this.clickOutsideToDismiss)
             this.setVisible(false);

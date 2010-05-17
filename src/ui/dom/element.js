@@ -357,10 +357,31 @@ Object.extend(Element, {
         @param {Element} node - the DOM element to clone
         @type Element
      */
-    clone: function(node)
-    {
-        return node.cloneNode(true);
-    },
+    clone: (function(){
+        if (coherent.Support.CloneNode)
+            return function(node)
+            {
+                return node.cloneNode(true);
+            };
+        
+        return function(element)
+        {
+            var markup= element.outerHTML;
+            var doc= element.ownerDocument;
+            if (!markup)
+            {
+                var div= doc.createElement('div');
+                div.appendChild(element.cloneNode(true));
+                markup= div.innerHTML;
+                div= null;
+            }
+            
+            //  creating a new node from the markup will remove any event
+            //  handlers that IE clones, plus the new node is in the holding
+            //  area, so tables and table rows will have the right properties.
+            return coherent.View.createNodeFromMarkup(markup);
+        };
+    })(),
     
     /** Visit all elements in the node tree rooted at e in depth first order. If
         the visitor function returns false (and exactly false, not a false-y

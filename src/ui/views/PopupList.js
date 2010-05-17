@@ -273,10 +273,8 @@ coherent.PopupList= Class.create(coherent.FormControl, {
         for (var i=0; i<numberOfOptions; ++i)
         {
             o= node.options[i];
-            if (coherent.Browser.IE)
-                o.innerText= contentValues[i];
-            else
-                o.text= contentValues[i];
+            o.innerText= contentValues[i];
+            o.text= contentValues[i];
             o.value= String(contentObjects[i]);
             o.selected= false;
             
@@ -303,7 +301,7 @@ coherent.PopupList= Class.create(coherent.FormControl, {
     
 });
 
-if (coherent.Browser.IE)
+if (!coherent.Support.ChangeBubbles)
     Class.extend(coherent.PopupList, {
 
         onfocus: function(event)

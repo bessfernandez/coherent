@@ -311,13 +311,6 @@ coherent.Page= Class.create(coherent.Responder, {
 
         var isDocument= (target===window);
             
-        // console.log('focus: target=', target?target.tagName:target, 'is window=', isDocument);
-        
-        // if (coherent.Browser.IE && document.activeElement==this.focusedElement)
-        //     isDocument = true;
-
-        // console.log('focus: is document=', isDocument);
-        
         if (isDocument)
         {
             if (window.dashcode && !window.dashcode.inDesign && document.body)
@@ -336,7 +329,6 @@ coherent.Page= Class.create(coherent.Responder, {
             if (view)
                 view.onfocus(event);
 
-            // console.log('focus: view=', view);
             if (view && view.acceptsFirstResponder())
                 this.makeFirstResponder(view);
             else
@@ -356,13 +348,6 @@ coherent.Page= Class.create(coherent.Responder, {
 
         var isDocument= (target===window);
 
-        // console.log('blur: target=', target?target.tagName:target, 'is window=', isDocument);
-
-        // if (coherent.Browser.IE && document.activeElement==this.focusedElement)
-        //     isDocument = true;
-
-        // console.log('blur: is document=', isDocument);
-        
         if (isDocument)
         {
             this._documentFocused = false;
@@ -379,8 +364,6 @@ coherent.Page= Class.create(coherent.Responder, {
             if (view)
                 view.onblur(event);
 
-            // console.log('blur: view=', view);
-                
             this.focusedElement = null;
         
             if (view && view.acceptsFirstResponder())
@@ -591,8 +574,7 @@ coherent.Page= Class.create(coherent.Responder, {
         
         @function
         @param {Event} event - the dragging event
-        @returns {coherent.DragInfo} An object with information about the
-            dragging event.
+        @type coherent.DragInfo
      */
     _dragInfoFromEvent: (function(){
     
@@ -952,11 +934,9 @@ coherent.Page= Class.create(coherent.Responder, {
         window.addEventListener('focus', wrapEventHandler("_onfocus"), false);
         window.addEventListener('blur', wrapEventHandler("_onblur"), false);
 
-        // if (!coherent.Browser.MobileSafari)
-        // {
-            document.addEventListener('click', wrapEventHandler("_onclick"), false);
-            document.addEventListener('dblclick', wrapEventHandler("_ondblclick"), false);
-        // }
+        document.addEventListener('click', wrapEventHandler("_onclick"), false);
+        document.addEventListener('dblclick', wrapEventHandler("_ondblclick"), false);
+
         if (coherent.Support.Touches)
         {
             document.addEventListener('touchstart', wrapEventHandler("_ontouchstart"), true);

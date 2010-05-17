@@ -73,27 +73,32 @@ coherent.Image= Class.create(coherent.View, {
         if (this.bindings.src)
             this.bindings.src.setValue(newSrc);
             
-        this.setValueForKey(true, 'loading');
-        
-        var node= this.node;
-        Element.updateClass(node, coherent.Style.kLoadingClass,
-                            coherent.Style.kInvalidValueClass);
-
         if (!newSrc)
             newSrc= 'about:blank';
+
+        var node= this.node;
+        var originalSrc= node.src;
+        
+        /*  Because Safari 3 & 4 don't fire the onload event if the new src is
+            the same as the previous src (see <rdar://problem/6660795>) and the
+            image ought to come out of the cache anyway, I'll skip updating the
+            node if the image src hasn't changed. The previous version set the
+            source and then immediately fired the onload handler.
+         */
+        if (originalSrc===newSrc)
+            return;
+        
+        this.setValueForKey(true, 'loading');
+
+        Element.updateClass(node, coherent.Style.kLoadingClass,
+                            coherent.Style.kInvalidValueClass);
 
         Event.stopObserving(node, 'load', this.__onloadHandler);
         Event.stopObserving(node, 'error', this.__onerrorHandler);
         this.__onloadHandler= Event.observe(node, 'load', this.onload.bind(this));
         this.__onerrorHandler= Event.observe(node, 'error', this.onerror.bind(this));
 
-        var originalSrc= node.src;
         node.src= newSrc;
-        
-        //  Safari 3 & 4 don't fire the onload event if the new src is the same
-        //  as the previous src. See <rdar://problem/6660795>.
-        if (coherent.Browser.Safari && node.src===originalSrc)
-            this.onload();
     },
     
     observeSrcChange: function(change)

@@ -1,15 +1,10 @@
 /*jsl:import element.js*/
 
-//  IE does things different, of course.
-if (coherent.Browser.IE)
+//  IE doesn't correctly support Opacity
+if (!coherent.Support.Opacity)
 {
     Object.extend(Element, {
     
-        contains: function(parent, child)
-        {
-            return parent==child || parent.contains(child);
-        },
-        
         setStyle: function(element, prop, value)
         {
             if ('opacity'!=prop)
@@ -118,34 +113,8 @@ if (coherent.Browser.IE)
             }
     
             return styles;
-        },
-    
-        clone: function(element)
-        {
-            var node= element.cloneNode(false);
-        
-            if ('TR'!=element.tagName)
-            {
-                node.innerHTML= element.innerHTML;
-                return node;
-            }
-
-            // special handling for TRs
-            var cellIndex;
-            var originalCell;
-            var newCell;
-
-            for (cellIndex=0; cellIndex<element.children.length; ++cellIndex)
-            {
-                originalCell= element.children[cellIndex];
-                newCell= originalCell.cloneNode(false);
-                newCell.id= '';
-                newCell.innerHTML= originalCell.innerHTML;
-                node.appendChild(newCell);
-            }
-            return node;
         }
-        
+                
     });
     
     //  re-alias getStyle to getStyles to pick up correct IE version

@@ -429,7 +429,7 @@ coherent.View= Class.create(coherent.Responder, {
         var parentNode= parent.node;
         var node= this.node;
         
-        return Element.contains(parentNode, node);
+        return parentNode.contains(node);
     },
     
     /** Add a view as a child of this view. This simply calls appendChild on
@@ -1051,7 +1051,7 @@ coherent.View= Class.create(coherent.Responder, {
             var dt= event.dataTransfer;
             dt.clearData();
             dt.effectAllowed=operation;
-            if (coherent.Browser.IE)
+            if (dt.setDragImage)
             {
                 if (e)
                 {

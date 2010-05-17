@@ -181,9 +181,9 @@
             queryString= "";
         }
 
-        if ('GET'===method && coherent.Browser.IE && !options.allowCache)
+        if ('GET'===method && !options.allowCache)
         {
-            var cache_bust= "ie_cache_buster=" + (new Date()).getTime();
+            var cache_bust= "__cache_buster=" + (new Date()).getTime();
             queryString= queryString?(queryString + "&" + cache_bust):cache_bust;
         }
 

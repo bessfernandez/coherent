@@ -262,7 +262,7 @@ coherent.fx= coherent.fx||{};
         
         cleanup: function()
         {
-            if (coherent.Browser.IE)
+            if (coherent.Support.BackgroundPositionXY)
             {
                 this.element.style.backgroundPositionX = '';
                 this.element.style.backgroundPositionY = '';

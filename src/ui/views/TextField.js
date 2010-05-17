@@ -235,7 +235,14 @@ coherent.TextField= Class.create(coherent.FormControl, {
                 end: 0
             };
         
-        if (coherent.Browser.IE)
+        if ('selectionStart' in node)
+        {
+            return {
+                start: node.selectionStart,
+                end: node.selectionEnd
+            };
+        }
+        else
         {
             var selectedRange = document.selection.createRange();
             var range= selectedRange.duplicate();
@@ -247,13 +254,6 @@ coherent.TextField= Class.create(coherent.FormControl, {
             return {
                 start: start,
                 end: end
-            };
-        }
-        else
-        {
-            return {
-                start: node.selectionStart,
-                end: node.selectionEnd
             };
         }
     },
@@ -269,7 +269,12 @@ coherent.TextField= Class.create(coherent.FormControl, {
             
         end= Math.max(start, end);
         
-        if (coherent.Browser.IE)
+        if ('selectionStart' in node)
+        {
+            node.selectionStart= start;
+            node.selectionEnd= end;
+        }
+        else
         {
             var selection= node.createTextRange();
             selection.moveStart('textedit', -1);
@@ -277,11 +282,6 @@ coherent.TextField= Class.create(coherent.FormControl, {
             selection.moveStart('character', start);
             selection.moveEnd('character', end-start);
             selection.select();
-        }
-        else
-        {
-            node.selectionStart= start;
-            node.selectionEnd= end;
         }
     },
     

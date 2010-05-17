@@ -12,7 +12,7 @@
 	var id = "script" + (new Date()).valueOf();
 
 	div.style.display = "none";
-	div.innerHTML = "   <link/><table></table><a href='/a' style='color:red;float:left;opacity:.55;background-color:rgba(255,255,255,1);-webkit-border-image: inherit; -moz-border-image: inherit;border-image:inherit'>a</a><input type='checkbox'/>";
+	div.innerHTML = "   <link/><table></table><a href='/a' style='color:red;float:left;opacity:.55;background-position: 0% 100%;background-color:rgba(255,255,255,0.5);-webkit-border-image: inherit; -moz-border-image: inherit;border-image:inherit'>a</a><input type='checkbox'/>";
 
 	var all = div.getElementsByTagName("*");
 	var a = div.getElementsByTagName("a")[0];
@@ -53,6 +53,13 @@
         /** Does the browser support the W3C Event Model? */
         StandardEventModel: !!window.addEventListener,
         
+        /** Does the browser support the hash change event? Currently IE8 in
+            IE8 standards mode and FF 3.6. */
+        HashChangeEvent: ("onhashchange" in window) && document.querySelector,
+
+        /** Does the browser correctly handle element.cloneNode(true)? */
+        CloneNode: true,
+        
         /** Determine whether the browser supports HTML5 Drag & Drop. Mozilla
             prior to 3.5 doesn't work correctly. When running under Selenium,
             native drag and drop is disabled.
@@ -62,6 +69,10 @@
         /** Does the browser support the CSS3 Colour Model? */
         CSS3ColorModel: /rgba/.test(a.style.backgroundColor),
 
+        /** Does the browser support separate X & Y on background position? */
+        BackgroundPositionXY: a.style.backgroundPosition && 
+                              (a.style.backgroundPositionX !== a.style.backgroundPositionY),
+        
         /** Doest the browser support the CSS3 BorderImage property? */
         BorderImage: 'inherit'===a.style.WebkitBorderImage ||
                      'inherit'===a.style.MozBorderImage ||
@@ -104,6 +115,20 @@
          */
         AssetsEvaluateChildren: false
 	};
+
+	//  In a standards compliant browser, cloning a node doesn't copy
+	//  event handlers from the original node. Guess what IE does?
+	if (div.attachEvent && div.fireEvent)
+	{
+	    var click= function()
+	    {
+			coherent.Support.CloneNode= false;
+			div.detachEvent("onclick", click);
+		};
+			    
+		div.attachEvent("onclick", click);
+		div.cloneNode(true).fireEvent("onclick");
+	}
 
     //  Determine value of AssetsEvaluateChildren
 	script.type = "text/javascript";

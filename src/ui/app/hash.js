@@ -241,9 +241,7 @@
     
     function setup()
     {
-        if ("onhashchange" in window &&
-            (!coherent.Browser.IE || (coherent.Browser.IE >= 8 && 
-                                      document.compatMode != "BackCompat")))
+        if (coherent.Support.HashChangeEvent)
         {
             //  need this IE browser test because "onhashchange" exists in IE8
             //  in IE7 mode

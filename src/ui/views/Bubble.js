@@ -198,7 +198,7 @@ coherent.Bubble= Class.create(coherent.Overlay, {
     onmouseup: function(event)
     {
         var target= event.target||event.srcElement;
-        if (Element.contains(this.anchor, target) || Element.contains(this.node, target))
+        if (this.anchor.contains(target) || this.node.contains(target))
             return;
         if (this.clickOutsideToDismiss)
             this.setVisible(false);

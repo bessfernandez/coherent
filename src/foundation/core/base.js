@@ -34,6 +34,10 @@ var coherent= {
 coherent.Browser= {
     /** If the browser is Microsoft Internet Explorer, this is the version. */
     IE: !!(window.attachEvent && !window.opera) && (function(){
+            //  IE8 supports multiple version modes and exposes that via
+            //  the document.documentMode property.
+            if (document.documentMode)
+                return document.documentMode;
             var ieVersionRegex= /MSIE (\d+)/;
             var match= ieVersionRegex.exec(navigator.userAgent);
             return match && parseInt(match[1],10);
