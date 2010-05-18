@@ -73,7 +73,7 @@
         BackgroundPositionXY: a.style.backgroundPosition && 
                               (a.style.backgroundPositionX !== a.style.backgroundPositionY),
         
-        /** Doest the browser support the CSS3 BorderImage property? */
+        /** Does the browser support the CSS3 BorderImage property? */
         BorderImage: 'inherit'===a.style.WebkitBorderImage ||
                      'inherit'===a.style.MozBorderImage ||
                      'inherit'===a.style.borderImage,
