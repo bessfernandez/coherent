@@ -1,4 +1,3 @@
-/*jsl:declare Sizzle*/
 /*jsl:ignore*/
 /**#nocode+*/
 

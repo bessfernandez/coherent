@@ -1,5 +1,5 @@
 /*jsl:import ../../ui.js*/
-/*jsl:import ../../foundation/core/colour.js*/
+/*jsl:import ../../foundation/core/Colour.js*/
 
 /** @namespace
  */
