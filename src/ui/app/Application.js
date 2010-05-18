@@ -1,5 +1,5 @@
 /*jsl:import Responder.js*/
-/*jsl:import ../NIB/NIB.js*/
+/*jsl:import ../nib/NIB.js*/
 /*jsl:import hash.js*/
 
 /** An application class.
