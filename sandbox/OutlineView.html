@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta http-equiv="X-UA-Compatible" content="IE=8">
-        <script src="../build/coherent-debug.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../build/debug/coherent-debug.js" type="text/javascript" charset="utf-8"></script>
         <style>
             body
             {
@@ -306,155 +306,156 @@
         </div>
         
         <script>
-            var TestView= Class.create(coherent.View, {
+            distil.onready(function(){
+                var TestView= Class.create(coherent.View, {
             
-                __structure__: {
-                    'input': coherent.TextField({
-                                action: 'fetchData',
-                                // sendsActionOnEndEditing: false,
-                                placeholder: 'Data Source'                            
-                            }),
-                    'ul': coherent.OutlineView({
-                                contentBinding: 'model',
-                                selectedObjectBinding: 'selectedObject',
-                                viewTemplate: VIEW({
-                                    ':root': coherent.View({
-                                                classBinding: {
-                                                    keypath: 'representedObject.type',
-                                                    transformedValue: function(value)
-                                                    {
-                                                        return 'item ' + value;
+                    __structure__: {
+                        'input': coherent.TextField({
+                                    action: 'fetchData',
+                                    // sendsActionOnEndEditing: false,
+                                    placeholder: 'Data Source'                            
+                                }),
+                        'ul': coherent.OutlineView({
+                                    contentBinding: 'model',
+                                    selectedObjectBinding: 'selectedObject',
+                                    viewTemplate: VIEW({
+                                        ':root': coherent.View({
+                                                    classBinding: {
+                                                        keypath: 'representedObject.type',
+                                                        transformedValue: function(value)
+                                                        {
+                                                            return 'item ' + value;
+                                                        }
                                                     }
-                                                }
-                                            }),
-                                    '.name': coherent.View({
-                                                textBinding: 'representedObject.name'
-                                            }),
-                                    '.value': coherent.View({
-                                                textBinding: 'representedObject.value(truncated)'
-                                            }),
-                                    '.array-controls': coherent.View({
-                                                visibleBinding: 'representedObject.toMany'
-                                            }),
-                                    '.array-controls .prev': coherent.Anchor({
-                                                enabledBinding: 'representedObject.canSelectPrevious',
-                                                target: 'representedObject',
-                                                action: 'selectPrevious'
-                                            }),
-                                    '.array-controls .next': coherent.Anchor({
-                                                enabledBinding: 'representedObject.canSelectNext',
-                                                target: 'representedObject',
-                                                action: 'selectNext'
-                                            }),
-                                    '.array-controls .index': coherent.View({
-                                                textBinding: {
-                                                    keypath: 'representedObject.index',
-                                                    transformedValue: function(value)
-                                                    {
-                                                        return value+1;
+                                                }),
+                                        '.name': coherent.View({
+                                                    textBinding: 'representedObject.name'
+                                                }),
+                                        '.value': coherent.View({
+                                                    textBinding: 'representedObject.value(truncated)'
+                                                }),
+                                        '.array-controls': coherent.View({
+                                                    visibleBinding: 'representedObject.toMany'
+                                                }),
+                                        '.array-controls .prev': coherent.Anchor({
+                                                    enabledBinding: 'representedObject.canSelectPrevious',
+                                                    target: 'representedObject',
+                                                    action: 'selectPrevious'
+                                                }),
+                                        '.array-controls .next': coherent.Anchor({
+                                                    enabledBinding: 'representedObject.canSelectNext',
+                                                    target: 'representedObject',
+                                                    action: 'selectNext'
+                                                }),
+                                        '.array-controls .index': coherent.View({
+                                                    textBinding: {
+                                                        keypath: 'representedObject.index',
+                                                        transformedValue: function(value)
+                                                        {
+                                                            return value+1;
+                                                        }
                                                     }
-                                                }
-                                            }),
-                                    '.array-controls .count': coherent.View({
-                                                textBinding: 'representedObject.count'
-                                            })
+                                                }),
+                                        '.array-controls .count': coherent.View({
+                                                    textBinding: 'representedObject.count'
+                                                })
+                                    })
+                                }),
+                        'div': coherent.View({
+                                    textBinding: 'selectedObject.name'
                                 })
-                            }),
-                    'div': coherent.View({
-                                textBinding: 'selectedObject.name'
-                            })
-                },
+                    },
                 
-                updateData: function(json)
-                {
-                    var node= new ModelNode('json', json);
-                    this.setValueForKey(node, 'model');
-                    return json;
-                },
+                    updateData: function(json)
+                    {
+                        var node= new ModelNode('json', json);
+                        this.setValueForKey(node, 'model');
+                        return json;
+                    },
                 
-                fetchData: function(sender)
-                {
-                    var url= sender.valueForKey('value');
-                    if (!url || url===this.url)
-                        return;
-                    this.url= url;
-                    var d= XHR.get(url);
-                    d.addCallback(this.updateData, this);
-                }
+                    fetchData: function(sender)
+                    {
+                        var url= sender.valueForKey('value');
+                        if (!url || url===this.url)
+                            return;
+                        this.url= url;
+                        var d= XHR.get(url);
+                        d.addCallback(this.updateData, this);
+                    }
                 
-            });
+                });
 
-            var testview= new TestView('demo');
+                var testview= new TestView('demo');
             
-            var ModelNode= Class.create(coherent.KVO, {
+                var ModelNode= Class.create(coherent.KVO, {
             
-                constructor: function(name, value)
-                {
-                    var p;
-                    this.name= name;
-                    this.type= coherent.typeOf(value);
-                    this.toMany= ('array'===this.type);
-                    this.children= [];
-                
-                    if ('object'===this.type)
+                    constructor: function(name, value)
                     {
-                        for (p in value)
-                            this.children.push(new ModelNode(p, value[p]));
-                    }
-                    else if ('array'===this.type)
-                    {
-                        this.arrayValues= value;
-                        this.index= value.length?0:-1;
-                        this.count= value.length;
-                        var first= value[0];
-                        for (p in first)
-                            this.children.push(new ModelNode(p, first[p]));
-                    }
-                    else
-                        this.value= String(value);
-                },
+                        var p;
+                        this.name= name;
+                        this.type= coherent.typeOf(value);
+                        this.toMany= ('array'===this.type);
+                        this.children= [];
                 
-                __updateArrayChildren: function()
-                {
-                    var children= [];
-                    var value= this.arrayValues[this.index];
-                    for (var p in value)
-                        children.push(new ModelNode(p, value[p]));
-                    this.setValueForKey(children, 'children');
-                },
+                        if ('object'===this.type)
+                        {
+                            for (p in value)
+                                this.children.push(new ModelNode(p, value[p]));
+                        }
+                        else if ('array'===this.type)
+                        {
+                            this.arrayValues= value;
+                            this.index= value.length?0:-1;
+                            this.count= value.length;
+                            var first= value[0];
+                            for (p in first)
+                                this.children.push(new ModelNode(p, first[p]));
+                        }
+                        else
+                            this.value= String(value);
+                    },
+                
+                    __updateArrayChildren: function()
+                    {
+                        var children= [];
+                        var value= this.arrayValues[this.index];
+                        for (var p in value)
+                            children.push(new ModelNode(p, value[p]));
+                        this.setValueForKey(children, 'children');
+                    },
                     
-                canSelectPrevious: function()
-                {
-                    return this.index>0;
-                },
+                    canSelectPrevious: function()
+                    {
+                        return this.index>0;
+                    },
                 
-                selectPrevious: function()
-                {
-                    this.willChangeValueForKey('canSelectPrevious');
-                    this.willChangeValueForKey('canSelectNext');
-                    this.setValueForKey(Math.max(0, this.index-1), 'index');
-                    this.__updateArrayChildren();
-                    this.didChangeValueForKey('canSelectPrevious');
-                    this.didChangeValueForKey('canSelectNext');
-                },
+                    selectPrevious: function()
+                    {
+                        this.willChangeValueForKey('canSelectPrevious');
+                        this.willChangeValueForKey('canSelectNext');
+                        this.setValueForKey(Math.max(0, this.index-1), 'index');
+                        this.__updateArrayChildren();
+                        this.didChangeValueForKey('canSelectPrevious');
+                        this.didChangeValueForKey('canSelectNext');
+                    },
 
-                canSelectNext: function()
-                {
-                    return (this.index+1) < this.count;
-                },
+                    canSelectNext: function()
+                    {
+                        return (this.index+1) < this.count;
+                    },
                 
-                selectNext: function()
-                {
-                    this.willChangeValueForKey('canSelectPrevious');
-                    this.willChangeValueForKey('canSelectNext');
-                    this.setValueForKey(Math.min(this.count-1, this.index+1), 'index');
-                    this.__updateArrayChildren();
-                    this.didChangeValueForKey('canSelectPrevious');
-                    this.didChangeValueForKey('canSelectNext');
-                }
+                    selectNext: function()
+                    {
+                        this.willChangeValueForKey('canSelectPrevious');
+                        this.willChangeValueForKey('canSelectNext');
+                        this.setValueForKey(Math.min(this.count-1, this.index+1), 'index');
+                        this.__updateArrayChildren();
+                        this.didChangeValueForKey('canSelectPrevious');
+                        this.didChangeValueForKey('canSelectNext');
+                    }
                 
+                });
             });
-
         </script>
         
     </body>

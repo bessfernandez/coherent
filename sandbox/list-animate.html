@@ -26,7 +26,7 @@
 			    opacity: 0;
 			}
 		</style>
-        <script src="../build/coherent-debug.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../build/debug/coherent-debug.js" type="text/javascript" charset="utf-8"></script>
     </head>
     
     <body>
@@ -42,82 +42,83 @@
             
         </div>
         <script>
-            NIB({
-                'view': VIEW(document.body, {
+            distil.onready(function(){
+                NIB({
+                    'view': VIEW(document.body, {
                     
-                        'ul': coherent.CollectionView({
-                                    contentBinding: 'controller.items',
-                                    animate: {
-                                        insertion: 250,
-                                        deletion: 250
-                                    },
-                                    viewTemplate: VIEW('<li></li>', {
-                                        ':root': coherent.View({
-                                                    textBinding: 'representedObject.text'
-                                                })
+                            'ul': coherent.CollectionView({
+                                        contentBinding: 'controller.items',
+                                        animate: {
+                                            insertion: 250,
+                                            deletion: 250
+                                        },
+                                        viewTemplate: VIEW('<li></li>', {
+                                            ':root': coherent.View({
+                                                        textBinding: 'representedObject.text'
+                                                    })
+                                        })
+                                    }),
+                            
+                            'button.insert': coherent.Button({
+                                        target: 'controller',
+                                        action: 'insertItem'
+                                    }),
+                            
+                            'button.delete': coherent.Button({
+                                        target: 'controller',
+                                        action: 'deleteItem'
+                                    }),
+                            
+                            'button.update': coherent.Button({
+                                        target: 'controller',
+                                        action: 'updateItem'
                                     })
-                                }),
                             
-                        'button.insert': coherent.Button({
-                                    target: 'controller',
-                                    action: 'insertItem'
-                                }),
-                            
-                        'button.delete': coherent.Button({
-                                    target: 'controller',
-                                    action: 'deleteItem'
-                                }),
-                            
-                        'button.update': coherent.Button({
-                                    target: 'controller',
-                                    action: 'updateItem'
-                                })
-                            
-                    }),
+                        }),
                 
-                'controller': coherent.KVO({
+                    'controller': coherent.KVO({
                 
-                    items: [],
-                    index: 0,
+                        items: [],
+                        index: 0,
                     
-                    insertItem: function()
-                    {
-                        var len= this.items.length;
-                        var item= {
-                                text: "Item " + (++this.index) + " (" + (new Date()).toString() + ")"
-                            };
-                        item= coherent.KVO.adaptTree(item);
-                        var index= Math.floor(len/2);
-                        if (index<len)
-                            this.items.insertObjectAtIndex(item, index);
-                        else
-                            this.items.addObject(item);
-                    },
+                        insertItem: function()
+                        {
+                            var len= this.items.length;
+                            var item= {
+                                    text: "Item " + (++this.index) + " (" + (new Date()).toString() + ")"
+                                };
+                            item= coherent.KVO.adaptTree(item);
+                            var index= Math.floor(len/2);
+                            if (index<len)
+                                this.items.insertObjectAtIndex(item, index);
+                            else
+                                this.items.addObject(item);
+                        },
                 
-                    deleteItem: function()
-                    {
-                        var len= this.items.length;
-                        var index= Math.floor(len/2);
-                        if (index<len)
-                            this.items.removeObjectAtIndex(index);
-                    },
+                        deleteItem: function()
+                        {
+                            var len= this.items.length;
+                            var index= Math.floor(len/2);
+                            if (index<len)
+                                this.items.removeObjectAtIndex(index);
+                        },
                 
-                    updateItem: function()
-                    {
-                        var len= this.items.length;
-                        var index= Math.floor(len/2);
-                        var item= {
-                                text: (new Date()).toString()
-                            };
-                        item= coherent.KVO.adaptTree(item);
+                        updateItem: function()
+                        {
+                            var len= this.items.length;
+                            var index= Math.floor(len/2);
+                            var item= {
+                                    text: (new Date()).toString()
+                                };
+                            item= coherent.KVO.adaptTree(item);
 
-                        if (index<len)
-                            this.items.replaceObjectAtIndexWithObject(index,item);
-                    }
-                })
+                            if (index<len)
+                                this.items.replaceObjectAtIndexWithObject(index,item);
+                        }
+                    })
                 
+                });
             });
-            
         </script>
     </body>
 </html>

@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
     <head>
-        <script src="../build/coherent-debug.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../build/debug/coherent-debug.js" type="text/javascript" charset="utf-8"></script>
         <style>
             div.slider {
               float: left;
@@ -45,27 +45,29 @@
         </div>
         
         <script>
-            var data= coherent.KVO.adaptTree({
-                            options: {
-                                min: 0,
-                                max: 5,
-                                value: 2
-                            }
-                        });
-            coherent.registerModelWithName(data, 'data');
-            var control= new coherent.Slider('control', {
-                                valueBinding: 'data.options.value',
-                                minValueBinding: 'data.options.min',
-                                maxValueBinding: 'data.options.max'
+            distil.onready(function(){
+                var data= coherent.KVO.adaptTree({
+                                options: {
+                                    min: 0,
+                                    max: 5,
+                                    value: 2
+                                }
                             });
-            var value= new coherent.View('value', {
-                                textBinding: 'data.options.value'
-                            });
-            var controlAlt= new coherent.Slider('slider', {
-                                valueBinding: 'data.options.value',
-                                minValueBinding: 'data.options.min',
-                                maxValueBinding: 'data.options.max'
-                            });
+                coherent.registerModelWithName(data, 'data');
+                var control= new coherent.Slider('control', {
+                                    valueBinding: 'data.options.value',
+                                    minValueBinding: 'data.options.min',
+                                    maxValueBinding: 'data.options.max'
+                                });
+                var value= new coherent.View('value', {
+                                    textBinding: 'data.options.value'
+                                });
+                var controlAlt= new coherent.Slider('slider', {
+                                    valueBinding: 'data.options.value',
+                                    minValueBinding: 'data.options.min',
+                                    maxValueBinding: 'data.options.max'
+                                });
+            });
         </script>
         
     </body>

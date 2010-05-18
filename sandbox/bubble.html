@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
     <head>
-        <script src="../build/coherent-debug.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../build/debug/coherent-debug.js" type="text/javascript" charset="utf-8"></script>
         <style>
             .modal-overlay-guard
             {
@@ -89,23 +89,25 @@
         <div id="bubble" class="overlay"><span class="arrow"></span></div>
 
         <script>
-            var bubble= new coherent.Bubble(document.getElementById('bubble'), {
-                                                animate: {
-                                                    visible: true
-                                                }
-                                            });
+            distil.onready(function(){
+                var bubble= new coherent.Bubble(document.getElementById('bubble'), {
+                                                    animate: {
+                                                        visible: true
+                                                    }
+                                                });
             
-            function showBubble()
-            {
-                bubble.constrainToView(document.getElementById('constraint'));
-                bubble.attachToView(document.getElementById('field'));
-                bubble.setVisible(true);
-            }
+                function showBubble()
+                {
+                    bubble.constrainToView(document.getElementById('constraint'));
+                    bubble.attachToView(document.getElementById('field'));
+                    bubble.setVisible(true);
+                }
 
-            function hideBubble()
-            {
-                bubble.setVisible(false);
-            }
+                function hideBubble()
+                {
+                    bubble.setVisible(false);
+                }
+            });
         </script>
 
         <div id="constraint">

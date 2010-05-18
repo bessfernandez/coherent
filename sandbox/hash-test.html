@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta http-equiv="X-UA-Compatible" content="IE=8">
-        <script src="../build/coherent.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../build/debug/coherent-debug.js" type="text/javascript" charset="utf-8"></script>
         <style>
             body
             {
@@ -30,33 +30,35 @@
         </div>
         
         <script>
-            var TestView= Class.create(coherent.View, {
+            distil.onready(function(){
+                var TestView= Class.create(coherent.View, {
             
-                __structure__: {
-                    'input': coherent.TextField({
-                                action: 'updateHash',
-                                // sendsActionOnEndEditing: false,
-                                placeholder: 'Hash'
-                            }),
-                    'div': coherent.View({
-                                textBinding: 'hash.value'
-                            })
-                },
+                    __structure__: {
+                        'input': coherent.TextField({
+                                    action: 'updateHash',
+                                    // sendsActionOnEndEditing: false,
+                                    placeholder: 'Hash'
+                                }),
+                        'div': coherent.View({
+                                    textBinding: 'hash.value'
+                                })
+                    },
                 
-                init: function()
-                {
-                    this.setValueForKey(coherent.hash, 'hash');
-                },
+                    init: function()
+                    {
+                        this.setValueForKey(coherent.hash, 'hash');
+                    },
                 
-                updateHash: function(sender)
-                {
-                    var hashValue= sender.value();
-                    coherent.hash.setValue(hashValue);
-                }
+                    updateHash: function(sender)
+                    {
+                        var hashValue= sender.value();
+                        coherent.hash.setValue(hashValue);
+                    }
                 
-            });
+                });
 
-            var testview= new TestView('demo');
+                var testview= new TestView('demo');
+            });
         </script>
         
     </body>

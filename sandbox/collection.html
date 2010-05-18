@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
     <head>
-        <script src="../build/coherent-debug.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../build/debug/coherent-debug.js" type="text/javascript" charset="utf-8"></script>
         <style>
             ul
             {
@@ -42,64 +42,66 @@
         </div>
         
         <script>
-            var data= coherent.KVO.adaptTree({
-                            title: "Foo",
-                            options: [
-                                {
-                                    name: "Abc"
-                                },
-                                {
-                                    name: "Def"
-                                },
-                                {
-                                    name: "Ghi"
-                                },
-                                {
-                                    name: "Jkl"
-                                },
-                                {
-                                    name: "Mno"
-                                },
-                                {
-                                    name: "Pqr"
-                                },
-                                {
-                                    name: "Stu"
-                                },
-                                {
-                                    name: "Vwx"
-                                },
-                                {
-                                    name: "Yz"
-                                }
-                            ]
-                        });
+            distil.onready(function(){
+                var data= coherent.KVO.adaptTree({
+                                title: "Foo",
+                                options: [
+                                    {
+                                        name: "Abc"
+                                    },
+                                    {
+                                        name: "Def"
+                                    },
+                                    {
+                                        name: "Ghi"
+                                    },
+                                    {
+                                        name: "Jkl"
+                                    },
+                                    {
+                                        name: "Mno"
+                                    },
+                                    {
+                                        name: "Pqr"
+                                    },
+                                    {
+                                        name: "Stu"
+                                    },
+                                    {
+                                        name: "Vwx"
+                                    },
+                                    {
+                                        name: "Yz"
+                                    }
+                                ]
+                            });
 
-            var TestView= Class.create(coherent.View, {
+                var TestView= Class.create(coherent.View, {
             
-                __structure__: {
+                    __structure__: {
                 
-                    'ul': coherent.CollectionView({
-                                animate: {
-                                    selection: true
-                                },
-                                contentBinding: 'data.options',
-                                // allowsEmptySelection: false,
-                                // multiple: true,
-                                viewTemplate: VIEW({
-                                    ':root': coherent.View({
-                                                textBinding: 'representedObject.name',
-                                                animate: {
-                                                    text: true
-                                                }
-                                            })
+                        'ul': coherent.CollectionView({
+                                    animate: {
+                                        selection: true
+                                    },
+                                    contentBinding: 'data.options',
+                                    // allowsEmptySelection: false,
+                                    // multiple: true,
+                                    viewTemplate: VIEW({
+                                        ':root': coherent.View({
+                                                    textBinding: 'representedObject.name',
+                                                    animate: {
+                                                        text: true
+                                                    }
+                                                })
+                                    })
                                 })
-                            })
-                }
+                    }
                 
+                });
+                var testview= new TestView('demo');
+                testview.setValueForKey(data, 'data');
             });
-            var testview= new TestView('demo');
-            testview.setValueForKey(data, 'data');
         </script>
         
     </body>
