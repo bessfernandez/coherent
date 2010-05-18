@@ -1,4 +1,5 @@
 /*jsl:import ../../ui.js*/
+/*jsl:declare Sizzle*/
 
 //  Trick picked up from Prototype to get around IE8's fixed Element & Event
 (function() {
