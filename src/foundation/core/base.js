@@ -1,28 +1,19 @@
-if ("undefined"!==typeof(coherent))
-    throw new Error("Library module (coherent) already defined");
-
+/*jsl:declare coherent*/
+if ('undefined'===typeof(coherent))
+    coherent= {};
+    
 /**
  *  @namespace
  */
-var coherent= {
-    /** The version of the Coherent library. */
-    version: "3.0.0",
-    
-    /** Helper method to generate an unique ID. Basically this is a simply
-        increasing value. It's not really unique outside of the page, so you
-        shouldn't use this value for synchronising components across pages or
-        communicating with servers.
-        @type Number
-     */
-    generateUid: function()
-    {
-        return ++(coherent.__nextUid);
-    },
-    
-    __nextUid: 0,
-        
-    globalObject: (function(){ return this; })()
-};
+coherent.version= "3.0.0";
+coherent.__nextUid= 0;
+coherent.global= window;
+coherent.globalEval= window['eval'];
+
+coherent.generateUid= function()
+{
+    return ++(coherent.__nextUid);
+}
 
 
 /** Boolean flags to indicate which browser is currently running. Purists will
@@ -80,7 +71,7 @@ coherent.typeOf=function(o)
     if ("object"!==t && "function"!==t)
         return t;
         
-    return Object.prototype.toString.call(o).slice(8,-1).toLowerCase();
+    return {}.toString.call(o).slice(8,-1).toLowerCase();
 }
 
 /** Compare two values. This handles pretty much every type possible. When the

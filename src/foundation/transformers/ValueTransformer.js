@@ -128,7 +128,7 @@ coherent.findTransformerWithName= function(transformerName)
     {
         try
         {
-            valueTransformer= eval(transformerName);
+            valueTransformer= coherent.globalEval(transformerName);
         }
         catch(e)
         {}

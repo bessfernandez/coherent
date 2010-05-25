@@ -189,7 +189,8 @@ coherent.Bubble= Class.create(coherent.Overlay, {
         
         node.style.top= top + 'px';
         
-        arrow.style.left= (targetRect.left - withinRect.left + targetRect.width/2) + 'px';
+        if (arrow)
+            arrow.style.left= (targetRect.left - withinRect.left + targetRect.width/2) + 'px';
         
         node.style.visibility= _visibility;
         node.style.display= _display;

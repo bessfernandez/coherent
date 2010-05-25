@@ -96,14 +96,14 @@
                                                     }
                                                 });
             
-                function showBubble()
+                window.showBubble=function()
                 {
                     bubble.constrainToView(document.getElementById('constraint'));
                     bubble.attachToView(document.getElementById('field'));
                     bubble.setVisible(true);
                 }
 
-                function hideBubble()
+                window.hideBubble=function()
                 {
                     bubble.setVisible(false);
                 }

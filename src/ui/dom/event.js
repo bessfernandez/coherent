@@ -17,65 +17,65 @@
  */
 Object.extend(Event, {
 
-	KEY_BACKSPACE: 8,
-	KEY_TAB: 9,
-	KEY_CLEAR: 12,
+    KEY_BACKSPACE: 8,
+    KEY_TAB: 9,
+    KEY_CLEAR: 12,
     KEY_RETURN: 13,
-	KEY_ENTER: 13,
-	KEY_SHIFT: 16,
-	KEY_CTRL: 17,
-	KEY_ALT: 18,
-	KEY_PAUSE: 19,
-	KEY_CAPS_LOCK: 20,
-	KEY_ESCAPE: 27,
-	KEY_SPACE: 32,
-	KEY_PAGE_UP: 33,
-	KEY_PAGE_DOWN: 34,
-	KEY_END: 35,
-	KEY_HOME: 36,
-	KEY_LEFT_ARROW: 37,
-	KEY_UP_ARROW: 38,
-	KEY_RIGHT_ARROW: 39,
-	KEY_DOWN_ARROW: 40,
-	KEY_INSERT: 45,
-	KEY_DELETE: 46,
-	KEY_HELP: 47,
-	KEY_LEFT_WINDOW: 91,
-	KEY_RIGHT_WINDOW: 92,
-	KEY_SELECT: 93,
-	KEY_NUMPAD_0: 96,
-	KEY_NUMPAD_1: 97,
-	KEY_NUMPAD_2: 98,
-	KEY_NUMPAD_3: 99,
-	KEY_NUMPAD_4: 100,
-	KEY_NUMPAD_5: 101,
-	KEY_NUMPAD_6: 102,
-	KEY_NUMPAD_7: 103,
-	KEY_NUMPAD_8: 104,
-	KEY_NUMPAD_9: 105,
-	KEY_NUMPAD_MULTIPLY: 106,
-	KEY_NUMPAD_PLUS: 107,
-	KEY_NUMPAD_ENTER: 108,
-	KEY_NUMPAD_MINUS: 109,
-	KEY_NUMPAD_PERIOD: 110,
-	KEY_NUMPAD_DIVIDE: 111,
-	KEY_F1: 112,
-	KEY_F2: 113,
-	KEY_F3: 114,
-	KEY_F4: 115,
-	KEY_F5: 116,
-	KEY_F6: 117,
-	KEY_F7: 118,
-	KEY_F8: 119,
-	KEY_F9: 120,
-	KEY_F10: 121,
-	KEY_F11: 122,
-	KEY_F12: 123,
-	KEY_F13: 124,
-	KEY_F14: 125,
-	KEY_F15: 126,
-	KEY_NUM_LOCK: 144,
-	KEY_SCROLL_LOCK: 145,
+    KEY_ENTER: 13,
+    KEY_SHIFT: 16,
+    KEY_CTRL: 17,
+    KEY_ALT: 18,
+    KEY_PAUSE: 19,
+    KEY_CAPS_LOCK: 20,
+    KEY_ESCAPE: 27,
+    KEY_SPACE: 32,
+    KEY_PAGE_UP: 33,
+    KEY_PAGE_DOWN: 34,
+    KEY_END: 35,
+    KEY_HOME: 36,
+    KEY_LEFT_ARROW: 37,
+    KEY_UP_ARROW: 38,
+    KEY_RIGHT_ARROW: 39,
+    KEY_DOWN_ARROW: 40,
+    KEY_INSERT: 45,
+    KEY_DELETE: 46,
+    KEY_HELP: 47,
+    KEY_LEFT_WINDOW: 91,
+    KEY_RIGHT_WINDOW: 92,
+    KEY_SELECT: 93,
+    KEY_NUMPAD_0: 96,
+    KEY_NUMPAD_1: 97,
+    KEY_NUMPAD_2: 98,
+    KEY_NUMPAD_3: 99,
+    KEY_NUMPAD_4: 100,
+    KEY_NUMPAD_5: 101,
+    KEY_NUMPAD_6: 102,
+    KEY_NUMPAD_7: 103,
+    KEY_NUMPAD_8: 104,
+    KEY_NUMPAD_9: 105,
+    KEY_NUMPAD_MULTIPLY: 106,
+    KEY_NUMPAD_PLUS: 107,
+    KEY_NUMPAD_ENTER: 108,
+    KEY_NUMPAD_MINUS: 109,
+    KEY_NUMPAD_PERIOD: 110,
+    KEY_NUMPAD_DIVIDE: 111,
+    KEY_F1: 112,
+    KEY_F2: 113,
+    KEY_F3: 114,
+    KEY_F4: 115,
+    KEY_F5: 116,
+    KEY_F6: 117,
+    KEY_F7: 118,
+    KEY_F8: 119,
+    KEY_F9: 120,
+    KEY_F10: 121,
+    KEY_F11: 122,
+    KEY_F12: 123,
+    KEY_F13: 124,
+    KEY_F14: 125,
+    KEY_F15: 126,
+    KEY_NUM_LOCK: 144,
+    KEY_SCROLL_LOCK: 145,
 
     isNumpadNumKey: function(keyCode)
     {
@@ -174,35 +174,35 @@ Object.extend(Event, {
         Compliant browsers and Internet Explorer.
         @param {Event} event - A standard event object
      */
-	stop: function(event)
-	{
-		event.preventDefault();
-		event.stopPropagation();
-	},
-    	
+    stop: function(event)
+    {
+        event.preventDefault();
+        event.stopPropagation();
+    },
+        
     /** Stop only the default behaviour for the specified event. This method
         will handle the differences between Standards Compliant browsers and
         Internet Explorer.
         @param {Event} event - A standard event object
      */
-	preventDefault: function(event)
-	{
-	    event.preventDefault();
-	},
+    preventDefault: function(event)
+    {
+        event.preventDefault();
+    },
 
-	/** Register a callback method to be invoked when the DOM has finished
-	    loading. This handles the various methods that browsers use to signal
-	    this state.
+    /** Register a callback method to be invoked when the DOM has finished
+        loading. This handles the various methods that browsers use to signal
+        this state.
 
-	    Note: The callback function is guaranteed to be called after this
-	    method. If the DOM has already been loaded, the callback will be invoked
-	    using a timeout scheduled for 0 milliseconds (essentially as soon as
-	    possible).
-	    
-	    @param {Function} f - The callback function. This function does not
-	        receive any arguments and is not called in any particular scope.
-	 */
-	onDomReady: function(f)
+        Note: The callback function is guaranteed to be called after this
+        method. If the DOM has already been loaded, the callback will be invoked
+        using a timeout scheduled for 0 milliseconds (essentially as soon as
+        possible).
+        
+        @param {Function} f - The callback function. This function does not
+            receive any arguments and is not called in any particular scope.
+     */
+    onDomReady: function(f)
     {
         //  If the DOM has already loaded, fire off the callback as soon as
         //  possible after returning from this method.

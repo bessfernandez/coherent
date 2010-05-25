@@ -20,7 +20,7 @@ Object.clone= function(obj)
  */
 Object.get= function(path, context)
 {
-    var obj= context||coherent.globalObject;
+    var obj= context||coherent.global;
     var parts= path.split('.');
     var p;
     

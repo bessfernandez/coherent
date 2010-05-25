@@ -369,7 +369,6 @@ coherent.CollectionView= Class.create(coherent.View, {
         }
         
         var container= this.container();
-        var children= Array.from(container.children);
         var items= this.__items;
         var newItems;
         var index;

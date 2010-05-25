@@ -50,6 +50,8 @@
     {
         var newHash= _getHash();
         
+        console.log('hash=', newHash);
+        
         if (newHash===_recentHash)
             return;
 
@@ -239,33 +241,29 @@
         this.pollLocation.bindAndDelay(this, _pollFrequency);
     }
     
-    function setup()
+    if (coherent.Support.HashChangeEvent)
     {
-        if (coherent.Support.HashChangeEvent)
-        {
-            //  need this IE browser test because "onhashchange" exists in IE8
-            //  in IE7 mode
-            Event.observe(window, "onhashchange", _dispatchEvent);
-        }
-        else
-        {
-            if (document.addEventListener)
-            {
-                //  Non-IE
-                _recentHash = _getHash();
-                //  Poll the window location for changes
-                window.setInterval(_pollLocation, _pollFrequency);
-            }
-            else if (document.attachEvent)
-            {
-                //  For IE versions 7 and lower, use hidden iframe in versions
-                //  of IE that don't have onhashchange event
-                _ieUriMonitor = new IEUriMonitor();
-            } 
-            // else non-supported browser, do nothing.
-        }
+        //  need this IE browser test because "onhashchange" exists in IE8
+        //  in IE7 mode
+        Event.observe(window, "onhashchange", _dispatchEvent);
     }
-    Event.onDomReady(setup);
+    else
+    {
+        if (document.addEventListener)
+        {
+            //  Non-IE
+            _recentHash = _getHash();
+            //  Poll the window location for changes
+            window.setInterval(_pollLocation, _pollFrequency);
+        }
+        else if (document.attachEvent)
+        {
+            //  For IE versions 7 and lower, use hidden iframe in versions
+            //  of IE that don't have onhashchange event
+            _ieUriMonitor = new IEUriMonitor();
+        } 
+        // else non-supported browser, do nothing.
+    }
 
 })();
 

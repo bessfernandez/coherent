@@ -108,7 +108,7 @@ coherent.Asset= Class._create({
         switch (this.ext)
         {
             case '.json':
-                this.__content= eval('('+newContent+')');
+                this.__content= coherent.globalEval('('+newContent+')');
                 break;
                 
             case '.html':

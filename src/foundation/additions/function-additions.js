@@ -26,26 +26,6 @@ if (!Function.prototype.bind)
         };
     }
 
-if (!Function.prototype.bindAsEventListener)
-    Function.prototype.bindAsEventListener = function(object)
-    {
-        var self = this;
-
-        if (1==arguments.length)
-            return function(event)
-            {
-                return self.call(object, event||window.event);
-            };
-            
-        var args = Array.from(arguments);
-        args.shift();
-
-        return function(event) {
-            return self.apply(object, [event || window.event].concat(args));
-        };
-    }
-
-
 if (!Function.delay)
     Function.delay= function(fn, delay, scope, args)
     {
@@ -157,51 +137,3 @@ if (!Function.prototype.bindAndDelay)
         }
         return window.setTimeout(go, delay);
     }
-
-
-
-
-/** Provide synchronisation for functions.
- */
-Function.prototype.sync= function()
-{
-    /** The function that will be called after all the sync points complete.
-        @function
-        @inner
-     */
-    var fn= arguments.length?this.bind.apply(this, arguments):this;
-    var joinPoints= {};
-    var cancelled= false;
-    
-    fn.stop= function()
-    {
-        cancelled= true;
-    }
-
-    fn.waitFor= function(point)
-    {
-        if (point in joinPoints)
-            joinPoints[point]+=1;
-        else
-            joinPoints[point]= 1;
-        
-        return function()
-        {
-            //  this joinPoint hasn't been signaled
-            if (0!==(joinPoints[point]-=1))
-                return;
-
-            if (cancelled)
-                return;
-
-            for (var p in joinPoints)
-                if (joinPoints[p])
-                    return;
-
-            //  All join points have been triggered
-            fn();
-        };
-    }
-    
-    return fn;
-}

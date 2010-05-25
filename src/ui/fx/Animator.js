@@ -230,7 +230,7 @@ coherent.Animator= {
         
         var groupStart= coherent.EventLoop.getStart();
         var groupEnd= groupStart + options.duration;
-        var startStyles= options.startStyles || getStyles(element, Object.keys(hash));
+        var startStyles= options.startStyles || getStyles(element, Set.toArray(hash));
 
         normaliseProperties(hash);
               

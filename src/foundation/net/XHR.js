@@ -128,7 +128,7 @@
                         try
                         {
                             if (""!==result)
-                                result= eval('('+result+')');
+                                result= coherent.globalEval('('+result+')');
                             else
                                 result= null;
                         }
