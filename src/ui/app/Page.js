@@ -538,6 +538,8 @@ coherent.Page= Class.create(coherent.Responder, {
             this._dragging.cleanup();
             delete this._dragging;
         }
+        
+        this._draggingData= null;
     },
     
     _exitOldDragView: function(event)
@@ -604,7 +606,7 @@ coherent.Page= Class.create(coherent.Responder, {
                             },
                             target: target,
                             types: Set.toArray(data),
-                            operation: this._draggingLastDropEffect,
+                            operation: event.dataTransfer.dropEffect||this._draggingLastDropEffect,
                             getData: function(type)
                             {
                                 return data[type]||null;
@@ -625,7 +627,7 @@ coherent.Page= Class.create(coherent.Responder, {
                             },
                             target: target,
                             types: types,
-                            operation: event.dataTransfer.dropEffect,
+                            operation: event.dataTransfer.dropEffect||this._draggingLastDropEffect,
                             getData: function(type)
                             {
                                 type= ieTypeTranslation[type];

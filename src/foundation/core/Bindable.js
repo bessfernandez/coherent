@@ -129,8 +129,9 @@ coherent.Bindable= Class.create(coherent.KVO, {
         {
             if (coherent.ChangeType.setting!==change.changeType)
                 return;
-            this.setValueForKey(change.newValue, name);
+            this.setValueForKey(change.newValue, observer.name);
         }
+        observer.name= name;
         
         return observer;
     },

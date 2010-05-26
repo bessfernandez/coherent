@@ -1051,7 +1051,7 @@ coherent.View= Class.create(coherent.Responder, {
             var dt= event.dataTransfer;
             dt.clearData();
             dt.effectAllowed=operation;
-            if (dt.setDragImage)
+            if (!dt.setDragImage)
             {
                 if (e)
                 {

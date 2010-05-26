@@ -20,48 +20,26 @@ coherent.ToggleButton= Class.create(coherent.FormControl, {
         this.sendAction();
     },
 
-    /** Callback for tracking changes to the value binding. This updates the
-        value that the checkbox or radio button will send to the server.
-        
-        @param change   a ChangeNotification with the new value for the field
-      */
-    observeValueChange: function(change)
+    checked: function()
     {
-        this.base(change);
-
-        var view= this.node;
-        var newValue= change.newValue;
-
-        view.value= newValue;
-        
-        if (!this.bindings.selection)
-            return;
-
-        view.checked= (this.bindings.selection.value()==newValue);
-        
-        if (this.bindings.checked)
-            this.bindings.checked.setValue(view.checked);
+        return this.node.checked;
     },
     
-    observeCheckedChange: function(change, keyPath, context)
+    setChecked: function(checked)
     {
-        var view= this.node;
-
-        var newValue= !!change.newValue;
-        view.checked= newValue;
+        this.node.checked= !!checked;
+    },
+    
+    setValue: function(newValue)
+    {
+        this.base(newValue);
         if (this.bindings.selection)
-            this.bindings.selection.setValue(view.value);
+            this.node.checked= (this.bindings.selection.value()==newValue);
     },
     
     observeSelectionChange: function(change, keyPath, context)
     {
-        var view= this.node;
-        
-        var checked= (change.newValue==view.value);
-        view.checked= checked;
-        
-        if (this.bindings.checked)
-            this.bindings.checked.setValue(checked);
+        this.node.checked= (change.newValue==this.node.value);
     }
     
 });

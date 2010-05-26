@@ -64,6 +64,18 @@ coherent.Media= Class.create(coherent.View, {
         node.currentTime = node.duration;
     },
     
+    currentTime: function()
+    {
+        return this.node.currentTime;
+    },
+    
+    setCurrentTime: function(newTime)
+    {
+        if (this.bindings.currentTime)
+            this.bindings.currentTime.setValue(newTime);
+        this.node.currentTime= newTime;
+    },
+    
     muted: function()
     {
         return this.node.muted;
