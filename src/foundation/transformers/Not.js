@@ -4,16 +4,16 @@
  */
 coherent.transformer.Not= Class.create(coherent.ValueTransformer, {
 
-    transformedValue: function(value)
-    {
-        return (value?false:true);
-    },
-    
-    reverseTransformedValue: function(value)
-    {
-        return (value?false:true);
-    }
-    
+  transformedValue: function(value)
+  {
+    return (value?false:true);
+  },
+  
+  reverseTransformedValue: function(value)
+  {
+    return (value?false:true);
+  }
+  
 });
 
 coherent.registerTransformerWithName(new coherent.transformer.Not(), "not");

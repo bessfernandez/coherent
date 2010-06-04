@@ -4,20 +4,20 @@
  */
 coherent.transformer.Boolean= Class.create(coherent.ValueTransformer, {
 
-    constructor: function(trueValue, falseValue)
-    {
-        this.trueValue= trueValue;
-        this.falseValue= falseValue;
-    },
-    
-    transformedValue: function(value)
-    {
-        return (value==this.trueValue);
-    },
-    
-    reverseTransformedValue: function(value)
-    {
-        return (value?this.trueValue:this.falseValue);
-    }
+  constructor: function(trueValue, falseValue)
+  {
+    this.trueValue= trueValue;
+    this.falseValue= falseValue;
+  },
+  
+  transformedValue: function(value)
+  {
+    return (value==this.trueValue);
+  },
+  
+  reverseTransformedValue: function(value)
+  {
+    return (value?this.trueValue:this.falseValue);
+  }
 
 });

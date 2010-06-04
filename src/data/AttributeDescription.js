@@ -2,16 +2,16 @@
 
 coherent.AttributeDescription= Class._create({
 
-    constructor: function(options)
-    {
-    },
-    
-    get: function()
-    {
-    },
-    
-    set: function(newValue)
-    {
-    }
-    
+  constructor: function(options)
+  {
+  },
+  
+  get: function()
+  {
+  },
+  
+  set: function(newValue)
+  {
+  }
+  
 });

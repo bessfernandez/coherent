@@ -5,14 +5,14 @@
  */
 coherent.Controller= Class.create(coherent.Bindable, {
 
-    registerWithName: function(name)
-    {
-        if (!name)
-            return;
-        this.name= name;
-        coherent.registerModelWithName(this, name);
-    }
-        
+  registerWithName: function(name)
+  {
+    if (!name)
+      return;
+    this.name= name;
+    coherent.registerModelWithName(this, name);
+  }
+    
 });
 
 
