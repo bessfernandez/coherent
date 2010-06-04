@@ -11,7 +11,7 @@ globals: window, document, String, Object, Function, Date, Array, RegExp
 # mode: debug
 # generate docs: true
 
-js:
+source:
   - src/foundation.js
   - src/foundation
   - src/external/sizzle.js

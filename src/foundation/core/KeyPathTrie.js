@@ -1,5 +1,8 @@
 /*jsl:import ../../foundation.js*/
 
+/**
+    Trie structure for key paths.
+ */
 coherent.KeyPathTrie= Class._create({
 
     constructor: function()

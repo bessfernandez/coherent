@@ -1,10 +1,10 @@
 /*jsl:declare coherent*/
 if ('undefined'===typeof(coherent))
+    /**
+     *  @namespace
+     */
     coherent= {};
     
-/**
- *  @namespace
- */
 coherent.version= "3.0.0";
 coherent.__nextUid= 0;
 coherent.global= window;

@@ -2,7 +2,7 @@
 
 /** Creator for NIBs.
  */
-function NIB(def)
+function NIB(name, def)
 {
     var oldDataModel= coherent.dataModel;
     var model= coherent.dataModel= NIB.__model;
@@ -34,8 +34,11 @@ function NIB(def)
         var type= ctypeof(v);
 
         if (v && 'function'===type && v.__factoryFn__)
+        {
+            v.__key= p;
             v= v.call(model);
-
+        }
+        
         if (v instanceof coherent.Asset)
             v= v.content();
         
@@ -128,9 +131,6 @@ Object.extend(NIB, {
 
             while (!node.nextSibling)
             {
-                // if (1===node.nodeType)
-                //     console.log('awakeViewsFromNib: ', node);
-                // 
                 if (1===node.nodeType && (view= viewFromNode(node)) && view.awakeFromNib)
                     view.awakeFromNib();
                 node= node.parentNode;
@@ -138,9 +138,6 @@ Object.extend(NIB, {
                     return;
             }
 
-            // if (1===node.nodeType)
-            //     console.log('awakeViewsFromNib: ', node);
-            // 
             if (1===node.nodeType && (view= viewFromNode(node)) && view.awakeFromNib)
                 view.awakeFromNib();
             node= node.nextSibling;
