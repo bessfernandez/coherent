@@ -62,7 +62,7 @@
 coherent.View= Class.create(coherent.Responder, {
 
   exposedBindings: ['visible', 'class', 'enabled', 'editable', 'html', 'text',
-            'toolTip', 'argument'],
+                    'toolTip', 'argument'],
   
   /** The default placeholder values for various bindings. Each entry should
       consist of an object literal with keys for `multipleValues`, `nullValue`,

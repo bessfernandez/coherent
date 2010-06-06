@@ -1,111 +1,16 @@
 /*jsl:import ../../ui.js*/
 
-/** Creator for NIBs.
- */
-function NIB(name, def)
-{
-  var oldDataModel= coherent.dataModel;
-  var model= coherent.dataModel= NIB.__model;
-  var applicationNib= !model;
-  
-  //  When there's no model predefined, we default to the application
-  if (applicationNib)
+coherent.Nib= Class._create({
+
+  SPECIAL_KEYS: {
+    'owner': true,
+    'application': true
+  },
+
+  constructor: function(name, def)
   {
-    model= coherent.dataModel= new coherent.KVO();
-    model.setValueForKey(coherent.Application.shared, 'owner');
-    model.setValueForKey(coherent.Application.shared, 'application');
-  }
-  
-  var v;
-  var p;
-  var ignore= coherent.KVO.typesOfKeyValuesToIgnore;
-  var ctypeof= coherent.typeOf;
-  var views= [];
-  var specialKeys= NIB.specialKeys;
-  var awake= [];
-  
-  for (p in def)
-  {
-    //  Skip owner, because it's special
-    if (p in specialKeys)
-      continue;
-  
-    v= def[p];
-    var type= ctypeof(v);
-
-    if (v && 'function'===type && v.__factoryFn__)
-    {
-      v.__key= p;
-      v= v.call(model);
-    }
-    
-    if (v instanceof coherent.Asset)
-      v= v.content();
-    
-    if ('array'===type || !(type in ignore || 'addObserverForKeyPath' in v))
-      coherent.KVO.adaptTree(v);
-
-    //  Remember all the views we've created, but don't add them to the list
-    //  of things to awake, because we special process views.
-    if (v instanceof coherent.View)
-      views.push(v);
-    else if ('awakeFromNib' in v)
-      awake.push(v);
-    model.setValueForKey(v, p);
-  }
-
-  model.__views= views;
-
-  //  Setup linkages to the special objects
-  for (var key in specialKeys)
-  {
-    var specialDef= def[key];
-    var special= model.valueForKey(key);
-    var modelValue;
-  
-    if (!special)
-      continue;
-    
-    for (p in specialDef)
-    {
-      v= specialDef[p];
-      if ('string'!==typeof(v))
-      {
-        special.setValueForKeyPath(v, p);
-        continue;
-      }
-    
-      //  See if the value is a keypath into the current model
-      modelValue= model.valueForKeyPath(v);
-      if (null===modelValue || 'undefined'===typeof(modelValue))
-      {
-        special.setValueForKeyPath(v, p);
-        continue;
-      }
-    
-      special.setValueForKeyPath(modelValue, p);
-    }
-  }
-
-  var len= awake.length;
-  while (len--)
-    awake[len].awakeFromNib();
-
-  len= views.length;
-  while (len--)
-    NIB.__awakeViewsFromNib(views[len]);
-    
-  coherent.dataModel= oldDataModel;
-  
-  if (applicationNib)
-    coherent.Application.shared.__bundleLoaded(model);
-}
-
-Object.extend(NIB, {
-
-  asset: function(href, content)
-  {
-    return new coherent.Asset(href, content);
+    this.name= name;
+    this.def= def;
   },
 
   /** Visit all elements in the node tree rooted at the view in depth first
@@ -144,42 +49,137 @@ Object.extend(NIB, {
     }
   },
   
-  __scriptLoaded: function(href, owner, source)
+  instantiateNibWithOwner: function(owner)
   {
-    var head= document.getElementsByTagName('head')[0];
-    var script= document.createElement('script');
-    script.type = 'text/javascript';
-    script.defer = false;
+    var oldDataModel= coherent.dataModel;
+    var model= coherent.dataModel= new coherent.KVO();
+  
+    model.setValueForKey(owner, 'owner');
+    model.setValueForKey(coherent.Application.shared, 'application');
+  
+    var v;
+    var p;
+    var ignore= coherent.KVO.typesOfKeyValuesToIgnore;
+    var ctypeof= coherent.typeOf;
+    var views= [];
+    var awake= [];
 
-    window.__filename__= String(href);
-    var model= NIB.__model= new coherent.KVO();
+    NIB.__currentNib= this;
+    
+    for (p in this.def)
+    {
+      //  Skip owner, because it's special
+      if (p in this.SPECIAL_KEYS)
+        continue;
+  
+      v= this.def[p];
+      var type= ctypeof(v);
 
-    NIB.__model.setValueForKey(owner, 'owner');
-    NIB.__model.setValueForKey(coherent.Application.shared, 'application');
+      if (v)
+      {
+        if ('function'===type && v.__factoryFn__)
+        {
+          v.__key= p;
+          v.__nib= this;
+          v= v.call(model);
+        }
+    
+        if (v instanceof coherent.Asset)
+          v= v.content();
+    
+        if ('array'===type || !(type in ignore || 'addObserverForKeyPath' in v))
+          coherent.KVO.adaptTree(v);
 
-    if (coherent.Support.AssetsEvaluateChildren)
-      script.appendChild(document.createTextNode(source));
-    else
-      script.text= source;
-    head.appendChild(script);
+        //  Remember all the views we've created, but don't add them to the list
+        //  of things to awake, because we special process views.
+        if (v instanceof coherent.View)
+          views.push(v);
+        else if ('awakeFromNib' in v)
+          awake.push(v);
+      }
+      model.setValueForKey(v, p);
+    }
 
-    NIB.__model= null;
-    window.__filename__= null;
-    return model;
-  },
+    model.__views= views;
 
-  load: function(href, owner)
-  {
-    var d= XHR.get(href, null, {
-            responseContentType: 'text/plain'
-          });
-    d.addCallback(NIB.__scriptLoaded.bind(null, href, owner));
-    return d;
-  },
+    //  Setup linkages to the special objects
+    for (var key in this.SPECIAL_KEYS)
+    {
+      var specialDef= this.def[key];
+      var special= model.valueForKey(key);
+      var modelValue;
+  
+      if (!special)
+        continue;
+    
+      for (p in specialDef)
+      {
+        v= specialDef[p];
+        if ('string'!==typeof(v))
+        {
+          special.setValueForKeyPath(v, p);
+          continue;
+        }
+    
+        //  See if the value is a keypath into the current model
+        modelValue= model.valueForKeyPath(v);
+        if (null===modelValue || 'undefined'===typeof(modelValue))
+        {
+          special.setValueForKeyPath(v, p);
+          continue;
+        }
+    
+        special.setValueForKeyPath(modelValue, p);
+      }
+    }
 
-  specialKeys: {
-    'owner': true,
-    'application': true
+    var len= awake.length;
+    while (len--)
+      awake[len].awakeFromNib();
+
+    len= views.length;
+    while (len--)
+      this.__awakeViewsFromNib(views[len]);
+    
+    coherent.dataModel= oldDataModel;
+    
+    this.context= model;
+    NIB.__currentNib= null;
   }
-
+  
 });
+
+/** Creator for NIBs.
+ */
+function NIB(name, def)
+{
+  var nib= new coherent.Nib(name, def);
+  nib.bundle= coherent.Bundle.__current;
+  coherent.Bundle.__current.nibs[name]= nib;
+}
+
+Object.extend(NIB, {
+
+  assetUrl: function(href)
+  {
+    return new coherent.Asset(href).href;
+  },
+
+  asset: function(href)
+  {
+    return new coherent.Asset(href);
+  },
+  
+  withName: function(name)
+  {
+    return coherent.Bundle.mainBundle.nibs[name];
+  },
+
+  withNameInBundle: function(name, bundle)
+  {
+    return bundle.nibs[name];
+  }
+  
+});
+
+window.NIB= NIB;

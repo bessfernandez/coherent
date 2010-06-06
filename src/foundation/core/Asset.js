@@ -18,15 +18,16 @@
  */
 coherent.Asset= Class._create({
 
-  constructor: function(href, content)
+  constructor: function(assetName)
   {
     if (!(this instanceof coherent.Asset))
-      return new coherent.Asset(href, content);
-    
+      return new coherent.Asset(assetName);
+
     var currentUrl= coherent.Scripts.currentScriptUrl();
     var lastSlash= currentUrl.lastIndexOf('/');
     var prefix= currentUrl.substring(0, lastSlash+1);
 
+    var href= assetName;
     if ('/'!==href.charAt(0))
       href= [prefix, href].join('');
     
@@ -35,12 +36,11 @@ coherent.Asset= Class._create({
     coherent.Asset.assetLookup[href]= this;
     
     this.href= href;
-    this.dirname= prefix;
+    this.dirname= href.split('/').slice(0,-1).join('/');
     var lastDot= href.lastIndexOf('.');
     this.ext= href.substring(lastDot).toLowerCase();
-
-    this.setContent(content);
   
+    this.setContent(distil.dataForAssetWithNameInModule(assetName, null));
     return this;
   },
 

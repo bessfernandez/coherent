@@ -8,7 +8,7 @@ function VIEW(markup, structure)
   {
     structure= markup;
     markup= null;
-  }
+  }  
 
   function setupView(viewNode)
   {
@@ -20,7 +20,17 @@ function VIEW(markup, structure)
     if (!viewNode)
     {
       if ("string"!==typeof(markup))
-        markup= markup.content();
+      {
+        var assetId= [setupView.__nib.name,setupView.__key].join("#") + ".html";
+        var module= setupView.__nib.bundle.name;
+        markup= distil.dataForAssetWithNameInModule(assetId, module);
+        
+        if (!markup)
+        {
+          var asset= coherent.Asset(distil.urlForAssetWithNameInModule(assetId, module));
+          markup= asset.content();
+        }
+      }
       viewNode= coherent.View.createNodeFromMarkup(markup);
     }
     
@@ -55,3 +65,5 @@ function VIEW(markup, structure)
   setupView.__factoryFn__= true;
   return setupView;
 }
+
+window.VIEW= VIEW;

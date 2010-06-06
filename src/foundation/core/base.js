@@ -8,7 +8,10 @@ if ('undefined'===typeof(coherent))
 coherent.version= "3.0.0";
 coherent.__nextUid= 0;
 coherent.global= window;
-coherent.globalEval= window['eval'];
+coherent.globalEval= function(script)
+{
+  return window['eval'](script);
+}
 
 coherent.generateUid= function()
 {

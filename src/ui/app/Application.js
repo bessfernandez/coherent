@@ -42,28 +42,21 @@ coherent.Application= Class.create(coherent.Responder, {
     this.__assetLocation= assetLocation;
   },
   
-  mainBundle: function()
+  mainNib: function()
   {
-    return this.__mainBundle;
+    return this.__nib;
   },
   
-  setMainBundle: function(newMainBundle)
+  setMainNib: function(newMainNib)
   {
-    this.__mainBundle= newMainBundle;
+    this.__mainNib= newMainNib;
     
-    var href= this.__assetLocation + newMainBundle;
-    
-    if (!/\.\w+$/.test(href))
-      href+= ".jsnib";
-      
-    var d= NIB.load(href, this);
-    d.addCallback(this.__bundleLoaded, this);
-  },
-  
-  __bundleLoaded: function(model)
-  {
+    var controller= new coherent.ViewController(newMainNib);
+    controller.loadView();
+    var context= controller.nib.context;
+
     var body= document.body;
-    var views= model.__views;
+    var views= context.__views;
     var numberOfViews= views.length;
     var view;
     
