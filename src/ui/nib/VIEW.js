@@ -27,8 +27,8 @@ function VIEW(markup, structure)
         
         if (!markup)
         {
-          var asset= coherent.Asset(distil.urlForAssetWithNameInModule(assetId, module));
-          markup= asset.content();
+          var href= distil.urlForAssetWithNameInModule(assetId, module);
+          markup= (new coherent.Asset(href)).content();
         }
       }
       viewNode= coherent.View.createNodeFromMarkup(markup);

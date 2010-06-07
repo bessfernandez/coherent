@@ -23,13 +23,17 @@ coherent.Asset= Class._create({
     if (!(this instanceof coherent.Asset))
       return new coherent.Asset(assetName);
 
-    var currentUrl= coherent.Scripts.currentScriptUrl();
-    var lastSlash= currentUrl.lastIndexOf('/');
-    var prefix= currentUrl.substring(0, lastSlash+1);
-
     var href= assetName;
-    if ('/'!==href.charAt(0))
-      href= [prefix, href].join('');
+    
+    if ('/'!==href.charAt(0) && !(/\w+:\/\//).test(href))
+    {
+      var currentUrl= coherent.Scripts.currentScriptUrl();
+      var lastSlash= currentUrl.lastIndexOf('/');
+      var prefix= currentUrl.substring(0, lastSlash+1);
+
+      if ('/'!==href.charAt(0))
+        href= [prefix, href].join('');
+    }
     
     if (href in coherent.Asset.assetLookup)
       return coherent.Asset.assetLookup[href];
