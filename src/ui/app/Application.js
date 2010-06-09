@@ -44,16 +44,20 @@ coherent.Application= Class.create(coherent.Responder, {
   
   mainNib: function()
   {
-    return this.__nib;
+    return this.__mainNib;
   },
   
   setMainNib: function(newMainNib)
   {
     this.__mainNib= newMainNib;
     
-    var controller= new coherent.ViewController(newMainNib);
-    controller.loadView();
-    var context= controller.nib.context;
+    var nib= NIB.withName(newMainNib);
+    if (!nib)
+      throw new Error("Could not find NIB with name \""+newMainNib +"\"");
+      
+    nib.instantiateNibWithOwner(this);
+
+    var context= nib.context;
 
     var body= document.body;
     var views= context.__views;
