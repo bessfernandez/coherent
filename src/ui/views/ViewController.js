@@ -12,10 +12,20 @@
 */
 coherent.ViewController= Class.create(coherent.Responder, {
 
-  constructor: function(nibName, bundle)
+  constructor: function(nibName, bundle, parameters)
   {
     this.nibName= nibName;
     this.bundle= bundle;
+    this.base(parameters);
+  },
+
+  __factory__: function(parameters)
+  {
+    var klass= this;
+    return function(nibName, bundle)
+    {
+      return new klass(nibName, bundle, parameters);
+    };
   },
   
   /** Retrieve the view associated with this ViewController.

@@ -56,16 +56,16 @@ if (!coherent.Support.Opacity)
             opacity = currentStyle.filter.match(/opacity=(\d+)/i);
             return (null===opacity ? 1 : parseInt(opacity[1], 10)/100);
           case 'width':
-            extra += parseInt(currentStyle.borderLeftWidth, 10)||0 + 
-                 parseInt(currentStyle.borderRightWidth, 10)||0 +
-                 parseInt(currentStyle.paddingLeft, 10)||0 +
-                 parseInt(currentStyle.paddingRight, 10)||0;
+            extra= parseInt(currentStyle.borderLeftWidth, 10)||0 + 
+                   parseInt(currentStyle.borderRightWidth, 10)||0 +
+                   parseInt(currentStyle.paddingLeft, 10)||0 +
+                   parseInt(currentStyle.paddingRight, 10)||0;
             return Math.max(0, element.offsetWidth - extra) + 'px';
           case 'height':
-            extra += parseInt(currentStyle.borderTopWidth, 10)||0 + 
-                 parseInt(currentStyle.borderBottomWidth, 10)||0 +
-                 parseInt(currentStyle.paddingTop, 10)||0 +
-                 parseInt(currentStyle.paddingBottom, 10)||0;
+            extra= parseInt(currentStyle.borderTopWidth, 10)||0 + 
+                   parseInt(currentStyle.borderBottomWidth, 10)||0 +
+                   parseInt(currentStyle.paddingTop, 10)||0 +
+                   parseInt(currentStyle.paddingBottom, 10)||0;
             return Math.max(0, element.offsetHeight - extra) + 'px';
           case 'backgroundPosition':
             return currentStyle.backgroundPositionX+' '+
@@ -89,17 +89,17 @@ if (!coherent.Support.Opacity)
             styles[p] = (null===opacity ? 1 : parseInt(opacity[1], 10)/100);
             break;
           case 'width':
-            extra += parseInt(currentStyle.borderLeftWidth, 10)||0 + 
-                 parseInt(currentStyle.borderRightWidth, 10)||0 +
-                 parseInt(currentStyle.paddingLeft, 10)||0 +
-                 parseInt(currentStyle.paddingRight, 10)||0;
+            extra= parseInt(currentStyle.borderLeftWidth, 10)||0 + 
+                   parseInt(currentStyle.borderRightWidth, 10)||0 +
+                   parseInt(currentStyle.paddingLeft, 10)||0 +
+                   parseInt(currentStyle.paddingRight, 10)||0;
             styles[p]= Math.max(0, element.offsetWidth - extra) + 'px';
             break;
           case 'height':
-            extra += parseInt(currentStyle.borderTopWidth, 10)||0 + 
-                 parseInt(currentStyle.borderBottomWidth, 10)||0 +
-                 parseInt(currentStyle.paddingTop, 10)||0 +
-                 parseInt(currentStyle.paddingBottom, 10)||0;
+            extra= parseInt(currentStyle.borderTopWidth, 10)||0 + 
+                   parseInt(currentStyle.borderBottomWidth, 10)||0 +
+                   parseInt(currentStyle.paddingTop, 10)||0 +
+                   parseInt(currentStyle.paddingBottom, 10)||0;
             styles[p]= Math.max(0, element.offsetHeight - extra) + 'px';
             break;
           case 'backgroundPosition':

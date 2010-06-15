@@ -3,7 +3,6 @@
 /*jsl:import ../dom/element.js*/
 /*jsl:import ../dom/element-ie.js*/
 /*jsl:import steppers.js*/
-/*jsl:import steppers-ie.js*/
 
 
 /** @name coherent.Animator
