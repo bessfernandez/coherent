@@ -1,4 +1,5 @@
 /*jsl:import base.js*/
+/*jsl:declare Set*/
 
 /** @class
     An initialiser for a set-like object. The arguments passed to the
@@ -15,7 +16,7 @@
   
     In the previous example, the two constructors yield the same value.
  */
-function Set()
+window.Set=function()
 {
   var s= this;
   if (s.constructor!==Set)

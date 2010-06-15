@@ -1,7 +1,8 @@
 /*jsl:import ../../foundation.js*/
+/*jsl:declare Colour*/
 
 /** A wrapper for colour objects */
-var Colour= Class._create({
+window.Colour= Class._create({
   constructor: function(r, g, b, a)
   {
     this.r=r||0;

@@ -18,7 +18,7 @@
 /* This code seems to confuse jsdoc-toolkit. */
 /**#nocode+*/
 
-function URL(url)
+window.URL= function(url)
 {
   /** The white-space timmed URL
    *  @property {String}

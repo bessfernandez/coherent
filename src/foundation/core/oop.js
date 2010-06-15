@@ -1,9 +1,7 @@
 /*jsl:import ../../foundation.js*/
+/*jsl:declare Class*/
 
-/**
-    @namespace
- */
-var Class= (function(){
+(function(){
 
   /** Wrap a constructor function so that it may invoke the base constructor.
       @param {Function} construct - the original constructor function
@@ -296,8 +294,10 @@ var Class= (function(){
         klass.__subclassCreated__(newClass);
   }
 
-  /** @scope Class */
-  return {
+  /** @name Class
+      @namespace
+   */
+  window.Class= {
   
     /** Create a class. This attempts to mimic classical OOP programming
         models in JavaScript. The first parameter (superclass) is optional
