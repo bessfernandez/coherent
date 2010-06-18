@@ -12,7 +12,11 @@ This will generate a fully functional miniature photo gallery. Granted, you'll h
 
 Now you can build your application by running `distil`. The first thing you'll notice is that Distil checks out the Coherent source code into the `ext/coherent` folder. You can always update that folder so you're tracking the latest and greatest version of the library.
 
-Point your favourite browser at the `build` folder and it should load a page that looks like the following:
+To see the result of all this _hard_ work, launch your default browser and view the `index.html` file in the demo application by typing:
+
+    distil launch
+    
+You should see a page similar to the following:
 
 <div style="margin: 0 auto; width:336px;">
 <img src="http://coherentjs.org/wordpress/wp-content/uploads/2009/12/CoherentSampleGallery.png" alt="" title="Coherent Sample Gallery" width="336" height="290">
