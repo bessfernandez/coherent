@@ -1,6 +1,6 @@
 /*jsl:import ../foundation/net/XHR.js*/
 
-function JSONRPC(method, url, parameters, options)
+window.JSONRPC= function(method, url, parameters, options)
 {
   options= Object.applyDefaults(options, JSONRPC.DEFAULTS);
   var deferred= XHR.request(method, url, parameters, options);
@@ -9,7 +9,7 @@ function JSONRPC(method, url, parameters, options)
   return deferred;
 }
 
-Object.extend(JSONRPC, {
+Object.extend(window.JSONRPC, {
 
   DEFAULTS: {
     sync: false,

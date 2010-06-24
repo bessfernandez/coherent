@@ -13,19 +13,10 @@
 
 (function(){
 
-  coherent.hash= new coherent.KVO();
-  coherent.hash.value= _getHash();
-  coherent.hash.setValue= function(hash)
-  {
-    if ('#'!==hash.charAt(0))
-      hash= '#' + hash;
-    window.location.href= hash;
-  }
-  
   // Global vars
   var _recentHash = null;
   var _ieUriMonitor = null;
-  var _pollFrequency = coherent.hash.hashPollFrequency || 100;
+  var _pollFrequency = 100;
 
   //Internal functions
   function _getHash()
@@ -241,30 +232,48 @@
     this.pollLocation.bindAndDelay(this, _pollFrequency);
   }
   
-  if (coherent.Support.HashChangeEvent)
+  function setup()
   {
-    //  need this IE browser test because "onhashchange" exists in IE8
-    //  in IE7 mode
-    Event.observe(window, "onhashchange", _dispatchEvent);
-  }
-  else
-  {
-    if (document.addEventListener)
+    if (coherent.Support.HashChangeEvent)
     {
-      //  Non-IE
-      _recentHash = _getHash();
-      //  Poll the window location for changes
-      window.setInterval(_pollLocation, _pollFrequency);
+      //  need this IE browser test because "onhashchange" exists in IE8
+      //  in IE7 mode
+      Event.observe(window, "onhashchange", _dispatchEvent);
     }
-    else if (document.attachEvent)
+    else
     {
-      //  For IE versions 7 and lower, use hidden iframe in versions
-      //  of IE that don't have onhashchange event
-      _ieUriMonitor = new IEUriMonitor();
-    } 
-    // else non-supported browser, do nothing.
+      if (document.addEventListener)
+      {
+        //  Non-IE
+        _recentHash = _getHash();
+        //  Poll the window location for changes
+        window.setInterval(_pollLocation, _pollFrequency);
+      }
+      else if (document.attachEvent)
+      {
+        //  For IE versions 7 and lower, use hidden iframe in versions
+        //  of IE that don't have onhashchange event
+        _ieUriMonitor = new IEUriMonitor();
+      } 
+      // else non-supported browser, do nothing.
+    }
   }
 
+  coherent.hash= new coherent.KVO();
+  coherent.hash.value= _getHash();
+  coherent.hash.setValue= function(hash)
+  {
+    if ('#'!==hash.charAt(0))
+      hash= '#' + hash;
+    window.location.href= hash;
+  }
+  coherent.hash.addObserverForKeyPath= function(observer, callback, keyPath, context)
+  {
+    setup();
+    return coherent.KVO.prototype.addObserverForKeyPath.call(this, observer, callback, keyPath, context);
+  }
+    
+  
 })();
 
 /**#nocode-*/

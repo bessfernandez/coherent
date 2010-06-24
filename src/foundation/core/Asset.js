@@ -112,7 +112,10 @@ coherent.Asset= Class._create({
     switch (this.ext)
     {
       case '.json':
+        var originalFilename= window.__filename__;
+        window.__filename__= this.href;
         this.__content= coherent.globalEval('('+newContent+')');
+        window.__filename__= originalFilename;
         break;
         
       case '.html':

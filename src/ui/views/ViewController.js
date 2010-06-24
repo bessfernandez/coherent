@@ -12,20 +12,14 @@
 */
 coherent.ViewController= Class.create(coherent.Responder, {
 
-  constructor: function(nibName, bundle, parameters)
+  title: function()
   {
-    this.nibName= nibName;
-    this.bundle= bundle;
-    this.base(parameters);
+    return this.__title;
   },
-
-  __factory__: function(parameters)
+  
+  setTitle: function(newTitle)
   {
-    var klass= this;
-    return function(nibName, bundle)
-    {
-      return new klass(nibName, bundle, parameters);
-    };
+    this.__title= newTitle;
   },
   
   /** Retrieve the view associated with this ViewController.
@@ -33,6 +27,8 @@ coherent.ViewController= Class.create(coherent.Responder, {
    */
   view: function()
   {
+    if (!this.__view)
+      this.loadView();
     return this.__view;
   },
   
@@ -58,6 +54,9 @@ coherent.ViewController= Class.create(coherent.Responder, {
    */
   loadView: function()
   {
+    if (!this.nibName)
+      throw new Error("ViewController is not associated with a NIB.");
+      
     if (this.bundle)
       this.nib= NIB.withNameInBundle(this.nibName, this.bundle);
     else

@@ -10,9 +10,8 @@ coherent.Application= Class.create(coherent.Responder, {
   {
     if (coherent.Application.shared)
       return coherent.Application.shared;
-    this.__assetLocation="";
     this.delegate= null;
-    coherent.hash.addObserverForKeyPath(this, 'observeHashChange', 'value');
+    // coherent.hash.addObserverForKeyPath(this, 'observeHashChange', 'value');
     return this;
   },
   
@@ -28,20 +27,7 @@ coherent.Application= Class.create(coherent.Responder, {
     if (this.delegate && 'hashDidChange' in this.delegate)
       this.delegate.hashDidChange(newValue);
   },
-  
-  assetLocation: function()
-  {
-    return this.__assetLocation;
-  },
-  
-  setAssetLocation: function(assetLocation)
-  {
-    if ('/'!==assetLocation.slice(-1))
-      assetLocation+= '/';
-      
-    this.__assetLocation= assetLocation;
-  },
-  
+    
   mainNib: function()
   {
     return this.__mainNib;
