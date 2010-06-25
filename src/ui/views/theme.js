@@ -37,5 +37,11 @@ coherent.Style= {
   kOverlayAbove: 'ui-overlay-above',
   kOverlayBelow: 'ui-overlay-below',
   kOverlayLeft: 'ui-overlay-left',
-  kOverlayRight: 'ui-overlay-right'
+  kOverlayRight: 'ui-overlay-right',
+  
+  kTabViewLabelContainer: 'ui-tabview-labels',
+  kTabViewLabel: 'ui-tabview-tab-label',
+  kTabViewContent: 'ui-tabview-tab-content',
+  kTabViewContentContainer: 'ui-tabview-tab-container'
+  
 };

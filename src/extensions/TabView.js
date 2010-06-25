@@ -2,17 +2,14 @@
 
 coherent.TabView= Class.create(coherent.View, {
 
-  tabItemContainerClassName: 'ui-tabview-tabs',
-  tabItemClassName: 'ui-tabview-tab-item',
-  tabContentClassName: 'ui-tabview-tab-content',
-  tabContentContainerClassName: 'ui-tabview-tab-container',
+  exposedBindings: ['selectedIndex', 'selectedLabel'],
   
   __createTabMarkup: function(viewController)
   {
     var doc= this.node.ownerDocument;
     var li= doc.createElement('li');
-    li.className= this.tabItemClassName;
-    var extraClassName= viewController.valueForKey('tabItemClassName');
+    li.className= coherent.Style.kTabViewLabel;
+    var extraClassName= viewController.valueForKey('tabLabelClassName');
     if (extraClassName)
       li.className+= ' ' + extraClassName;
       
@@ -35,8 +32,8 @@ coherent.TabView= Class.create(coherent.View, {
     viewControllers= viewControllers ? viewControllers.copy() : [];
 
     var node= this.node;
-    this.tabs= Element.query(node, '.' + this.tabItemContainerClassName);
-    this.contents= Element.query(node, '.' + this.tabContentContainerClassName);
+    this.tabs= Element.query(node, '.' + coherent.Style.kTabViewLabelContainer);
+    this.contents= Element.query(node, '.' + coherent.Style.kTabViewContentContainer);
     
     //  clear out the old markup
     this.tabs.innerHTML= "";
@@ -63,7 +60,7 @@ coherent.TabView= Class.create(coherent.View, {
       itemsFrag.appendChild(item);
       
       var div= node.ownerDocument.createElement('div');
-      div.className= this.tabContentClassName;
+      div.className= coherent.Style.kTabViewContent;
       div.appendChild(controller.view().node);
       contentsFrag.appendChild(div);
     }
@@ -127,6 +124,29 @@ coherent.TabView= Class.create(coherent.View, {
     this.setSelectedIndex(index);
   },
   
+  selectedLabel: function()
+  {
+    var index= this.__selectedIndex;
+    if (-1==index)
+      return null;
+    return this.__viewControllers[index].title();
+  },
+
+  setSelectedLabel: function(selectedLabel)
+  {
+    var controllers= this.__viewControllers;
+    var len= controllers.length;
+    
+    while (len--)
+    {
+      if (controllers[len].title()!==selectedLabel)
+        continue;
+        
+      this.setSelectedIndex(len);
+      return;
+    }
+  },
+  
   onclick: function(event)
   {
     var target= event.target||event.srcElement;
@@ -136,7 +156,14 @@ coherent.TabView= Class.create(coherent.View, {
     {
       if ('__index' in target)
       {
-        this.setSelectedIndex(target.__index);
+        var index= target.__index;
+        this.setSelectedIndex(index);
+
+        if (this.bindings.selectedIndex)
+          this.bindings.selectedIndex.setValue(index);
+        if (this.bindings.selectedLabel)
+          this.bindings.selectedLabel.setValue(this.__viewControllers[index].title());
+          
         Event.preventDefault(event);
         return;
       }
