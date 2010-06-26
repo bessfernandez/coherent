@@ -4,9 +4,20 @@ coherent.TabView= Class.create(coherent.View, {
 
   exposedBindings: ['selectedIndex', 'selectedLabel'],
   
+  init: function()
+  {
+    var node= this.node;
+    this.tabs= Element.query(node, '.' + coherent.Style.kTabViewLabelContainer);
+    this.contents= Element.query(node, '.' + coherent.Style.kTabViewContentContainer);
+    
+    this.tabs.setAttribute("role", "tablist");
+  },
+  
   __createTabMarkup: function(viewController)
   {
     var doc= this.node.ownerDocument;
+    var node= viewController.view().node;
+    
     var li= doc.createElement('li');
     li.className= coherent.Style.kTabViewLabel;
     var extraClassName= viewController.valueForKey('tabLabelClassName');
@@ -14,12 +25,21 @@ coherent.TabView= Class.create(coherent.View, {
       li.className+= ' ' + extraClassName;
       
     var tabAnchor= doc.createElement('a');
+    var anchorId= Element.assignId(tabAnchor);
+    
     tabAnchor.innerText= viewController.title();
-    tabAnchor.href= '#' + Element.assignId(viewController.view().node);
+    tabAnchor.href= '#' + Element.assignId(node);
     tabAnchor.tabIndex= -1;
+    tabAnchor.setAttribute("role", "tab");
     li.appendChild(tabAnchor);
-        
-    return li;
+    
+    var div= doc.createElement('div');
+    div.className= coherent.Style.kTabViewContent;
+    div.setAttribute("role", "tabpanel");
+    div.setAttribute("aria-labelledby", anchorId);
+    div.appendChild(node);
+    
+    return [li, div];
   },
   
   viewControllers: function()
@@ -44,7 +64,7 @@ coherent.TabView= Class.create(coherent.View, {
     var contentsFrag= this.node.ownerDocument.createDocumentFragment();
     
     var len= viewControllers.length;
-    var item;
+    var markup;
     var controller;
     
     var oldDataModel= coherent.dataModel;
@@ -55,14 +75,11 @@ coherent.TabView= Class.create(coherent.View, {
       controller= viewControllers[i];
       if (controller.__factoryFn__)
         controller= controller.call();
-      item= this.__createTabMarkup(controller);
-      item.__index= i;
-      itemsFrag.appendChild(item);
+      markup= this.__createTabMarkup(controller);
+      markup[0].__index= i;
       
-      var div= node.ownerDocument.createElement('div');
-      div.className= coherent.Style.kTabViewContent;
-      div.appendChild(controller.view().node);
-      contentsFrag.appendChild(div);
+      itemsFrag.appendChild(markup[0]);
+      contentsFrag.appendChild(markup[1]);
     }
 
     coherent.dataModel= oldDataModel;
@@ -85,12 +102,16 @@ coherent.TabView= Class.create(coherent.View, {
       return;
     
     var item;
+    var anchor;
     var container;
     var selectedClass= coherent.Style.kSelectedClass;
     
     if (-1!==this.__selectedIndex)
     {
       item= this.tabs.children[this.__selectedIndex];
+      anchor= item.getElementsByTagName('a')[0];
+      if (anchor)
+        anchor.tabIndex=-1;
       Element.removeClassName(item, selectedClass);
       container= this.contents.children[this.__selectedIndex];
       Element.removeClassName(container, selectedClass);
@@ -101,6 +122,9 @@ coherent.TabView= Class.create(coherent.View, {
     if (-1!==this.__selectedIndex)
     {
       item= this.tabs.children[this.__selectedIndex];
+      anchor= item.getElementsByTagName('a')[0];
+      if (anchor)
+        anchor.tabIndex=0;
       Element.addClassName(item, selectedClass);
       container= this.contents.children[this.__selectedIndex];
       Element.addClassName(container, selectedClass);

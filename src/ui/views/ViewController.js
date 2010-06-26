@@ -12,6 +12,8 @@
 */
 coherent.ViewController= Class.create(coherent.Responder, {
 
+  exposedBindings: ['representedObject'],
+  
   title: function()
   {
     return this.__title;
