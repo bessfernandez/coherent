@@ -51,23 +51,21 @@ coherent.AjaxController= Class.create(coherent.ObjectController, {
 
     this.base(parameters);
   
-    if (this.parameters) {
-      coherent.KVO.adaptTree(this.parameters);
-    } else {
-      this.parameters = new coherent.KVO();
-    }
+    if (this.parameters)
+      this.parameters= new coherent.KVO(this.parameters);
+    else
+      this.parameters= new coherent.KVO();
 
     this.addObserverForKeyPath(this, this.queryUpdated, "url");
     this.addObserverForKeyPath(this, this.queryUpdated, "method");
   },
   
-  __postConstruct: function()
+  init: function()
   {
     this.base();
     
-    if (this.fetchesInitially && this.url && this.url.length && this.validateParameters()) {
+    if (this.fetchesInitially && this.url && this.validateParameters())
       this.forceChangeNotificationForKey("url");
-    }
   },
   
   /** Validate the request parameters. By default this method simply returns
