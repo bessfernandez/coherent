@@ -177,7 +177,7 @@ coherent.KeyInfo.getInfoForKeyOnObject= function(key, object)
   var proto= constructor.prototype;
   var objectIsPrototype= (proto==object);
   var target= (proto!=Object.prototype &&
-         proto!=coherent.KVO.prototype)?proto:object;
+              proto!=coherent.KVO.prototype)?proto:object;
 
   var keyAsTitle= key.titleCase();
   var names= {
