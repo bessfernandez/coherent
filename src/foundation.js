@@ -1,5 +1,6 @@
 /*jsl:declare distil*/
 /*jsl:import foundation/core/base.js*/
+/*jsl:import foundation/core/shortcuts.js*/
 /*jsl:import foundation/additions/object-additions.js*/
 /*jsl:import foundation/core/browser.js*/
 /*jsl:import foundation/core/support.js*/

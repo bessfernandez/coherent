@@ -731,15 +731,15 @@ coherent.KVO.kAllPropertiesKey= "*";
 /** Set of keys which should be ignored when computing the list of mutable keys
     and when adapting an existing object.
  */
-coherent.KVO.keysToIgnore= $S("__kvo","__keysToIgnore", "__mutableKeys",
-                "__factories__");
+coherent.KVO.keysToIgnore= coherent.Set("__kvo","__keysToIgnore",
+                                        "__mutableKeys", "__factories__");
 
 /** Set of value types which will be ignored when adapting an object and when
     attempting to observe child object changes.
  */
-coherent.KVO.typesOfKeyValuesToIgnore= $S("string", "number", "boolean", "date",
-                      "regexp", "function");
-
+coherent.KVO.typesOfKeyValuesToIgnore= coherent.Set("string", "number",
+                                                    "boolean", "date",
+                                                    "regexp", "function");
 
 
 coherent.KVO.Proxy= Class._create(coherent.KVO, {
@@ -841,7 +841,7 @@ coherent.KVO.mutableKeys= function(kvo)
   if ("__mutableKeys" in kvo && kvo.__mutableKeys.concat)
     return kvo.__mutableKeys;
 
-  var keysToIgnore= Set.union(coherent.KVO.keysToIgnore, kvo.__keysToIgnore);
+  var keysToIgnore= coherent.Set.union(coherent.KVO.keysToIgnore, kvo.__keysToIgnore);
 
   for (k in kvo)
   {

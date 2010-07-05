@@ -232,7 +232,7 @@
   }
 
   
-  window.XHR= /** @lends XHR */ {
+  coherent.XHR= /** @lends XHR */ {
   
     numberOfActiveRequests: 0,
     
@@ -261,4 +261,5 @@
     
   };
 
+  coherent.__export('XHR');
 })();

@@ -569,18 +569,18 @@ coherent.View= Class.create(coherent.Responder, {
   {
     var node= this.node;
     var originalClassName= node.className;
-    var newClasses= $S((newClassName||"").split(" "));
+    var newClasses= coherent.Set((newClassName||"").split(" "));
     var prefixLen= coherent.Style.PREFIX.length;
     
     //  reset any state classes
     function reapplyStyle(classname)
     {
       if (classname.slice(0,prefixLen)===coherent.Style.PREFIX)
-        Set.add(newClasses, classname);
+        coherent.Set.add(newClasses, classname);
     }
     originalClassName.split(" ").forEach(reapplyStyle);
     
-    newClassName = Set.join(newClasses, ' ');
+    newClassName = coherent.Set.join(newClasses, ' ');
     
     if (newClassName===originalClassName)
       return;

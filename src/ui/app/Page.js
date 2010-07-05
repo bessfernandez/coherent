@@ -605,7 +605,7 @@ coherent.Page= Class.create(coherent.Responder, {
                 y: event.clientY
               },
               target: target,
-              types: Set.toArray(data),
+              types: coherent.Set.toArray(data),
               operation: event.dataTransfer.dropEffect||this._draggingLastDropEffect,
               getData: function(type)
               {
@@ -681,7 +681,7 @@ coherent.Page= Class.create(coherent.Responder, {
             y: event.clientY
           },
           target: target,
-          types: Set.toArray(data),
+          types: coherent.Set.toArray(data),
           operation: this._draggingLastDropEffect,
           getData: function(type)
           {

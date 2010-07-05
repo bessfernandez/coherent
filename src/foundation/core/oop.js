@@ -297,7 +297,7 @@
   /** @name Class
       @namespace
    */
-  window.Class= {
+  coherent.Class= {
   
     /** Create a class. This attempts to mimic classical OOP programming
         models in JavaScript. The first parameter (superclass) is optional
@@ -548,5 +548,7 @@
             };
     })()
   };
+  
+  coherent.__export("Class");
   
 })();

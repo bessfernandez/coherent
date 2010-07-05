@@ -351,7 +351,7 @@ coherent.Bindable.__subclassCreated__= function(subclass)
 
   //  create a set of the maskedBindings.  Masked bindings are those unique to this class
   //  as any masks have already been applied to the base class.  
-  var masked= (baseproto.maskedBindings===proto.maskedBindings)?{}:$S(proto.maskedBindings);
+  var masked= (baseproto.maskedBindings===proto.maskedBindings)?{}:coherent.Set(proto.maskedBindings);
   
   function isBindingExposed(binding)
   {

@@ -151,9 +151,9 @@ Object.extend(Element, {
    */
   updateClass: function(element, classesToAdd, classesToRemove)
   {
-    var classes= $S(element.className.split(' '));
-    var add= Set.add;
-    var remove= Set.remove;
+    var classes= coherent.Set(element.className.split(' '));
+    var add= coherent.Set.add;
+    var remove= coherent.Set.remove;
     
     var i;
     var len;
@@ -175,7 +175,7 @@ Object.extend(Element, {
       while (len--)
         remove(classes, classesToRemove[len]);
     }
-    element.className= Set.join(classes, ' ');
+    element.className= coherent.Set.join(classes, ' ');
   },
 
   /** The list of CSS properties that will be returned from {@link #getStyles}
@@ -383,7 +383,9 @@ Object.extend(Element, {
       //  creating a new node from the markup will remove any event
       //  handlers that IE clones, plus the new node is in the holding
       //  area, so tables and table rows will have the right properties.
-      return coherent.View.createNodeFromMarkup(markup);
+      var node= coherent.View.createNodeFromMarkup(markup);
+      node.id= "";
+      return node;
     };
   })(),
   

@@ -3,7 +3,7 @@
 
 /** Cookie support.
 */
-var Cookie = Class.create(coherent.KVO, {
+coherent.Cookie = Class.create(coherent.KVO, {
 
   /** Create a wrapper for the cookie with the given name. The new Cookie
       object will immediately retrieve the value of the cookie if it exists.
@@ -137,5 +137,4 @@ var Cookie = Class.create(coherent.KVO, {
   }
 });
 
-if (window.Cookie!==Cookie)
-  window.Cookie= Cookie;
+coherent.__export("Cookie");

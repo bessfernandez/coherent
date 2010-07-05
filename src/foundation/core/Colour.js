@@ -2,7 +2,7 @@
 /*jsl:declare Colour*/
 
 /** A wrapper for colour objects */
-window.Colour= Class._create({
+coherent.Colour= Class._create({
   constructor: function(r, g, b, a)
   {
     this.r=r||0;
@@ -19,42 +19,58 @@ window.Colour= Class._create({
   subtract: function(colour)
   {
     return new Colour(this.r-colour.r,
-              this.g-colour.g,
-              this.b-colour.b,
-              this.a-colour.a);
+                      this.g-colour.g,
+                      this.b-colour.b,
+                      this.a-colour.a);
+  },
+
+  add: function(colour)
+  {
+    return new Colour(this.r+colour.r,
+                      this.g+colour.g,
+                      this.b+colour.b,
+                      this.a+colour.a);
   }
+  
 });
 
-Colour.transparent= new Colour(255,255,255,0);
-Colour.black= new Colour(0,0,0,1);
-Colour.white= new Colour(255,255,255,1);
 
-Colour.fromString= function(colour)
-{
-  if (typeof(colour) != "string")
-    return colour;
+Object.extend(coherent.Colour, {
   
-  colour= colour.toLowerCase();
-  if (colour in Colour)
-    return Colour[colour];
+  transparent: new coherent.Colour(255,255,255,0),
+  black: new coherent.Colour(0,0,0,1),
+  white: new coherent.Colour(255,255,255,1),
 
-  var rgb;
-
-  if ((rgb= colour.match(/^rgb(?:a)?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*(\d(?:\.\d+)?)\s*)?\)$/i)))
-    return new Colour(parseInt(rgb[1], 10),
-              parseInt(rgb[2], 10),
-              parseInt(rgb[3], 10),
-              parseInt(rgb[4]||1, 10));
-
-  if ('#'!==colour.charAt(0))
-    throw new Error('Invalid colour: ' + colour);
+  fromString: function(colour)
+  {
+    if (typeof(colour) != "string")
+      return colour;
   
-  if (4==colour.length)
-    return new Colour(parseInt(colour.charAt(1)+colour.charAt(1), 16),
-              parseInt(colour.charAt(2)+colour.charAt(2), 16),
-              parseInt(colour.charAt(3)+colour.charAt(3), 16));
-    else
-    return new Colour(parseInt(colour.substr(1,2), 16),
-              parseInt(colour.substr(3,2), 16),
-              parseInt(colour.substr(5,2), 16));
-}
+    colour= colour.toLowerCase();
+    if (colour in Colour)
+      return Colour[colour];
+
+    var rgb;
+
+    if ((rgb= colour.match(/^rgb(?:a)?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*(\d(?:\.\d+)?)\s*)?\)$/i)))
+      return new Colour(parseInt(rgb[1], 10),
+                parseInt(rgb[2], 10),
+                parseInt(rgb[3], 10),
+                parseInt(rgb[4]||1, 10));
+
+    if ('#'!==colour.charAt(0))
+      throw new Error('Invalid colour: ' + colour);
+  
+    if (4==colour.length)
+      return new Colour(parseInt(colour.charAt(1)+colour.charAt(1), 16),
+                parseInt(colour.charAt(2)+colour.charAt(2), 16),
+                parseInt(colour.charAt(3)+colour.charAt(3), 16));
+      else
+      return new Colour(parseInt(colour.substr(1,2), 16),
+                parseInt(colour.substr(3,2), 16),
+                parseInt(colour.substr(5,2), 16));
+  }
+
+});
+
+coherent.__export("Colour");

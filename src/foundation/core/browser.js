@@ -1,3 +1,5 @@
+/*jsl:import ../../foundation.js*/
+
 /** Boolean flags to indicate which browser is currently running. Purists will
     tell you that browser sniffing is passé, but sometimes there's really no
     other way...

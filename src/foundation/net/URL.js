@@ -18,7 +18,7 @@
 /* This code seems to confuse jsdoc-toolkit. */
 /**#nocode+*/
 
-window.URL= function(url)
+coherent.URL= function(url)
 {
   /** The white-space timmed URL
    *  @property {String}
@@ -79,5 +79,7 @@ window.URL= function(url)
    */
   this.port = match[5]||"";
 }
+
+coherent.__export("URL");
 
 /**#nocode-*/

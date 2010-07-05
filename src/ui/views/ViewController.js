@@ -29,7 +29,7 @@ coherent.ViewController= Class.create(coherent.Responder, {
    */
   view: function()
   {
-    if (!this.__view)
+    if (!this.__view && this.nibName)
       this.loadView();
     return this.__view;
   },

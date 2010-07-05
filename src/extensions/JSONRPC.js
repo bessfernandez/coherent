@@ -1,6 +1,7 @@
 /*jsl:import ../foundation/net/XHR.js*/
+/*jsl:declare JSONRPC*/
 
-window.JSONRPC= function(method, url, parameters, options)
+coherent.JSONRPC= function(method, url, parameters, options)
 {
   options= Object.applyDefaults(options, JSONRPC.DEFAULTS);
   var deferred= XHR.request(method, url, parameters, options);
@@ -9,7 +10,7 @@ window.JSONRPC= function(method, url, parameters, options)
   return deferred;
 }
 
-Object.extend(window.JSONRPC, {
+Object.extend(coherent.JSONRPC, {
 
   DEFAULTS: {
     sync: false,
@@ -132,3 +133,5 @@ Object.extend(window.JSONRPC, {
     window.open(url, target?target:"_top");
   }
 });
+
+coherent.__export("JSONRPC");

@@ -1,6 +1,3 @@
-/*jsl:import ../core/set.js*/
-
-  
 /** Make a shallow-copy clone of an object. Modifications are copy-on-write.
     Note, because this is a shallow copy, only properties actually on the cloned
     object will be copy-on-write. For example, if you clone foo into bar and
@@ -131,7 +128,7 @@ Object.merge = function(obj1, obj2)
  */
 (function(){
 
-  var typesToExclude= Set('file', 'submit', 'image', 'reset', 'button');
+  var typesToExclude= {file:1, submit:1, image:1, reset:1, button:1};
   var genericObject={};
   
   function setValue(object, name, value)
