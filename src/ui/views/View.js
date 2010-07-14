@@ -610,22 +610,7 @@ coherent.View= Class.create(coherent.Responder, {
   
   animateClassName: function(animationOptions, reverse)
   {
-    var hasReverse= ('reverse' in animationOptions);
-    
-    if (hasReverse)
-    {
-      var originalReverse= animationOptions.reverse;
-      animationOptions.reverse= reverse?!animationOptions.reverse:animationOptions.reverse;
-    }
-    else
-      animationOptions.reverse= !!reverse;
-      
-    coherent.Animator.animateClassName(this.node, animationOptions);
-
-    if (!hasReverse)
-      delete animationOptions.reverse;
-    else
-      animationOptions.reverse= originalReverse;
+    coherent.Animator.animateClassName(this.node, animationOptions, reverse);
   },
   
   /** Send the action message to the target.
@@ -1175,7 +1160,10 @@ coherent.View.fromNode= function(element)
   var lookup= coherent.View.viewLookup;
   var id = null;
   
-  if (coherent.typeOf(element) == "string")
+  if (!element)
+    return null;
+    
+  if ("string"===typeof(element))
     id = element;
   else if ("id" in element)
     id = element.id;

@@ -1,0 +1,131 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <script src="../build/debug/distil.js" type="text/javascript" charset="utf-8"></script>
+        <script>
+          distil.sync=true;
+        </script>
+        <script src="../build/debug/coherent-debug.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../src/controls/SlideshowView.js" type="text/javascript" charset="utf-8"></script>
+        
+        <style>
+          #slideshow
+          {
+            width: 400px;
+            height: 400px;
+            position: relative;
+            overflow: hidden;
+          }
+
+          #slideshow div
+          {
+            width: 400px;
+            height: 400px;
+            top: 0;
+            left: 0;
+            position: absolute;
+            font-family: helvetica;
+            font-weight: bold;
+            font-size: 150px;
+            line-height: 400px;
+            color: white;
+            text-align: center;
+            opacity: 0;
+          }
+          
+          #slideshow div.ui-selected
+          {
+            opacity: 1;
+          }
+          
+          #slide1
+          {
+            background-color: red;
+          }
+          
+          #slide2
+          {
+            background-color: green;
+          }
+          
+          #slide3
+          {
+            background-color: blue;
+          }
+          
+          #slide4
+          {
+            background-color: black;
+          }
+          
+          #slideshow .ui-next
+          {
+            left: 400px;
+            top: 0;
+          }
+          
+          #slideshow .ui-previous
+          {
+            left: -400px;
+            top: 0;
+          }
+          
+        </style>
+    </head>
+    
+    <body>
+        <div id="slideshow">
+          <div id="slide1">1</div>
+          <div id="slide2">2</div>
+          <div id="slide3">3</div>
+          <div id="slide4">4</div>
+        </div>
+        <button class="prev">Previous</button>
+        <button class="next">Next</button>
+        <script>
+            distil.onready(function(){
+            
+              var v= VIEW({
+                  '#slideshow': coherent.SlideshowView({
+                                  animate: {
+                                    selection: {
+                                      duration: 300
+                                    },
+                                    next: {
+                                      duration: 400,
+                                      curve: coherent.easing.inOutSine
+                                    },
+                                    previous: {
+                                      duration: 400,
+                                      curve: coherent.easing.inOutSine
+                                    }
+                                  }
+                                }),
+                  'button.next': coherent.Button({
+                                  action: function()
+                                  {
+                                    var view= coherent.View.fromNode('slideshow');
+                                    var index= view.selectedIndex();
+                                    if (index>2)
+                                      return;
+                                    view.setSelectedIndex(index+1);
+                                  }
+                                }),
+                  'button.prev': coherent.Button({
+                                  action: function()
+                                  {
+                                    var view= coherent.View.fromNode('slideshow');
+                                    var index= view.selectedIndex();
+                                    if (!index)
+                                      return;
+                                    view.setSelectedIndex(index-1);
+                                  }
+                                })
+                });
+              
+              v(document.body);
+            });
+        </script>
+        
+    </body>
+</html>

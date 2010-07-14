@@ -385,7 +385,6 @@ coherent.CollectionView= Class.create(coherent.View, {
     {
       case coherent.ChangeType.insertion:
         animationOptions= this.__animationOptionsForProperty('insertion');
-        animationOptions.reverse= true;
         animated= !!animationOptions.duration;
         
         newItems= change.newValue.map(this.newItemForRepresentedObject, this);
@@ -399,7 +398,7 @@ coherent.CollectionView= Class.create(coherent.View, {
             Element.addClassName(newItems[index].node, animationOptions.classname);
           container.insertBefore(newItems[index].node, item?item.node:null);
           if (animated)
-            animator.animateClassName(newItems[index].node, animationOptions);
+            animator.animateClassName(newItems[index].node, animationOptions, true);
         }
         this.__content.insertObjectsAtIndexes(change.newValue, indexes);
         items.insertObjectsAtIndexes(newItems, indexes);

@@ -1,3 +1,5 @@
+/*jsl:import ../../foundation.js*/
+
 /** @name URL
     @class
   

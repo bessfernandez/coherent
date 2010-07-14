@@ -10,30 +10,60 @@ function VIEW(markup, structure)
     markup= null;
   }  
 
+  function resolveViewNode(viewNode)
+  {
+    if (viewNode && 1===viewNode.nodeType)
+      return viewNode;
+    
+    if (viewNode && 'string'===typeof(viewNode))
+      return Element.query(viewNode);
+
+    var asset;
+    
+    if (markup)
+    {
+      if (1===markup.nodeType)
+        return markup;
+      
+      if ('string'===typeof(markup) && (viewNode=Element.query(markup)))
+        return viewNode;
+
+      if (markup instanceof coherent.Asset)
+      {
+        asset= markup;
+        markup= null;
+      }
+    }
+    else
+    {
+      var assetId= [setupView.__nib.name,setupView.__key].join("#") + ".html";
+      var module= setupView.__nib.bundle.name;
+      markup= distil.dataForAssetWithNameInModule(assetId, module);
+      
+      if (!markup)
+      {
+        var href= distil.urlForAssetWithNameInModule(assetId, module);
+        asset= new coherent.Asset(href);
+      }
+    }
+      
+    if (asset)
+      markup= asset.content();
+
+    if (markup)
+      viewNode= coherent.View.createNodeFromMarkup(markup);
+
+    return viewNode;
+  }
+      
   function setupView(viewNode)
   {
     var view;
-
-    if (markup && 1===markup.nodeType)
-      viewNode= markup;
-
-    if (!viewNode)
-    {
-      if ("string"!==typeof(markup))
-      {
-        var assetId= [setupView.__nib.name,setupView.__key].join("#") + ".html";
-        var module= setupView.__nib.bundle.name;
-        markup= distil.dataForAssetWithNameInModule(assetId, module);
-        
-        if (!markup)
-        {
-          var href= distil.urlForAssetWithNameInModule(assetId, module);
-          markup= (new coherent.Asset(href)).content();
-        }
-      }
-      viewNode= coherent.View.createNodeFromMarkup(markup);
-    }
     
+    viewNode= resolveViewNode(viewNode);
+    if (!viewNode || 1!==viewNode.nodeType)
+      throw new Error('Unable to find or create DOM for view.');
+      
     var v;
     var p;
 

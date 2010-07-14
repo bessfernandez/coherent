@@ -1,5 +1,6 @@
 /*jsl:import ../../foundation.js*/
 /*jsl:declare JSON*/
+/*jsl:declare Cookie*/
 
 /** Cookie support.
 */

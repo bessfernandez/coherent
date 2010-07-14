@@ -654,12 +654,15 @@ coherent.Animator= {
         @param {Element} element - The DOM element that should be animated.
         @param {Object} options - A dictionary defining how the element
           should be modified.
+        @param {Boolean} [reverse] - Should the animation be reversed? Can also
+          be specified as part of options.
      */
-    animateClassName: function(element, options)
+    animateClassName: function(element, options, reverse)
     {
       var elementClasses= coherent.Animator.classname(element).split(" ");
       
-      var reverse= options.reverse;
+      reverse= reverse || options.reverse;
+      
       var add= reverse ? options.remove : (options.add||options.classname);
       var remove= reverse ? (options.add||options.classname) : options.remove;
       

@@ -1,3 +1,5 @@
+/*jsl:import ../../foundation.js*/
+
 /** Make a shallow-copy clone of an object. Modifications are copy-on-write.
     Note, because this is a shallow copy, only properties actually on the cloned
     object will be copy-on-write. For example, if you clone foo into bar and

@@ -29,7 +29,7 @@ coherent.ViewController= Class.create(coherent.Responder, {
    */
   view: function()
   {
-    if (!this.__view && this.nibName)
+    if (!this.__loading && !this.__view && this.nibName)
       this.loadView();
     return this.__view;
   },
@@ -65,8 +65,11 @@ coherent.ViewController= Class.create(coherent.Responder, {
       this.nib= NIB.withName(this.nibName);
     if (!this.nib)
       throw new Error("Could not find NIB with name \""+this.nibName +"\" in bundle \""+this.bundle+"\"");
-      
+    
+    this.__loading= true;  
     this.nib.instantiateNibWithOwner(this);
+    delete this.__loading;
+    
     if (!this.__view)
       throw new Error("NIB does not seem to have set the view for the ViewController.");
   },

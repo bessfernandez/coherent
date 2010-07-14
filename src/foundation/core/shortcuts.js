@@ -9,7 +9,6 @@ coherent.__export= function(name, value)
   value= value||coherent[name];
   
   original[name]= global[name];
-  console.log('original.'+name+'= ', global[name]);
   global[name]= value;
 }
 
@@ -21,7 +20,6 @@ coherent.noConflict= function()
   
   for (var s in original)
   {
-    console.log('resetting window.'+s+'= ', original[s]);
     value= original[s];
     if ('undefined'===typeof(value))
       delete global[s];

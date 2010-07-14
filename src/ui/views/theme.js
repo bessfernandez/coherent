@@ -42,6 +42,9 @@ coherent.Style= {
   kTabViewLabelContainer: 'ui-tabview-labels',
   kTabViewLabel: 'ui-tabview-tab-label',
   kTabViewContent: 'ui-tabview-tab-content',
-  kTabViewContentContainer: 'ui-tabview-tab-container'
+  kTabViewContentContainer: 'ui-tabview-tab-container',
+  
+  kNext: 'ui-next',
+  kPrevious: 'ui-previous'
   
 };

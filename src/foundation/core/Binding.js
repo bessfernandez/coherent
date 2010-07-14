@@ -219,11 +219,11 @@ coherent.Binding= Class._create({
                           newValue);
     this.updating= true;
 
-    try {
+    // try {
       this.observerFn.call(this.observer, change, this.keypath);
-    } catch (e) {
-      console.error('Exception while bindng "' + this.name + '" to keypath "' + this.keypath + ' ": ' + e);
-    }
+    // } catch (e) {
+    //   console.error('Exception while bindng "' + this.name + '" to keypath "' + this.keypath + ' ": ' + e);
+    // }
     
     this.updating= false;
   },
@@ -323,11 +323,11 @@ coherent.Binding= Class._create({
 
     this.updating= true;
     
-    try {
+    // try {
       this.observerFn.call(this.observer, transformedChange, keypath,context);               
-    } catch (e) {
-      console.error('Exception while bindng "' + this.name + '" to keypath "' + this.keypath + ' ": ' + e);
-    }
+    // } catch (e) {
+    //   console.error('Exception while bindng "' + this.name + '" to keypath "' + this.keypath + ' ": ' + e);
+    // }
 
     this.updating= oldUpdating;
   }
