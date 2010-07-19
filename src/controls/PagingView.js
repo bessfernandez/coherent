@@ -4,6 +4,8 @@ coherent.PagingView= Class.create(coherent.View, {
 
   exposedBindings: ['selectedIndex'],
 
+  autoAdvanceDirection: 1,
+  
   animationOptions: {
     selection: {
       classname: coherent.Style.kSelectedClass
@@ -59,6 +61,14 @@ coherent.PagingView= Class.create(coherent.View, {
       node.style.display='';
       Element.addClassName(node, selectedClass);
     }
+
+    var hoverInfo={
+      owner: this,
+      onmouseenter: this.onmouseenter,
+      onmouseleave: this.onmouseleave
+    };
+    
+    this.addTrackingInfo(hoverInfo);
   },
   
   selectedIndex: function()
@@ -71,6 +81,10 @@ coherent.PagingView= Class.create(coherent.View, {
     if (this.__selectedIndex===selectedIndex || 'number'!==typeof(selectedIndex))
       return;
 
+    var lastPage= this.numberOfPages()-1;
+    if (selectedIndex<-1 || selectedIndex>lastPage)
+      return;
+      
     var selectionOptions= this.__animationOptionsForProperty('selection');
     var fromNode= coherent.View.fromNode;
     var container= this.container();
@@ -98,8 +112,14 @@ coherent.PagingView= Class.create(coherent.View, {
     
     var nextOptions= this.__animationOptionsForProperty('next');
     var prevOptions= this.__animationOptionsForProperty('previous');
-
-    if (selectedIndex > this.__selectedIndex)
+    var direction= (selectedIndex > this.__selectedIndex) ? 1 : -1;
+    
+    if (0===selectedIndex && lastPage===this.__selectedIndex)
+      direction= 1;
+    else if (0===this.__selectedIndex && lastPage===selectedIndex)
+      direction= -1;
+      
+    if (direction>0)
     {
       prevOptions.callback= function()
       {
@@ -129,8 +149,65 @@ coherent.PagingView= Class.create(coherent.View, {
     this.__selectedIndex= selectedIndex;
   },
   
-  currentSlide: function()
+  numberOfPages: function()
   {
+    return this.node ? this.node.children.length : 0;
+  },
+  
+  pauseOnMouseHover: function()
+  {
+    return this.__pauseOnMouseHover;
+  },
+  
+  setPauseOnMouseHover: function(pause)
+  {
+    this.__pauseOnMouseHover= pause;
+  },
+  
+  onmouseenter: function()
+  {
+    if (!this.__pauseOnMouseHover)
+      return;
+    if (this.__advanceTimer)
+      window.clearTimeout(this.__advanceTimer);
+    this.__advanceTimer= null;
+  },
+  
+  onmouseleave: function()
+  {
+    if (!this.__pauseOnMouseHover)
+      return;
+    if (this.__autoAdvanceDelay)
+      this.setAutoAdvanceDelay(this.__autoAdvanceDelay);
+  },
+  
+  autoAdvanceDelay: function()
+  {
+    return this.__autoAdvanceDelay;
+  },
+  
+  setAutoAdvanceDelay: function(delay)
+  {
+    if (this.__advanceTimer)
+      window.clearTimeout(this.__advanceTimer);
+    this.__autoAdvanceDelay= delay;
+    this.__advanceTimer= window.setTimeout(this.__autoAdvance.bind(this), delay);
+  },
+  
+  __autoAdvance: function()
+  {
+    var newIndex= (this.__selectedIndex||0) + this.autoAdvanceDirection;
+    
+    if (newIndex<0)
+      newIndex= this.numberOfPages()-1;
+    else if (newIndex>=this.numberOfPages())
+      newIndex= 0;
+    
+    this.setSelectedIndex(newIndex);
+    if (this.bindings.selectedIndex)
+      this.bindings.selectedIndex.setValue(newIndex);
+    this.__advanceTimer= window.setTimeout(this.__autoAdvance.bind(this),
+                                           this.__autoAdvanceDelay);
   }
-
+  
 });
