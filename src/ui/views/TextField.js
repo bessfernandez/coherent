@@ -440,7 +440,7 @@ coherent.TextField= Class.create(coherent.FormControl, {
       listNode.innerHTML= '<li></li>';
       var list= new coherent.CollectionView(listNode, {
               action: '__completionSelected',
-              viewTemplate: VIEW({
+              viewTemplate: VIEW_TEMPLATE({
                 ':root': coherent.View({
                       textBinding: 'representedObject'
                     })

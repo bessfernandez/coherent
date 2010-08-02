@@ -8,15 +8,15 @@
  */
 coherent.ErrorBubble= Class.create(coherent.Bubble, {
 
-  markup: '<div class="bubble"></div>',
-  innerHTML: '<span class="chrome tl"></span><span class="chrome tr"></span><span class="chrome top"></span><span class="chrome left"></span><span class="chrome right"></span><span class="chrome bottom"></span><span class="chrome bl"></span><span class="chrome br"></span><a href="#" class="close">close</a><span class="chrome center"></span><div class="container"><div class="content"></div><ul class="buttons"><li><button></button></li></ul></div><span class="chrome arrow"></span>',
+  markup: '<div class="ui-bubble"></div>',
+  innerHTML: '<span class="ui-bubble-chrome ui-bubble-tl"></span><span class="ui-bubble-chrome ui-bubble-tr"></span><span class="ui-bubble-chrome ui-bubble-top"></span><span class="ui-bubble-chrome ui-bubble-left"></span><span class="ui-bubble-chrome ui-bubble-right"></span><span class="ui-bubble-chrome ui-bubble-bottom"></span><span class="ui-bubble-chrome ui-bubble-bl"></span><span class="ui-bubble-chrome ui-bubble-br"></span><a href="#" class="close">close</a><span class="ui-bubble-chrome ui-bubble-center"></span><div class="ui-bubble-container"><div class="ui-bubble-content"></div><ul class="ui-bubble-buttons"><li><button></button></li></ul></div><span class="ui-bubble-chrome ui-bubble-arrow"></span>',
 
   __structure__: {
     '.buttons': coherent.CollectionView({
               visibleBinding: 'recoveryOptions',
               contentBinding: 'recoveryOptions',
               action: 'recoveryButtonClicked',
-              viewTemplate: VIEW({
+              viewTemplate: VIEW_TEMPLATE({
                   'button': coherent.Button({
                       textBinding: 'representedObject.text'
                     })

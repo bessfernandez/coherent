@@ -17,3 +17,4 @@
 /*jsl:import ui/views/theme.js*/
 /*jsl:import ui/views/View.js*/
 /*jsl:import ui/nib/VIEW.js*/
+/*jsl:import ui/nib/VIEW_TEMPLATE.js*/
