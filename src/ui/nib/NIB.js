@@ -11,6 +11,8 @@ coherent.Nib= Class._create({
   {
     this.name= name;
     this.def= def;
+    this.references= coherent.REF.__unresolved;
+    coherent.REF.__unresolved= [];
   },
 
   /** Visit all elements in the node tree rooted at the view in depth first
@@ -53,7 +55,7 @@ coherent.Nib= Class._create({
   {
     var oldDataModel= coherent.dataModel;
     var model= coherent.dataModel= new coherent.KVO();
-  
+    
     model.setValueForKey(owner, 'owner');
     model.setValueForKey(coherent.Application.shared, 'application');
   
@@ -107,33 +109,29 @@ coherent.Nib= Class._create({
     {
       var specialDef= this.def[key];
       var special= model.valueForKey(key);
-      var modelValue;
-  
+      
       if (!special)
         continue;
     
       for (p in specialDef)
       {
         v= specialDef[p];
-        if ('string'!==typeof(v))
+        type= typeof(v);
+        
+        if ('function'===type && v.__factoryFn__)
         {
-          special.setValueForKeyPath(v, p);
-          continue;
+          v.__key= p;
+          v= v.call(special);
         }
-    
-        //  See if the value is a keypath into the current model
-        modelValue= model.valueForKeyPath(v);
-        if (null===modelValue || 'undefined'===typeof(modelValue))
-        {
-          special.setValueForKeyPath(v, p);
-          continue;
-        }
-    
-        special.setValueForKeyPath(modelValue, p);
+        special.setValueForKeyPath(v, p);
       }
     }
 
-    var len= awake.length;
+    var len= this.references.length;
+    while (len--)
+      this.references[len].resolve(model);
+      
+    len= awake.length;
     while (len--)
       awake[len].awakeFromNib();
 

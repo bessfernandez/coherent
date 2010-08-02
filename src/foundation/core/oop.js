@@ -117,6 +117,7 @@
       v= obj[p];
       if (!v.__factoryFn__)
         continue;
+      v.__key= p;
       obj[p]= v.call(obj);
     }
   }

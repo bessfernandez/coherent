@@ -116,15 +116,6 @@ coherent.CollectionView= Class.create(coherent.View, {
     //  remove all children, can't use innerHTML on MSIE.
     while (container.firstChild)
       container.removeChild(container.firstChild);
-    
-    if (!this.viewTemplate)
-      throw new Error('No view template specified for CollectionView');
-    
-    //  If the viewTemplate is specified as simply a class (rather than a
-    //  factory function, via a declarative constructor), then convert it
-    //  to a factory function. This makes the logic less complex later.
-    if (this.viewTemplate && !this.viewTemplate.__factoryFn__)
-      this.viewTemplate= this.viewTemplate();
   },
 
   /** Should the view accept being the first responder?
@@ -136,6 +127,22 @@ coherent.CollectionView= Class.create(coherent.View, {
     return !(node.disabled || node.readOnly);
   },
     
+  viewTemplate: function()
+  {
+    return this.__viewTemplate;
+  },
+  
+  setViewTemplate: function(viewTemplate)
+  {
+    this.__viewTemplate= viewTemplate;
+    
+    //  If the viewTemplate is specified as simply a class (rather than a
+    //  factory function, via a declarative constructor), then convert it
+    //  to a factory function. This makes the logic less complex later.
+    if (this.__viewTemplate && !this.__viewTemplate.__factoryFn__)
+      this.__viewTemplate= this.__viewTemplate();
+  },
+  
   /** Create a new view for the representedObject. This method swizzles the
       global dataModel to point to the created item, then creates an instance
       of the {@link #viewTemplate} to associate with the new item. Because the
@@ -163,7 +170,7 @@ coherent.CollectionView= Class.create(coherent.View, {
       node= Element.clone(this.templateNode);
 
     item.setValueForKey(representedObject, 'representedObject');
-    item.setValueForKey(this.viewTemplate(node, null), 'view');
+    item.setValueForKey(this.__viewTemplate(node, null), 'view');
     item.setValueForKey(node||item.view.node, 'node');
     
     coherent.dataModel= oldDataModel;

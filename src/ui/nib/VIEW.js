@@ -1,8 +1,9 @@
 /*jsl:import ../../ui.js*/
+/*jsl:declare VIEW*/
 
 /** Factory function for creating views.
  */
-function VIEW(markup, structure)
+coherent.VIEW= function(markup, structure)
 {
   if (1==arguments.length)
   {
@@ -96,4 +97,4 @@ function VIEW(markup, structure)
   return setupView;
 }
 
-window.VIEW= VIEW;
+coherent.__export("VIEW");

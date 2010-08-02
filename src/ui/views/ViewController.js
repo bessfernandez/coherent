@@ -44,11 +44,9 @@ coherent.ViewController= Class.create(coherent.Responder, {
     if (this.__view)
       this.__view.setNextResponder(null);
       
-    if ('string'===typeof(view))
-      view= this.__context.valueForKeyPath(view);
-      
     this.__view= view;
-    view.setNextResponder(this);
+    if (view)
+      view.setNextResponder(this);
   },
 
   /** Load the NIB from the associated bundle... the view property will be

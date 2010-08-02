@@ -46,6 +46,7 @@ coherent.Bindable= Class.create(coherent.KVO, {
       v= this[p];
       if (!v.__factoryFn__)
         continue;
+      v.__key= p;
       this[p]= v.call(this);
     }
     
@@ -231,13 +232,20 @@ coherent.Bindable= Class.create(coherent.KVO, {
     var v;
     var setter;
     var adaptTree= coherent.KVO.adaptTree;
+    var type;
     
     for (p in parameters)
     {
       if (-1!==p.search(/Binding$/))
         continue;
       v= parameters[p];
-      if ('object'===coherent.typeOf(v) && !('addObserverForKeyPath' in v))
+      type= coherent.typeOf(v);
+      if (v && 'function'===type && v.__factoryFn__)
+      {
+        v.__key= p;
+        v= v.call(this);
+      }
+      else if ('object'===type && !('addObserverForKeyPath' in v))
         adaptTree(v);
       setter= 'set' + p.titleCase();
       if (setter in this)

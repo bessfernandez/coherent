@@ -321,7 +321,7 @@ coherent.TextField= Class.create(coherent.FormControl, {
     }
         
     if (Event.isAlphaNumKey(keyCode) || Event.KEY_SPACE===keyCode ||
-      Event.KEY_BACKSPACE===keyCode || Event.KEY_DELETE===keyCode)
+        Event.KEY_BACKSPACE===keyCode || Event.KEY_DELETE===keyCode)
     {
       var delegate= this.delegate();
       if (delegate && delegate.completionsForFieldWithText)
