@@ -199,10 +199,10 @@ coherent.Bubble= Class.create(coherent.Overlay, {
   onmouseup: function(event)
   {
     var target= event.target||event.srcElement;
-    if (this.anchor.contains(target) || this.node.contains(target))
+    if (this.anchor.contains(target))
       return;
-    if (this.clickOutsideToDismiss)
-      this.setVisible(false);
+      
+    this.base(event);
   }
   
 });

@@ -38,7 +38,7 @@
                 border: 4px solid #666;
 /*                -webkit-box-shadow: 0 3px 8px rgba(0,0,0,0.85);*/
 /*                -moz-box-shadow: 0 3px 8px rgba(0,0,0,0.85);*/
-                background: white;
+                background: rgba(255,255,255,0.5);
                 padding: 10px;
             }
             
@@ -61,28 +61,30 @@
             {
                 width: 20px;
                 height: 20px;
-                bottom: -29px;
+                left: 20px;
+                top: 20px;
                 position: absolute;
-                background-color: green;
-                margin-bottom: 5px;
+                background-color: rgba(0,0,0,0.25);
             }
-            
-            .overlay.below .ui-bubble-arrow
-            {
-                top: -29px;
-                bottom: auto;
-                margin-top: 5px;
-                margin-bottom: 0;
-            }
-            
+                        
             #constraint
             {
                 position: absolute;
                 top: 200px;
                 left: 50px;
                 width: 300px;
+                padding: 10px;
                 background-color: pink;
             }
+            
+            #field
+            {
+              width: 20px;
+              height: 20px;
+              background-color: red;
+              margin-bottom: 50px;
+            }
+            
         </style>
     </head>
     
@@ -91,7 +93,7 @@
 
         <script>
             distil.onready(function(){
-                var bubble= new coherent.Bubble(document.getElementById('bubble'), {
+                var bubble= new coherent.AnchoredBubble(document.getElementById('bubble'), {
                                                     animate: {
                                                         visible: true
                                                     }
@@ -99,6 +101,7 @@
             
                 window.showBubble=function()
                 {
+                debugger;
                     bubble.constrainToView(document.getElementById('constraint'));
                     bubble.attachToView(document.getElementById('field'));
                     bubble.setVisible(true);
@@ -112,7 +115,7 @@
         </script>
 
         <div id="constraint">
-            <input type="text" id="field">
+            <div id="field"></div>
             <input style="position:relative;z-index:10000" onclick="showBubble()" type="button" value="Show Bubble">
             <input style="position:relative;z-index:10000" onclick="hideBubble()" type="button" value="Hide Bubble">
         </div>

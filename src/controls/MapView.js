@@ -146,6 +146,22 @@ coherent.MapView= Class.create(coherent.View, {
             this.__overlayItem.overlay.setMap(null);
     },
     
+    annotationViewTemplate: function()
+    {
+      return this.__annotationViewTemplate;
+    },
+    
+    setAnnotationViewTemplate: function(viewTemplate)
+    {
+      this.__annotationViewTemplate= viewTemplate;
+      
+      //  If the viewTemplate is specified as simply a class (rather than a
+      //  factory function, via a declarative constructor), then convert it
+      //  to a factory function. This makes the logic less complex later.
+      if (this.__annotationViewTemplate && !this.__annotationViewTemplate.__factoryFn__)
+        this.__annotationViewTemplate= this.__annotationViewTemplate();
+    },
+    
     showOverlayForAnnotation: function(annotation)
     {
         if (this.__annotationTimer)
@@ -159,7 +175,7 @@ coherent.MapView= Class.create(coherent.View, {
             return;
         }
         
-        if (!this.annotationViewTemplate)
+        if (!this.__annotationViewTemplate)
             return;
             
         var oldDataModel= coherent.dataModel;
@@ -168,7 +184,7 @@ coherent.MapView= Class.create(coherent.View, {
         coherent.dataModel= item;
         
         item.setValueForKey(annotation, 'representedObject');
-        item.setValueForKey(this.annotationViewTemplate(this.annotationNode, null), 'view');
+        item.setValueForKey(this.__annotationViewTemplate(this.annotationNode, null), 'view');
         item.setValueForKey(new coherent.MapViewOverlay(item.view), 'overlay');
         
         var hoverInfo={

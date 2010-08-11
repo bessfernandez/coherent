@@ -252,8 +252,11 @@
      */
     function wrappedMethod()
     {
+      var prev= this.base;
       this.base= superproto[name]||emptyFn;
-      return wrappedMethod.method.apply(this, arguments);
+      var result= wrappedMethod.method.apply(this, arguments);
+      this.base= prev;
+      return result;
     }
     wrappedMethod.valueOf= function()
     {
