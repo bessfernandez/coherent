@@ -10,6 +10,13 @@
     values. These placeholders should be URLs to the appropriate image to
     display under those circumstances. The default values are empty, so no image
     will be displayed.
+    
+    @binding {String} src - The URL to display in this Image.
+    @binding {String} alt - Text to display when the visitor hovers over the image.
+    @binding {Number} width - The width of the view. The actual image is scaled to
+          fit this width.
+    @binding {Number} height - The height of the view. The actual image is scaled
+          to fit this height.
  */
 coherent.Image= Class.create(coherent.View, {
   

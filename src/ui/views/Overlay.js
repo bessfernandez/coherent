@@ -3,20 +3,41 @@
 /**
     Recommended z-index values:
   
-      100 < z < 200 : general overlays
-      200       : modal page obscuring layer
-      200 < z < 300 : modal overlays
-      300       : error page obscuring layer
-      300 < z < 400 : error notifications
+        100 < z < 200 : general overlays
+             200      : modal page obscuring layer
+        200 < z < 300 : modal overlays
+             300      : error page obscuring layer
+        300 < z < 400 : error notifications
     
  */
 coherent.Overlay= Class.create(coherent.View, {
 
+  /** Should this overlay be displayed modally? Modal overlays obscure the
+      page below them and can't be dismissed by clicking outside the overlay.
+      @type boolean
+      @default false
+   */
   modal: false,
   
+  /** Should clicks outside the overlay dismiss it? When set to false, the
+      overlay must be explicitly dismissed.
+      @type boolean
+      @default false
+   */
   clickOutsideToDismiss: false,
   
+  /** The classname to use when creating the modal backdrop DIV. The backdrop is
+      used to obscure the content of the page and can be styled however you wish.
+      @type String
+      @default "modal-overlay-backdrop"
+   */
   backdropClassName: "modal-overlay-backdrop",
+  /** The classname to use when creating the modal guard DIV. The guard DIV prevents
+      clicks from interacting with other modal overlays or the page. This DIV
+      will always appear just below the current modal overlay in z-index.
+      @type String
+      @default "modal-overlay-guard"
+   */
   guardClassName: "modal-overlay-guard",
   
   init: function()
@@ -154,6 +175,10 @@ coherent.Overlay= Class.create(coherent.View, {
 
 coherent.Overlay.numberOfModalOverlays=0;
 
+/** @namespace
+    Valid values for where an overlay may be positioned relative to an anchor
+    view or element.
+ */
 coherent.Overlay.Position= {
   ABOVE: coherent.Style.kOverlayAbove,
   BELOW: coherent.Style.kOverlayBelow,

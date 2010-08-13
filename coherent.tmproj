@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>src/controls/MapView.js</string>
+	<string>src/ui/views/PopupList.js</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -13,8 +13,6 @@
 			<string>coherent</string>
 			<key>regexFolderFilter</key>
 			<string>!.*/(\.[^/]*|doc|build|CVS|_darcs|_MTN|\{arch\}|blib|.*~\.nib|.*\.(framework|app|pbproj|pbxproj|xcode(proj)?|bundle))$</string>
-			<key>selected</key>
-			<true/>
 			<key>sourceDirectory</key>
 			<string></string>
 		</dict>
@@ -66,20 +64,6 @@
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
 			<integer>20</integer>
-		</dict>
-		<key>src/controls/MapView.js</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>57</integer>
-				<key>line</key>
-				<integer>186</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>346</integer>
 		</dict>
 		<key>src/controls/TabView.js</key>
 		<dict>
@@ -267,33 +251,49 @@
 			<key>firstVisibleLine</key>
 			<integer>74</integer>
 		</dict>
-		<key>src/ui/dom/colours.js</key>
+		<key>src/ui/views/CollectionView.js</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
 				<integer>0</integer>
 				<key>line</key>
-				<integer>0</integer>
+				<integer>40</integer>
 			</dict>
+			<key>columnSelection</key>
+			<false/>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
 			<integer>0</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>36</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>40</integer>
+			</dict>
 		</dict>
-		<key>src/ui/views/View.js</key>
+		<key>src/ui/views/PopupList.js</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>5</integer>
+				<integer>54</integer>
 				<key>line</key>
-				<integer>205</integer>
+				<integer>12</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>200</integer>
+			<integer>0</integer>
 		</dict>
 		<key>tests/oop-test.js</key>
 		<dict>
@@ -340,11 +340,12 @@
 	</dict>
 	<key>openDocuments</key>
 	<array>
-		<string>src/controls/MapView.js</string>
+		<string>src/ui/views/PopupList.js</string>
+		<string>src/ui/views/CollectionView.js</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
 	<false/>
 	<key>windowFrame</key>
-	<string>{{197, 300}, {1181, 878}}</string>
+	<string>{{197, 88}, {1224, 1090}}</string>
 </dict>
 </plist>

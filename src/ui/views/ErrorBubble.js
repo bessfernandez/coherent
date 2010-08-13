@@ -4,7 +4,7 @@
 
 /** A specialisation of the {@link coherent.Bubble} view that displays the
     contents of a {@link coherent.Error} object and offers buttons to attempt
-    recovery form the error.
+    recovery from the error.
  */
 coherent.ErrorBubble= Class.create(coherent.Bubble, {
 
@@ -24,16 +24,25 @@ coherent.ErrorBubble= Class.create(coherent.Bubble, {
             })
   },
   
+  /** Retrieve the error being displayed in this bubble.
+      @type coherent.Error
+   */
   error: function()
   {
     return this.__error;
   },
   
+  /** Set the error object associated with this bubble.
+      @param {coherent.Error} newError
+   */
   setError: function(newError)
   {
     this.__error= newError;
   },
   
+  /** Override of the default {@link coherent.Bubble#updateContent} method that
+      displays the error description and buttons.
+   */
   updateContent: function()
   {
     if (!this.__error)

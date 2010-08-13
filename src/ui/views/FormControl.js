@@ -13,6 +13,11 @@ coherent.FormControl= Class.create(coherent.View, {
   exposedBindings: ['value', 'name'],
   maskedBindings: ['text', 'html'],
 
+  /** Retrieve the value of the form control. If a formatter has been defined,
+      the value will be appropriately formatted. Otherwise, the raw value is
+      returned.
+      @type Any
+   */
   value: function()
   {
     if (this.formatter)
@@ -21,6 +26,11 @@ coherent.FormControl= Class.create(coherent.View, {
     return this.node.value;
   },
   
+  /** Set the value of the form control. If a formatter has been defined for
+      this control, the newValue will be formatted as a string before being
+      sent to the DOM node.
+      @param {Any} newValue
+   */
   setValue: function(newValue)
   {
     var markerType= this.bindings.value && this.bindings.value.markerType;

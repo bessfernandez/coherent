@@ -1,6 +1,8 @@
 /*jsl:import View.js*/
 
-/** An outline view */
+/** An outline view - This is currently broken because it requires a single
+    root element.
+ */
 coherent.OutlineView= Class.create(coherent.View, {
 
   animationOptions: {

@@ -1,5 +1,9 @@
 /*jsl:import Bubble.js*/
 
+/** A variant of {@link coherent.Bubble} that will use the arrow element to
+    anchor the bubble to the target element rather than move point at the target
+    element.
+ */
 coherent.AnchoredBubble= Class.create(coherent.Bubble, {
 
   updatePosition: function()

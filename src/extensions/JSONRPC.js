@@ -1,5 +1,6 @@
 /*jsl:import ../foundation/net/XHR.js*/
 /*jsl:declare JSONRPC*/
+/*jsl:declare JSON*/
 
 coherent.JSONRPC= function(method, url, parameters, options)
 {
@@ -27,6 +28,13 @@ Object.extend(coherent.JSONRPC, {
     return JSONRPC('POST', url, parameters, options);
   },
 
+  postJSON: function(url, parameters, json, options)
+  {
+    options= Object.extend({ contentType: 'application/json' }, options);
+    options.body= JSON.stringify(json);
+    return JSONRPC('POST', url, parameters, options);
+  },
+  
   __requestComplete: function(response)
   {
     if (!response.head)

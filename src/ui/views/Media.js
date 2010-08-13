@@ -1,6 +1,19 @@
 /*jsl:import View.js*/
 
-/** Base class for HTML5 media elements */
+/** Base class for HTML5 media elements
+
+    @binding {String} src - The URL of the media.
+    @binding {Number} currentTime - The current time position within the media
+          clip. This does not automatically update while the clip plays.
+    @binding {Number} volume - The volume for playing back the clip.
+    @binding {boolean} autoplay - Should the clip begin playing automatically?
+    @binding {boolean} controls - Should the media element display controls for
+          manipulating the media clip.
+    @binding {boolean} loop - When reaching the end of the clip, should the
+          media element rewind and start over?
+    @binding {boolean} playing - Is the media playing? Toggling this value will
+          start and stop playback of the media.
+ */
 coherent.Media= Class.create(coherent.View, {
 
   exposedBindings: ['src', 'currentTime', 'volume', 'muted', 'autoplay', 'controls', 'loop', 'playing'],
@@ -113,7 +126,6 @@ coherent.Media= Class.create(coherent.View, {
     return this.node.ended;
   },
   
-  //'autoplay', 'controls', 'loop'
   autoplay: function()
   {
     return this.node.autoplay;

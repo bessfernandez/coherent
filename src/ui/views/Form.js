@@ -17,6 +17,13 @@ coherent.Form= Class.create(coherent.FieldGroup, {
   //  Only send the action on submit of the form.
   sendActionOn: ['submit'],
   
+  /** Event handler for the submit event. If an {@link #action} is defined and
+      the {@link #sendActionOn} property includes the 'submit' event, the default
+      handling of the submit event is canceled and the action is sent to the
+      responder chain.
+      
+      @param {Event} event
+   */
   onsubmit: function(event)
   {
     if (!this.action || !this.sendActionOn.containsObject('submit'))

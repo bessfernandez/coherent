@@ -79,14 +79,14 @@ coherent.Bubble= Class.create(coherent.Overlay, {
       relative position is used as a classname added to the Bubble's DOM node
       to trigger alternate CSS rules. The valid values for this field are:
       `above` and `below`.
-      @type String
+      @type coherent.Overlay.Position
+      @default coherent.Overlay.Position.ABOVE
    */
   relativePosition: coherent.Overlay.Position.ABOVE,
 
-  /** The CSS selector used to locate the arrow DOM node within the Bubble. If
-      the bubble can't locate the arrow, {@link #updatePosition} will throw an
-      error.
+  /** The CSS selector used to locate the arrow DOM node within the Bubble.
       @type String
+      @default '.ui-bubble-arrow'
    */
   arrowSelector: '.ui-bubble-arrow',
 
@@ -196,6 +196,10 @@ coherent.Bubble= Class.create(coherent.Overlay, {
     node.style.display= _display;
   },
 
+  /** Handle mouseup events. If the mouseup occurs in the anchor for the bubble,
+      don't dismiss the bubble. Otherwise, defer to {@link coherent.Overlay#onmouseup}.
+      @param Event event
+   */
   onmouseup: function(event)
   {
     var target= event.target||event.srcElement;

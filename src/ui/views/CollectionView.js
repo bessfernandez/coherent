@@ -126,12 +126,19 @@ coherent.CollectionView= Class.create(coherent.View, {
     var node= this.node;
     return !(node.disabled || node.readOnly);
   },
-    
+  
+  /** Retrieve the view template that will be used to create items in the 
+      collection view.
+      @type coherent.VIEW_TEMPLATE
+   */
   viewTemplate: function()
   {
     return this.__viewTemplate;
   },
   
+  /** Set the view template that is used to create items in the collection.
+      @param coherent.VIEW_TEMPLATE viewTemplate
+   */
   setViewTemplate: function(viewTemplate)
   {
     this.__viewTemplate= viewTemplate;
@@ -243,6 +250,10 @@ coherent.CollectionView= Class.create(coherent.View, {
     }
   },
 
+  /** Set the content for the collection view. This computes the minimal number
+      of updates necessary and performs insertion and deletion animations.
+      @param {coherent.KVO[]} newContent
+   */
   setContent: function(newContent)
   {
     var _this= this;

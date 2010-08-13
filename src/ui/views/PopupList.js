@@ -1,6 +1,19 @@
 /*jsl:import FormControl.js*/
 
-/** A popup list.
+/** A view that wraps the default browser popup list.
+
+    @binding {coherent.KVO[]} content - The content to be displayed by the view.
+  
+    @binding {Any} contentObjects - An array of values that will be returned
+            by the {@link #selectedObject} property and also used to fill out
+            the value property that will be sent to a server should the popup
+            list be submitted.
+    
+    @binding {Any} contentValues - An array containing the text that should be
+            displayed for each item in the popup list.
+    @binding {Number[]} selectionIndexes - The indexes of the selected items in
+      the data array.
+
  */
 coherent.PopupList= Class.create(coherent.FormControl, {
 
