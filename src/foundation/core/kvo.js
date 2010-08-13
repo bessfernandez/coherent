@@ -41,21 +41,6 @@ coherent.KVO= Class.create({
         this.setValueForKey(v, p);
     }
   },
-
-  /** Return a plain object which should be used when converting the KVO to JSON
-      notation.
-      @type Object
-   */
-  toJSON: function()
-  {
-    var keys= this.__jsonKeys || coherent.KVO.mutableKeys(this);
-    var obj= {};
-    
-    for (var key in keys)
-      obj[key]= this.valueForKey(key);
-      
-    return obj;
-  },
   
   /** The factory method for KVO and any derived classes. This factory method
       simply passes along the parameters to the constructor.
@@ -746,7 +731,7 @@ coherent.KVO.kAllPropertiesKey= "*";
 /** Set of keys which should be ignored when computing the list of mutable keys
     and when adapting an existing object.
  */
-coherent.KVO.keysToIgnore= coherent.Set("__kvo","__keysToIgnore",
+coherent.KVO.keysToIgnore= coherent.Set("__uid", "__kvo","__keysToIgnore",
                                         "__jsonKeys", "__mutableKeys",
                                         "__factories__");
 
@@ -1014,6 +999,14 @@ coherent.KVO.breakParentChildLink= function(keyInfo)
   keyInfo.parentLink.observer= null;
   keyInfo.parentLink.callback= null;
   keyInfo.parentLink= null;
+}
+
+coherent.KVO.jsonReplacer= function(key, value)
+{
+  var undefined;
+  if (key in coherent.KVO.keysToIgnore)
+    return undefined;
+  return value;
 }
 
 Object.markMethods(coherent.KVO);
