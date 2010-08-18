@@ -3,12 +3,14 @@
 
 /** Factory function for creating views.
  */
-coherent.VIEW= function(markup, structure)
+coherent.VIEW= function(selector, structure)
 {
+  var markup;
+  
   if (1==arguments.length)
   {
-    structure= markup;
-    markup= null;
+    structure= selector;
+    selector= null;
   }  
 
   function resolveViewNode(viewNode)
@@ -19,38 +21,38 @@ coherent.VIEW= function(markup, structure)
     if (viewNode && 'string'===typeof(viewNode))
       return Element.query(viewNode);
 
+    if (selector && 1===selector.nodeType)
+      return selector;
+      
+    if ('string'===typeof(selector))
+      return Element.query(selector);
+
     var asset;
     
-    if (markup)
+    if (!markup)
     {
-      if (1===markup.nodeType)
-        return markup;
-      
-      if ('string'===typeof(markup) && (viewNode=Element.query(markup)))
-        return viewNode;
-
-      if (markup instanceof coherent.Asset)
+      if (selector instanceof coherent.Asset)
       {
-        asset= markup;
-        markup= null;
+        asset= selector;
+        selector= null;
       }
-    }
-    else
-    {
-      var assetId= [setupView.__nib.name,setupView.__key].join("#") + ".html";
-      var module= setupView.__nib.bundle.name;
-      markup= distil.dataForAssetWithNameInModule(assetId, module);
-      
-      if (!markup)
+      else
       {
-        var href= distil.urlForAssetWithNameInModule(assetId, module);
-        asset= new coherent.Asset(href);
-      }
-    }
+        var assetId= [setupView.__nib.name,setupView.__key].join("#") + ".html";
+        var module= setupView.__nib.bundle.name;
+        markup= distil.dataForAssetWithNameInModule(assetId, module);
       
-    if (asset)
-      markup= asset.content();
-
+        if (!markup)
+        {
+          var href= distil.urlForAssetWithNameInModule(assetId, module);
+          asset= new coherent.Asset(href);
+        }
+      }
+      
+      if (asset)
+        markup= asset.content();
+    }
+    
     if (markup)
       viewNode= coherent.View.createNodeFromMarkup(markup);
 

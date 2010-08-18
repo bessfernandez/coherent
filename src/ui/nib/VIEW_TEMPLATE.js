@@ -7,7 +7,10 @@ coherent.VIEW_TEMPLATE= function()
   
   function templateFactory()
   {
+    result.__key= templateFactory.__key;
+    result.__nib= templateFactory.__nib;
     return result;
+    
   }
   templateFactory.__viewTemplate__=true;
   return templateFactory;

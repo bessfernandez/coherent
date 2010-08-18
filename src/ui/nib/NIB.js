@@ -85,7 +85,11 @@ coherent.Nib= Class._create({
           v.__nib= this;
           v= v.call(model);
         }
-    
+        if ('function'===type && v.__viewTemplate__)
+        {
+          v.__key= p;
+          v.__nib= this;
+        }
         if (v instanceof coherent.Asset)
           v= v.content();
     

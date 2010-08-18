@@ -28,14 +28,14 @@ Object.extend(coherent.JSONRPC, {
     return JSONRPC('POST', url, parameters, options);
   },
 
-  postJSON: function(url, parameters, json, options)
+  postJSON: function(url, json, parameters, options)
   {
     options= Object.extend({ contentType: 'application/json' }, options);
     options.body= JSON.stringify(json, coherent.KVO.jsonReplacer);
     return JSONRPC('POST', url, parameters, options);
   },
 
-  putJSON: function(url, parameters, json, options)
+  putJSON: function(url, json, parameters, options)
   {
     options= Object.extend({ contentType: 'application/json' }, options);
     options.body= JSON.stringify(json, coherent.KVO.jsonReplacer);
