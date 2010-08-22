@@ -495,12 +495,15 @@ coherent.Page= Class.create(coherent.Responder, {
   
   _onunload: function()
   {
-    var id;
-    var viewLookup= coherent.View.viewLookup;
-    for (id in viewLookup)
+    var nodes= document.getElementsByTagName("*");
+    var len= nodes.length;
+    var n;
+    
+    while (len--)
     {
-      viewLookup[id].teardown();
-      delete viewLookup[id];
+      n= nodes[len];
+      if (n.object)
+        n.object.teardown();
     }
   },
   

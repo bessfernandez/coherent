@@ -210,12 +210,10 @@ coherent.View= Class.create(coherent.Responder, {
     else
       throw new Error('Unexpected value for node: ', + node);
       
-    if (this.id in coherent.View.viewLookup)
-      throw new Error('Two views share the same ID: ' + this.id);
+    if (this.node.object)
+      throw new Error('Node already has a view: node=', this.node, 'view=', this.node.object);
 
     this.node.object= this;
-    
-    coherent.View.viewLookup[this.id]= this;
 
     //  Handle factory and constructor formatter values
     if (this.formatter && 'function'===typeof(this.formatter))
@@ -278,7 +276,6 @@ coherent.View= Class.create(coherent.Responder, {
     if (this.node)
       this.node.object= null;
     delete this.node;
-    delete coherent.View.viewLookup[this.id];
   },
   
   __factory__: function(selector, parameters, container)
@@ -1127,9 +1124,6 @@ coherent.View= Class.create(coherent.Responder, {
   
 });
 
-/** Lookup table matching node IDs to view instances */
-coherent.View.viewLookup= {};
-
 /** Handle special processing for subclasses of the View class. This method
     registers the view by name (via __viewClassName__ key) and sets up matching
     tag specifications (via __tagSpec__ key). Also combines any default
@@ -1157,21 +1151,14 @@ coherent.View.__subclassCreated__= function(subclass)
  */
 coherent.View.fromNode= function(element)
 {
-  var lookup= coherent.View.viewLookup;
-  var id = null;
-  
   if (!element)
     return null;
-    
-  if ("string"===typeof(element))
-    id = element;
-  else if ("id" in element)
-    id = element.id;
+
+  if (1===element.nodeType)
+    return element.object;
   
-  if (!lookup || !id || !lookup[id])
-    return null;
-  
-  return lookup[id];
+  element= document.getElementById("string"===typeof(element) ? element : element.id);
+  return element ? element.object : element;
 }
 
 coherent.View.teardownViewsForNodeTree= function(node)
