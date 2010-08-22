@@ -22,6 +22,13 @@ Object.extend(coherent, {
  */
 coherent.Binding= Class._create({
 
+  /** Should the value of bindings be pulled from the DOM when the model doesn't
+      specify a value?
+      @type Boolean
+      @default true
+   */
+  initFromDOM: true,
+  
   /** Create a new Binding and associate it with a keypath on a specific
       object.
 
@@ -38,6 +45,9 @@ coherent.Binding= Class._create({
         not the same.
       @param settings.noSelectionPlaceholder - The value used when the
         bound value represents an empty selection.
+      @param settings.initFromDOM - Whether the value of this binding should be
+        pulled from the view rather than the model. This will only take effect
+        if the model doesn't already have a value.
    */
   constructor: function(settings)
   {
@@ -56,6 +66,20 @@ coherent.Binding= Class._create({
     }
     
     this.refresh();
+  },
+  
+  /** Should the value for this binding be pulled from the DOM if the model
+      doesn't specify a value?
+      @type Boolean
+   */
+  shouldInitFromDOM: function()
+  {
+    if (!this.initFromDOM)
+      return false;
+
+    this.refresh();
+    var value= this.cachedModelValue;
+    return (null===value || 'undefined'===typeof(value));
   },
   
   /** Begin tracking changes to the value for this Binding. This method adds
