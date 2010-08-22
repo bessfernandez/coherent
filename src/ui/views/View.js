@@ -346,6 +346,28 @@ coherent.View= Class.create(coherent.Responder, {
   {
   },
 
+  /** Initialise the bound values from the DOM.
+   */
+  initFromDOM: function()
+  {
+    var exposed= this.exposedBindings;
+    var len= exposed.length;
+    var b;
+    var binding;
+    
+    for (var i=0; i<len; ++i)
+    {
+      b= exposed[b];
+      if (!(binding=this.bindings[b]) || !binding.shouldInitFromDOM())
+        continue;
+      
+      var value= this.valueForKey(b);
+      if (null===value || 'undefined'===typeof(value))
+        continue;
+      binding.setValue(value);
+    }
+  },
+  
   /** Return the declarative structure of the View, where the keys are CSS
       selectors used to find the DOM nodes that should be attached to views.
       @type Object
