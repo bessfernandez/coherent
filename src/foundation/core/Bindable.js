@@ -2,19 +2,19 @@
 
 
 /** Bindable is a base class that provides a simple mechanism for keeping one
-  object's properties in sync with the properties of another. Views and
-  Controllers are subclasses of Bindable.
+    object's properties in sync with the properties of another. Views and
+    Controllers are subclasses of Bindable.
   
-  @property {Object} bindings - A map of the bindings that have been
-    established for this object.
+    @property {Object} bindings - A map of the bindings that have been
+      established for this object.
  */
 coherent.Bindable= Class.create(coherent.KVO, {
 
   /** Construct a new Bindable instance. This initialises the bindings
-    property to an empty hash.
+      property to an empty hash.
     
-    @param {Object} parameters - An object containing name/value pairs that
-         will be copied to this object upon initialisation.
+      @param {Object} parameters - An object containing name/value pairs that
+           will be copied to this object upon initialisation.
    */
   constructor: function(parameters)
   {
@@ -24,12 +24,12 @@ coherent.Bindable= Class.create(coherent.KVO, {
   },
 
   /** Create factory objects for instances of this class. Because Bindable
-    instances may have factory objects that should participate in the
-    binding context, this method overrides the default implementation
-    provided by {@link Class.create} to switch the global context to this
-    instances context before constructing the factory objects.
+      instances may have factory objects that should participate in the
+      binding context, this method overrides the default implementation
+      provided by {@link Class.create} to switch the global context to this
+      instances context before constructing the factory objects.
     
-    @private
+      @private
    */
   __createFactoryObjects: function()
   {

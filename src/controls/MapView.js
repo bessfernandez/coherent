@@ -98,7 +98,7 @@
     __zoomChanged: function()
     {
       var zoom= this.__map.getZoom();
-    
+
       if ('number'===typeof(this.__minZoom) && zoom < this.__minZoom)
         this.__map.setZoom(zoom=this.__minZoom);
       if ('number'===typeof(this.__maxZoom) && zoom > this.__maxZoom)

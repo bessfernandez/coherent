@@ -3,7 +3,7 @@
     <head>
         <link rel="stylesheet" href="reset.css" type="text/css" title="no title" charset="utf-8">
         <script src="../build/debug/distil.js" type="text/javascript" charset="utf-8"></script>
-        <script src="../build/coherent-debug.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../build/debug/coherent-debug.js" type="text/javascript" charset="utf-8"></script>
         <script src="states.js" type="text/javascript" charset="utf-8"></script>
         <style>
             input.ui-placeholder
@@ -64,7 +64,8 @@
         </div>
     </body>
     <script type="text/javascript" charset="utf-8">
-        NIB({
+      distil.onready(function(){
+        NIB('simple', {
             'sample': VIEW(document.body, {
                         'input#control': coherent.TextField({
                                                 delegate: 'data',
@@ -94,7 +95,13 @@
                             return words;
                         }
                         
-                    })
+                    }),
+            'owner': {
+              view: REF('sample')
+            }
         });
+        var controller= new coherent.ViewController({ nibName: 'simple' });
+        controller.view();
+      });
     </script>
 </html>
