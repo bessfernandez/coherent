@@ -1037,7 +1037,7 @@ coherent.View= Class.create(coherent.Responder, {
       this.beforeRemoveElement(node);
     return node.parentNode.removeChild(node);
   },
-  
+
   /** Register for drag types. */
   registerForDraggedTypes: function(dragTypes)
   {
