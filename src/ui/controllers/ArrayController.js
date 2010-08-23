@@ -566,6 +566,13 @@ coherent.ArrayController= Class.create(coherent.ObjectController, {
    */
   removeObject: function(object)
   {
+    var value= this.bindings.content && this.bindings.content.value();
+    if (value)
+    {
+      value.removeObject(object);
+      return;
+    }
+
     this.__content.removeObject(object);
     this.__removeObjectsFromArrangedObjects([object]);
   },
@@ -575,6 +582,13 @@ coherent.ArrayController= Class.create(coherent.ObjectController, {
    */
   removeObjects: function(objects)
   {
+    var value= this.bindings.content && this.bindings.content.value();
+    if (value)
+    {
+      value.removeObjects(objects);
+      return;
+    }
+
     this.__content.removeObjects(objects);
     this.__removeObjectsFromArrangedObjects(objects);
   },
