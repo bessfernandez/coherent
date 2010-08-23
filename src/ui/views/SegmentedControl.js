@@ -29,9 +29,17 @@ coherent.SegmentedControl = Class.create(coherent.View, {
     this.__selectedIndex=-1;
     var segments= Element.queryAll(this.node, this.segmentSelector);
     var len= segments.length;
+    var selectedClass= coherent.Style.kSelectedClass;
+    var node;
+    var hasClassName= Element.hasClassName;
     
     for (var i=0; i<len; ++i)
-      segments[i].segmentIndex= i;
+    {
+      node= segments[i];
+      if (hasClassName(node, selectedClass))
+        this.__selectedIndex= i;
+      node.segmentIndex= i;
+    }
   },
   
   /** Accessor for the selectedIndex property.
