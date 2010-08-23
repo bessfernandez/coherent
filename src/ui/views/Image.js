@@ -28,13 +28,17 @@ coherent.Image= Class.create(coherent.View, {
     this.base();
     
     var node= this.node;
-    
-    // Set the original src, if any to be the default 
-    // placeholder for null and no selection values 
-    if (!this.defaultPlaceholders.src && node.src)
+
+    //  If the src for the image is either not bound or not initialised from
+    //  the DOM, and no default placeholders have been specified for this image,
+    //  use the src value for the null value, no selection placeholders.
+    if ((!this.bindings.src || !this.bindings.src.initFromDOM) &&
+        (!this.defaultPlaceholders.src && node.src))
     { 
-      var srcPH = this.defaultPlaceholders.src= {}; 
-      srcPH.nullValue = srcPH.noSelection = node.src; 
+      this.defaultPlaceholders.src= {
+        nullValue: node.src,
+        noSelection: node.src
+      };
     }
   },
 

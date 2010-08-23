@@ -346,25 +346,41 @@ coherent.View= Class.create(coherent.Responder, {
   {
   },
 
-  /** Initialise the bound values from the DOM.
+  /** Retrieve the initial value for a specific binding. The default value just
+      calls valueForKey to retrieve the current value. Subclasses may implement
+      this method to provide special case handling for some bindings.
+      @type Any
+      @param {String} binding - The name of the binding
    */
-  initFromDOM: function()
+  initialValueForBinding: function(binding)
   {
+    return this.valueForKey(binding);
+  },
+  
+  /** Update the value of all bindings. Updated in the same order they were
+    declared via exposedBindings.
+   */
+  updateBindings: function()
+  {
+    var bindings= this.bindings;
     var exposed= this.exposedBindings;
     var len= exposed.length;
-    var b;
-    var binding;
-    
-    for (var i=0; i<len; ++i)
+    var b, name, i, value;
+
+    for (i=0; i<len; ++i)
     {
-      b= exposed[b];
-      if (!(binding=this.bindings[b]) || !binding.shouldInitFromDOM())
+      b= bindings[name=exposed[i]];
+      if (!b)
         continue;
-      
-      var value= this.valueForKey(b);
-      if (null===value || 'undefined'===typeof(value))
-        continue;
-      binding.setValue(value);
+      if (b.shouldInitFromDOM())
+      {
+        value= this.initialValueForBinding(name);
+        if (null===value || 'undefined'===typeof(value))
+          continue;
+        b.setValue(value);
+      }
+      else
+        b.update();
     }
   },
   
