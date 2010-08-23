@@ -18,12 +18,14 @@
 coherent.PopupList= Class.create(coherent.FormControl, {
 
   exposedBindings: ['content', 'contentObjects', 'contentValues', 'selectedIndex',
-            'selectedObject', 'selectedValue'],
+                    'selectedObject', 'selectedValue'],
 
   constructor: function(node, parameters)
   {
     this.base(node, parameters);
     this.__content= [];
+    this.__contentValues= [];
+    this.__contentObjects= [];
     this.__selectedIndex= -1;
     this.__selectedValue= null;
     this.__selectedObject= null;
@@ -50,6 +52,93 @@ coherent.PopupList= Class.create(coherent.FormControl, {
       this.bindings.selectedObject.setValue(this.selectedObject());
     if (this.bindings.selectedValue)
       this.bindings.selectedValue.setValue(this.selectedValue());
+  },
+  
+  __findContentArrayController: function()
+  {
+    var binding= this.bindings.content;
+    var parts= binding.keypath.split('.');
+    var object= binding.object;
+    var controller= object;
+    
+    var i, len= parts.length;
+    
+    for (i=0; i<len; ++i)
+    {
+      controller= controller.valueForKey(parts[i]);
+      if (controller.newObject)
+      {
+        return this.__contentArrayController= controller;
+      }
+    }
+
+    return null;
+  },
+  
+  initialValueForContentBinding: function()
+  {
+    var controller= this.__findContentArrayController();
+    
+    if (!controller)
+      return content;
+    
+    var contentKeyPathPlusDot= this.bindings.content.keypath + ".";
+    var contentKeyPathPlusDotLen= contentKeyPathPlusDot.length;
+    var bindings= this.bindings;
+    
+    var keypathForBinding= function(name)
+    {
+      var binding= bindings[name];
+      if (!binding || !binding.shouldInitFromDOM() || !binding.keypath.beginsWith(contentKeyPathPlusDot))
+        return null;
+      return binding.keypath.substring(contentKeyPathPlusDotLen);
+    };
+    
+    var content= [];
+    
+    var valueKeyPath= keypathForBinding('contentValues');
+    var objectKeyPath= keypathForBinding('contentObjects');
+    
+    var node= this.node;
+    var options= node.options;
+    var len= options.length;
+    var i;
+    var o;
+    var obj;
+
+    this.__selectedIndex= node.selectedIndex;
+    
+    for (i=0; i<len; ++i)
+    {
+      o= options[i];
+      obj= controller.newObject();
+      if (valueKeyPath)
+        obj.setValueForKeyPath(o.text, valueKeyPath);
+      if (objectKeyPath)
+        obj.setValueForKeyPath(o.value, objectKeyPath);
+      content.push(obj);
+    }
+
+    controller.addObjects(content);
+    
+    //  deliberately return null, because adding the individual object has
+    //  already updated the array controller associated with this view.
+    return null;
+  },
+  
+  initialValueForBinding: function(name)
+  {
+    switch (name)
+    {
+      case 'content':
+        return this.initialValueForContentBinding();
+      case 'contentValues':
+      case 'contentObjects':
+        //  return null to prevent updateBindings from actually setting the value
+        return null;
+      default:
+        return this.valueForKey(name);
+    }
   },
   
   content: function()
@@ -195,7 +284,7 @@ coherent.PopupList= Class.create(coherent.FormControl, {
 
   selectedIndex: function()
   {
-    return this.__selectedIndex;
+    return this.node.selectedIndex;
   },
   
   setSelectedIndex: function(newIndex)

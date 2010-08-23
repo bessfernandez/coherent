@@ -79,7 +79,9 @@ coherent.Binding= Class._create({
 
     this.refresh();
     var value= this.cachedModelValue;
-    return (null===value || 'undefined'===typeof(value));
+    //  If the value is null, undefined or an empty array then initialise from
+    //  the view's DOM element.
+    return (null===value || 'undefined'===typeof(value) || (value.splice && !value.length));
   },
   
   /** Begin tracking changes to the value for this Binding. This method adds
