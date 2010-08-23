@@ -78,6 +78,9 @@ coherent.ArrayController= Class.create(coherent.ObjectController, {
     this.__content= newContent?newContent.copy():[];
     this.rearrangeObjects();
     
+    if (this.bindings.content)
+      this.bindings.content.setValue(newContent);
+
     if (!this.preservesSelection)
       this.setSelectionIndexes([]);
   },
@@ -517,8 +520,22 @@ coherent.ArrayController= Class.create(coherent.ObjectController, {
    */
   addObject: function(object)
   {
+    var objects= [object];
+    if (this.bindings.content)
+    {
+      var value= this.bindings.content.value();
+      if (value)
+      {
+        value.addObject(object);
+        return;
+      }
+
+      //  setValue prevents call through to observeContentChange
+      this.bindings.content.setValue(objects);
+    }
+    
     this.__content.addObject(object);
-    this.__insertObjectsIntoArrangedObjects([object]);
+    this.__insertObjectsIntoArrangedObjects(objects);
   },
   
   /** Add an array of objects to the content managed by this controller. The
@@ -527,6 +544,19 @@ coherent.ArrayController= Class.create(coherent.ObjectController, {
    */
   addObjects: function(objects)
   {
+    if (this.bindings.content)
+    {
+      var value= this.bindings.content.value();
+      if (value)
+      {
+        value.addObjects(objects);
+        return;
+      }
+
+      //  setValue prevents call through to observeContentChange
+      this.bindings.content.setValue(objects);
+    }
+
     this.__content.addObjects(objects);
     this.__insertObjectsIntoArrangedObjects(objects);
   },
