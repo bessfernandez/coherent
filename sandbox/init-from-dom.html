@@ -1,0 +1,119 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <link rel="stylesheet" href="reset.css" type="text/css" title="no title" charset="utf-8">
+    <script src="../build/debug/distil.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../build/debug/coherent-debug.js" type="text/javascript" charset="utf-8"></script>
+  </head>
+  
+  <body>
+    <!--
+      Anchor
+      AnchoredBubble - can't initialise from DOM
+      Bubble - can't initialise from DOM
+      Button - no unique bindings
+      CollectionView - TODO
+      ErrorBubble - can't initialise from DOM
+      FieldGroup - no unique bindings
+      Form
+      FormControl
+      Image
+      Media - TODO
+      OutlineView
+      Overlay - can't initialise from DOM
+      PopupList
+      SearchField - TODO
+      SegmentedControl
+      Slider
+      TableHeader - TODO
+      TextField - TODO
+      ToggleButton - TODO (selection binding is confusing)
+      Video - TODO
+      View - TODO
+    -->
+    <form action="http://example.com" method="POST">
+      <a href="http://www.apple.com/" title="A link to Apple.com">Apple.com</a>
+      <input name="form-control" value="Zebras are cool" id="form-control">
+      <img src="images/propertyIconsS.png" width="56" height="70" alt="Property Icons">
+      <select name="popup-list">
+        <option>Foo</option>
+        <option selected="selected">Zebra</option>
+      </select>
+      
+      <div class="segmented"><button>Button 1</button><button>Button 2</button><button class="ui-selected">Button 3</button></div>
+      <input type="range" min="0" max="10" step="2" value="4">
+    </form>
+    
+  </body>
+  
+  <script>
+  distil.onready(function(){
+  
+    window.dump= function(obj)
+    {
+      return JSON.parse(JSON.stringify(obj, coherent.KVO.jsonReplacer));
+    }
+    
+    NIB('init-from-dom', {
+
+        'model': coherent.KVO(),
+    
+        'options': coherent.ArrayController({
+            contentBinding: 'model.select_options'
+          }),
+          
+        'view': VIEW(document.body, {
+    
+            'a': coherent.Anchor({
+                    hrefBinding: 'model.anchor_ref',
+                    titleBinding: 'model.anchor_title'
+                }),
+            'form': coherent.Form({
+                    actionUrlBinding: 'model.form_actionUrl',
+                    methodBinding: 'model.formMethod'
+                }),
+            //  Generic FormControl bindings, not specific to TextField or others
+            '#form-control': coherent.FormControl({
+                    nameBinding: 'model.formControl_name',
+                    valueBinding: 'model.formControl_value'
+                }),
+            'img': coherent.Image({
+                    srcBinding: 'model.image_src',
+                    altBinding: 'model.image_alt',
+                    widthBinding: 'model.image_width',
+                    heightBinding: 'model.image_height'
+                }),
+            
+            'select': coherent.PopupList({
+                    contentBinding: 'options.arrangedObjects',
+                    contentValuesBinding: 'options.arrangedObjects.text',
+                    selectedIndexBinding: 'model.select_selectedIndex'
+                }),
+                
+            'div.segmented': coherent.SegmentedControl({
+                    selectedIndexBinding: 'model.segmentedControl_selectedIndex',
+                    selectedLabelBinding: 'model.segmentedControl_selectedLabel'
+                }),
+              
+            'input[type=range]': coherent.Slider({
+                    minValueBinding: 'model.slider_minValue',
+                    maxValueBinding: 'model.slider_maxValue',
+                    incrementValueBinding: 'model.slider_incrementValue',
+                    valueBinding: 'model.slider_value'
+                })
+          }),
+          
+        owner: {
+          model: REF('model'),
+          view: REF('view'),
+          options: REF('options')
+        }
+    });
+    var controller= new coherent.ViewController({ nibName: 'init-from-dom' });
+    controller.view();
+    console.log('model=', dump(controller.model), controller.options);
+  });
+  </script>
+</html>
+          
+        
