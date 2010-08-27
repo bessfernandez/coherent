@@ -51,7 +51,8 @@ coherent.CollectionView= Class.create(coherent.View, {
     },
     insertion: {
       classname: coherent.Style.kInsertedClass,
-      duration: 100
+      duration: 100,
+      reverse: true
     },
     deletion: {
       classname: coherent.Style.kDeletedClass,
@@ -261,7 +262,7 @@ coherent.CollectionView= Class.create(coherent.View, {
     var container= this.container();
 
     var insertionAnimationOptions= this.__animationOptionsForProperty('insertion');
-    insertionAnimationOptions.reverse= true;
+    // insertionAnimationOptions.reverse= true;
 
     var deletionAnimationOptions= this.__animationOptionsForProperty('deletion');
     deletionAnimationOptions.callback= function(node)

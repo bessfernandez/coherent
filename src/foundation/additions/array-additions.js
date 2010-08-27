@@ -102,6 +102,21 @@ Object.applyDefaults(Array.prototype, {
     return result;
   },
 
+  /** Find the first object that matches the predicate */
+  find: function(predicate, fromIndex)
+  {
+    if ('undefined'===typeof(fromIndex)) {
+      fromIndex = 0;
+    } else if (fromIndex < 0) {
+      fromIndex = Math.max(0, this.length + fromIndex);
+    }
+    for (var i = fromIndex; i < this.length; i++) {
+      if (predicate(this[i]))
+        return i;
+    }
+    return -1;
+  },
+  
   /** Compare an array with another array.
 
       @param {Array} a - the other array

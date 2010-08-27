@@ -13,6 +13,12 @@
 coherent.Anchor= Class.create(coherent.View, {
 
   exposedBindings: ['href', 'title'],
+
+  /** Should navigation be prevented when the visitor clicks on this anchor?
+      @type Boolean
+      @default false
+   */
+  preventNavigation: false,
   
   /** Retrieve the value of the href attribute on the anchor.
       @type String
@@ -61,7 +67,7 @@ coherent.Anchor= Class.create(coherent.View, {
   onclick: function(event)
   {
     var href= this.href();
-    if ('#'===href)
+    if ('#'===href || this.preventNavigation)
       Event.preventDefault(event);
     this.base(event);
   }

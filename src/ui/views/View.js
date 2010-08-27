@@ -602,7 +602,7 @@ coherent.View= Class.create(coherent.Responder, {
     if (animationOptions)
       coherent.Animator.removeClassName(this.node, classname, animationOptions);
     else
-      Element.addClassName(this.node, classname);
+      Element.removeClassName(this.node, classname);
   },
   
   animateClassName: function(animationOptions, reverse)
