@@ -4,6 +4,20 @@
     <link rel="stylesheet" href="reset.css" type="text/css" title="no title" charset="utf-8">
     <script src="../build/debug/distil.js" type="text/javascript" charset="utf-8"></script>
     <script src="../build/debug/coherent-debug.js" type="text/javascript" charset="utf-8"></script>
+    <style>
+      .not-visible-view
+      {
+        display: none;
+      }
+      
+      pre
+      {
+        margin: 20px;
+        font-family: menlo, monaco, courier;
+        font-size: 14px;
+        line-height: 1.25em;
+      }
+    </style>
   </head>
   
   <body>
@@ -22,14 +36,14 @@
       OutlineView
       Overlay - can't initialise from DOM
       PopupList
-      SearchField - TODO
+      SearchField - TODO (this class really needs updating)
       SegmentedControl
       Slider
       TableHeader - TODO
-      TextField - TODO
+      TextField - no unique bindings
       ToggleButton - TODO (selection binding is confusing)
       Video - TODO
-      View - TODO
+      View - can't init argument binding from DOM
     -->
     <form action="http://example.com" method="POST">
       <a href="http://www.apple.com/" title="A link to Apple.com">Apple.com</a>
@@ -42,8 +56,15 @@
       
       <div class="segmented"><button>Button 1</button><button>Button 2</button><button class="ui-selected">Button 3</button></div>
       <input type="range" min="0" max="10" step="2" value="4">
+      
+      <input class="disabled-view" type="text" disabled="true">
+      <input class="not-editable-view" type="text" readOnly="true" value="Zebra">
+      
+      <div class="not-visible-view">You can't see me.</div>
+      <div title="html!" class="html-view">This is <i>some</i> html. You should be <strong>excited</strong>.</div>
     </form>
     
+    <code><pre id="results"></pre></code>
   </body>
   
   <script>
@@ -100,6 +121,23 @@
                     maxValueBinding: 'model.slider_maxValue',
                     incrementValueBinding: 'model.slider_incrementValue',
                     valueBinding: 'model.slider_value'
+                }),
+                
+            'input.disabled-view': coherent.View({
+                    enabledBinding: 'model.view_enabled'
+                }),
+                
+            'input.not-editable-view': coherent.View({
+                    editableBinding: 'model.view_editable',
+                    classBinding: 'model.view_class'
+                }),
+            '.not-visible-view': coherent.View({
+                    visibleBinding: 'model.view_visible',
+                    textBinding: 'model.view_text'
+                }),
+            '.html-view': coherent.View({
+                    htmlBinding: 'model.view_html',
+                    toolTipBinding: 'model.view_toolTip'
                 })
           }),
           
@@ -111,6 +149,9 @@
     });
     var controller= new coherent.ViewController({ nibName: 'init-from-dom' });
     controller.view();
+    var results= document.getElementById('results');
+    results.innerText= JSON.stringify(controller.model, coherent.KVO.jsonReplacer, 2);
+    // results.textContent= dump(controller.model);
     console.log('model=', dump(controller.model), controller.options);
   });
   </script>
