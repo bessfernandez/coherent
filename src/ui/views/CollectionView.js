@@ -114,9 +114,11 @@ coherent.CollectionView= Class.create(coherent.View, {
     if (templateNode)
       this.templateNode= Element.clone(templateNode);
     
-    //  remove all children, can't use innerHTML on MSIE.
-    while (container.firstChild)
-      container.removeChild(container.firstChild);
+    //  If I'm not pulling the content out of the dom, remove all children,
+    //  can't use innerHTML on MSIE.
+    if (this.bindings.content && !this.bindings.content.shouldInitFromDOM())
+      while (container.firstChild)
+        container.removeChild(container.firstChild);
   },
 
   /** Should the view accept being the first responder?
