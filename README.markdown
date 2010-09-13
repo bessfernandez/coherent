@@ -31,13 +31,3 @@ Chances are you won't be content to stare at pictures of my daughter all day lon
     distil
 
 Just like the gallery demo, this will generate the app and build it. If you open the `build` folder in your browser, you won't see anything terribly exciting. But now you're ready to go.
-
-## Installing Plug Ins
-
-So I borrowed the code from Ruby on Rails to handle plug ins. At the moment, there isn't much except some additional controls. But you can install those by typing the following in your project folder:
-
-    coherent plugin install controls
-
-This will build a folder named `controls` in the `vendor/plugins` folder. The controls plugin includes various extras including a view that wraps Google Maps, a date picker, and a fancy sliding track view.
-
-There will be more controls and more plugins in the future.

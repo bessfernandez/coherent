@@ -150,10 +150,10 @@ coherent.Bubble= Class.create(coherent.Overlay, {
       var x= parseInt(targetRect.left,10) + Math.floor(targetRect.width/2);
       var halfW= Math.floor(dimensions.width/2);
       
-      withinRect= { left: x-halfW,
-              right: x+halfW,
-              width: dimensions.width
-            };
+      withinRect= { left: Math.max(0, x-halfW),
+                    right: Math.max(0, x-halfW) + dimensions.width,
+                    width: dimensions.width
+                  };
     }
   
     node.style.left= withinRect.left + 'px';
