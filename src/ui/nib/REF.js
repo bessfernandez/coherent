@@ -17,13 +17,14 @@ coherent.REF = function(reference)
     ref.reference= reference;
   
   coherent.REF.__unresolved.push(ref);  
-  function referenceFunction()
+  
+  var referenceFunction= function()
   {
     var ref= referenceFunction.ref;
     ref.key= referenceFunction.__key;
     ref.owner= this;
     return null;
-  }
+  };
   referenceFunction.ref= ref;
   referenceFunction.__factoryFn__= true;
   return referenceFunction;
