@@ -70,6 +70,12 @@ coherent.ViewController= Class.create(coherent.Responder, {
     
     if (!this.__view)
       throw new Error("NIB does not seem to have set the view for the ViewController.");
+      
+    this.viewDidLoad();
+  },
+  
+  viewDidLoad: function()
+  {
   },
   
   /** If the next responder has been set explicitly via a call to

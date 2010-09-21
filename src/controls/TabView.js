@@ -58,7 +58,7 @@ coherent.TabView= Class.create(coherent.View, {
     //  clear out the old markup
     this.tabs.innerHTML= "";
     this.contents.innerHTML= "";
-    this.__viewControllers= viewControllers;
+    this.__viewControllers= [];
     
     var itemsFrag= this.node.ownerDocument.createDocumentFragment();
     var contentsFrag= this.node.ownerDocument.createDocumentFragment();
@@ -75,6 +75,7 @@ coherent.TabView= Class.create(coherent.View, {
       controller= viewControllers[i];
       if (controller.__factoryFn__)
         controller= controller.call();
+      this.__viewControllers[i]= controller;
       markup= this.__createTabMarkup(controller);
       markup[0].__index= i;
       
@@ -89,6 +90,31 @@ coherent.TabView= Class.create(coherent.View, {
     
     this.__selectedIndex=-1;
     this.setSelectedIndex(0);
+  },
+  
+  addViewController: function(controller)
+  {
+    if (!this.__viewControllers || !this.__viewControllers.length)
+    {
+      this.setViewControllers([controller]);
+      return;
+    }
+    
+    var markup;
+    var index= this.__viewControllers.length;
+    var oldDataModel= coherent.dataModel;
+    coherent.dataModel= this.__context;
+
+    if (controller.__factoryFn__)
+      controller= controller.call();
+    this.__viewControllers[index]= controller;
+    markup= this.__createTabMarkup(controller);
+    markup[0].__index= index;
+    
+    this.tabs.appendChild(markup[0]);
+    this.contents.appendChild(markup[1]);
+
+    coherent.dataModel= oldDataModel;
   },
   
   selectedIndex: function()
