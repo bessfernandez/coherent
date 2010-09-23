@@ -287,8 +287,10 @@ coherent.KeyInfo.getInfoForKeyOnObject= function(key, object)
 
   if (properties)
   {
-    if (key in object)
+    if (object.hasOwnProperty(key))
       value= object[key];
+    else if (target.hasOwnProperty(key))
+      value= target[key];
     delete object[key];
     delete target[key];
     target.__defineGetter__(key, wrappedMethods.get);
