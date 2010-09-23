@@ -1,0 +1,51 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <script src="../build/debug/distil.js" type="text/javascript" charset="utf-8"></script>
+        <script>
+          //  needed to make extra script tags work
+          distil.sync=true;
+        </script>
+        <script src="../build/debug/coherent-debug.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../src/extensions/TwitterSearchStream.js" type="text/javascript" charset="utf-8"></script>
+        
+        <style>
+        </style>
+    </head>
+    
+    <body>
+        <div id="twitter">
+          <div class="stream"><div class="tweet"></div></div>
+          
+          <input type="text">
+        </div>
+        <script>
+            NIB('demo', {
+              'controller': coherent.TwitterSearchStream({
+                    searchQuery: 'javascript'
+                }),
+                
+              'tweet': VIEW_TEMPLATE({
+                    ':root': coherent.View({
+                          htmlBinding: 'representedObject.text'
+                      })
+                }),
+                          
+              'body': VIEW(document.body, {
+                    '.stream': coherent.CollectionView({
+                          contentBinding: 'controller.tweets',
+                          viewTemplate: REF('tweet')
+                      }),
+                }),
+                
+              owner: {
+                    view: REF('body')
+                }
+            });
+            
+            var controller= new coherent.ViewController({ nibName: 'demo' });
+            controller.view();
+        </script>
+        
+    </body>
+</html>

@@ -55,6 +55,8 @@
     }
   }
 
+  var jsonpIndex= 0;
+  
   /** Send a XHR request.
       @inner
       @param {String} url - The URL of the endpoint
@@ -77,7 +79,64 @@
       xhr.abort();
       XHR.numberOfActiveRequests--;
     }
-    
+
+    function sendViaJsonP(url)
+    {
+			var head = document.getElementsByTagName("head")[0] || document.documentElement;
+			var script = document.createElement("script");
+			var done= false;
+			
+      var jsonpParam= 'string'===typeof(options.jsonp) ? options.jsonp : 'callback';
+      var jsonpFnName= 'jsonp'+(++jsonpIndex);
+      var undefined;
+
+      if (-1===url.indexOf('?'))
+        url+= '?';
+      else if ('&'!==url.slice(-1))
+        url+= '&';
+      url+= jsonpParam + '=' + jsonpFnName;
+      
+			script.src = url;
+      
+      window[jsonpFnName]= function(data)
+      {
+        if (deferred)
+          deferred.callback(data);
+				
+				window[jsonpFnName]= undefined;
+
+				try
+				{
+					delete window[jsonpFnName];
+				}
+				catch (err)
+				{}
+				
+				if (head && script)
+					head.removeChild(script);
+      }
+      
+			// Attach handlers for all browsers
+			script.onload = script.onreadystatechange = function()
+    			{
+    			  if (done || (this.readyState && this.readyState!=='loaded' && this.readyState!=='complete'))
+    			    return;
+
+  					done = true;
+
+  					// Handle memory leak in IE
+  					script.onload = script.onreadystatechange = null;
+  					if (head && script.parentNode)
+  						head.removeChild(script);
+    			};
+
+			// Use insertBefore instead of appendChild  to circumvent an IE6 bug.
+			// This arises when a base node is used (#2709 and #4378).
+			head.insertBefore(script, head.firstChild);
+			
+			return deferred;
+		}
+
     function readyStateChanged()
     {
       if (4!==xhr.readyState)
@@ -165,7 +224,6 @@
       XHR.numberOfActiveRequests--;
     }
     
-    var xhr= getTransport();
     var queryString= Object.toQueryString(options.parameters||{});
     var body= options.body||"";
     var async= !options.sync;
@@ -198,6 +256,11 @@
 
       url= [url, queryString].join(join);
     }
+
+    if (options.jsonp)
+      return sendViaJsonP(url);
+
+    var xhr= getTransport();
 
     if (options.responseContentType && xhr.overrideMimeType)
       xhr.overrideMimeType(options.responseContentType);

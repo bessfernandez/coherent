@@ -6,7 +6,7 @@
           distil.sync=true;
         </script>
         <script src="../build/debug/coherent-debug.js" type="text/javascript" charset="utf-8"></script>
-        <script src="../src/controls/SlideshowView.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../src/controls/PagingView.js" type="text/javascript" charset="utf-8"></script>
         
         <style>
           #slideshow
@@ -86,7 +86,7 @@
             distil.onready(function(){
             
               var v= VIEW({
-                  '#slideshow': coherent.SlideshowView({
+                  '#slideshow': coherent.PagingView({
                                   animate: {
                                     selection: {
                                       duration: 300

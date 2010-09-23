@@ -35,10 +35,10 @@ coherent.KVO= Class.create({
     for (var p in hash)
     {
       v= hash[p];
-      if ('function'===typeof(v))
-        this[p]= v;
-      else
+      if ('function'!==typeof(v))
         this.setValueForKey(v, p);
+      else if (!this[p])
+        this[p]= v;
     }
   },
   
