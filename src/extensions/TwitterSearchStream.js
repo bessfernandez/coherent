@@ -3,7 +3,9 @@
 
 coherent.TwitterSearchStream= Class.create(coherent.Bindable, {
 
-  exposedBindings: ['searchQuery', 'paused', 'minNumberOfTweets', 'maxNumberOfTweets', 'maxTweetAge'],
+  exposedBindings: ['searchQuery', 'paused', 'minNumberOfTweets',
+                    'maxNumberOfTweets', 'maxTweetAge', 'centerCoordinate',
+                    'radius', 'radiusUnits', 'language'],
   
   SEARCH_URL: 'http://search.twitter.com/search.json',
   RESULTS_PER_PAGE: 100,
@@ -13,6 +15,8 @@ coherent.TwitterSearchStream= Class.create(coherent.Bindable, {
   minNumberOfTweets: 20,
   maxNumberOfTweets: null,
   maxTweetAge: 1000 * 60 * 3,
+  
+  language: null,
   
   objectClass: coherent.KVO,
   
@@ -119,8 +123,12 @@ coherent.TwitterSearchStream= Class.create(coherent.Bindable, {
     
     if (this.__sinceId)
       params.since_id= this.__sinceId;
-    
-    console.log('fetching tweets @ ' + (new Date()) + ' since_id: ', this.__sinceId);  
+    if (this.language)
+      params.lang= this.language;
+    if (this.centerPosition && this.radius && this.radiusUnits)
+      params.geocode= [this.centerPosition.latitude, this.centerPosition.longitude,
+                       this.radius+this.radiusUnits].join(',');
+    console.log('fetching tweets @ ' + (new Date()) + ' params: ', params);  
     var deferred= XHR.get(this.SEARCH_URL, params, options);
     deferred.addCallback(this.__tweetsFetched, this);
   },
