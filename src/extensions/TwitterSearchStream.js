@@ -70,6 +70,7 @@ coherent.TwitterSearchStream= Class.create(coherent.Bindable, {
   setSearchQuery: function(searchQuery)
   {
     this.__searchQuery= searchQuery;
+    this.__sinceId= null;
     this.__pendingTweets= [];
     this.__updateTimestamp= null;
     this.__scheduleUpdate();
