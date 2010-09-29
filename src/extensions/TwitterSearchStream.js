@@ -62,6 +62,19 @@ coherent.TwitterSearchStream= Class.create(coherent.Bindable, {
     }
   },
 
+  searchQuery: function()
+  {
+    return this.__searchQuery;
+  },
+  
+  setSearchQuery: function(searchQuery)
+  {
+    this.__searchQuery= searchQuery;
+    this.__pendingTweets= [];
+    this.__updateTimestamp= null;
+    this.__scheduleUpdate();
+  },
+  
   __addTweet: function(rawTweet)
   {
     var tweet= new (this.objectClass||coherent.KVO)(coherent.KVO.adaptTree(rawTweet));
@@ -118,9 +131,13 @@ coherent.TwitterSearchStream= Class.create(coherent.Bindable, {
   
   __fetchTweets: function()
   {
-    var params= { q: this.searchQuery, rpp: this.RESULTS_PER_PAGE };
+    var query= this.searchQuery();
+    if (!query)
+      return;
+      
+    var params= { q: query, rpp: this.RESULTS_PER_PAGE };
     var options= { jsonp: true };
-    
+
     if (this.__sinceId)
       params.since_id= this.__sinceId;
     if (this.language)
