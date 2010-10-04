@@ -707,6 +707,9 @@ if ('undefined'!==typeof(Sizzle))
   
     match: function(selector, nodes, resultArray)
     {
+      //  Handle passing a single node, in which case return true or false
+      if (nodes.nodeType)
+        return Sizzle(selector, null, resultArray||null, [nodes]).length;
       return Sizzle(selector, null, resultArray||null, nodes);
     },
     
