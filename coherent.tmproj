@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>src/foundation/core/KeyInfo.js</string>
+	<string>src/ui/dom/element.js</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -13,6 +13,8 @@
 			<string>coherent</string>
 			<key>regexFolderFilter</key>
 			<string>!.*/(\.[^/]*|doc|build|CVS|_darcs|_MTN|\{arch\}|blib|.*~\.nib|.*\.(framework|app|pbproj|pbxproj|xcode(proj)?|bundle))$</string>
+			<key>selected</key>
+			<true/>
 			<key>sourceDirectory</key>
 			<string></string>
 		</dict>
@@ -110,14 +112,30 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>0</integer>
+				<integer>26</integer>
 				<key>line</key>
-				<integer>290</integer>
+				<integer>166</integer>
 			</dict>
+			<key>columnSelection</key>
+			<false/>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>261</integer>
+			<integer>162</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>17</integer>
+				<key>line</key>
+				<integer>166</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>38</integer>
+				<key>line</key>
+				<integer>166</integer>
+			</dict>
 		</dict>
 		<key>src/foundation/core/KeyPathTrie.js</key>
 		<dict>
@@ -161,7 +179,7 @@
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>772</integer>
+			<integer>846</integer>
 			<key>selectFrom</key>
 			<dict>
 				<key>column</key>
@@ -234,6 +252,66 @@
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
 			<integer>103</integer>
+		</dict>
+		<key>src/ui/app/Page.js</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>34</integer>
+				<key>line</key>
+				<integer>212</integer>
+			</dict>
+			<key>columnSelection</key>
+			<false/>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>185</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>21</integer>
+				<key>line</key>
+				<integer>212</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>34</integer>
+				<key>line</key>
+				<integer>212</integer>
+			</dict>
+		</dict>
+		<key>src/ui/dom/element.js</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>37</integer>
+			</dict>
+			<key>columnSelection</key>
+			<false/>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>32</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>37</integer>
+			</dict>
 		</dict>
 		<key>src/ui/formatters/NumberFormatter.js</key>
 		<dict>
@@ -338,14 +416,13 @@
 	</dict>
 	<key>openDocuments</key>
 	<array>
-		<string>src/controls/PagingView.js</string>
+		<string>src/foundation/core/kvo.js</string>
 		<string>src/foundation/core/KeyInfo.js</string>
-		<string>src/ui/formatters/NumberFormatter.js</string>
-		<string>src/ui/formatters/RelativeDateFormatter.js</string>
+		<string>src/ui/dom/element.js</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
 	<false/>
 	<key>windowFrame</key>
-	<string>{{70, 0}, {1229, 878}}</string>
+	<string>{{211, 0}, {1229, 878}}</string>
 </dict>
 </plist>

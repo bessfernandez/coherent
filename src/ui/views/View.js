@@ -958,6 +958,11 @@ coherent.View= Class.create(coherent.Responder, {
       node.title= newTooltip;
   },
   
+  scrollIntoView: function(animate)
+  {
+    Element.scrollIntoView(this.node);
+  },
+  
   /** Use this method rather than calling the DOM removeChild method directly,
       because this will automatically teardown the outgoing node and give the
       view a chance to remove any event handlers.
@@ -973,14 +978,6 @@ coherent.View= Class.create(coherent.Responder, {
     if (this.beforeRemoveElement)
       this.beforeRemoveElement(node);
     return node.parentNode.removeChild(node);
-  },
-
-  /** When this view is cloned, this method is called to set up any state that
-      can't be inferred from the DOM.
-      @param originalView   the view associated with the original DOM node.
-   */
-  clonedFrom: function(originalView)
-  {
   },
   
   /** Register for drag types. */

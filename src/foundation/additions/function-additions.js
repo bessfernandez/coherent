@@ -46,7 +46,7 @@ if (!Function.delay)
     delayedFnWrapper.args= args||[];
     delayedFnWrapper.scope= scope||fn;
     delayedFnWrapper.cancel= cancel;
-    delayedFnWrapper.timer= window.setTimeout(delayedFnWrapper, delay);
+    delayedFnWrapper.timer= window.setTimeout(delayedFnWrapper, delay||0);
     return delayedFnWrapper;
   }
 

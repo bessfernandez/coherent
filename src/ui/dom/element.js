@@ -684,8 +684,67 @@ Object.extend(Element, {
     
     var e= document.elementFromPoint(clientX, clientY);
     return e;
-  }
+  },
+  
+  scrollIntoView: function(node, callback)
+  {
+    var viewport= Element.getViewport();
+    var oldDisplay= node.style.display;
+    var oldVisibility= node.style.visibility;
+    
+    node.style.visibility= 'hidden';
+    node.style.display='';
+    
+    var rect= Element.getRect(node, true);
+    
+    node.style.display=oldDisplay;
+    node.style.visibility=oldVisibility;
+    
+    //  return if already visible
+    if (rect.top>0 && (rect.bottom<viewport.height || rect.height > viewport.height))
+      return;
+      
+    var duration= 250;
+    var curve= coherent.easing.inOutSine;
+    var startY= window.scrollTop||document.body.scrollTop;
+    var deltaY;
+    
+    if (rect.top<0)
+      deltaY= rect.top;
+    else if (rect.height > viewport.height)
+      deltaY= rect.top - startY;
+    else
+      deltaY= rect.bottom - viewport.height;
 
+    var endY= startY + deltaY;
+    
+    var start= Date.now();
+    var end= start+duration;
+    
+    function scroll()
+    {
+      var now = coherent.EventLoop.getStart();
+      var t;
+    
+      if (now >= end)
+      {
+        window.scrollTo(viewport.left, endY);
+        if (callback)
+          callback(node);
+        return;
+      }
+      else
+      {
+        t = (now-start)/duration;
+        window.scrollTo(viewport.left, startY + deltaY*t);
+      }
+      
+      Function.delay(scroll, 10);
+    }
+  
+    Function.delay(scroll, 10);
+  }
+  
 });
 
 
