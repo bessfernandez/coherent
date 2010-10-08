@@ -502,7 +502,7 @@ coherent.Page= Class.create(coherent.Responder, {
     while (len--)
     {
       n= nodes[len];
-      if (n.object)
+      if (n.object && n.object.teardown)
         n.object.teardown();
     }
   },
