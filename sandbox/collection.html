@@ -19,18 +19,10 @@
             {
                 padding: 0 5px;
             }
-            li.selected
+            li.ui-selected
             {
-                background-color: Highlight;
-                color: HighlightText;
-            }
-            .updating
-            {
-                color: rgba(0,0,0,0);
-            }
-            .item
-            {
-                background-color: pink;
+                background-color: rgba(0,0,255,1);
+                color: rgba(255,255,255,1);
             }
         </style>
     </head>
@@ -38,71 +30,63 @@
     <body>
         <div id="demo">
             <ul tabIndex="0" id="list1">
-                <li class="item"></li>
+                <li class="item"><input type="checkbox"><span></span></li>
             </ul>
         </div>
         
         <script>
             distil.onready(function(){
-                var data= coherent.KVO.adaptTree({
+            
+                NIB('Demo', {
+
+                  'data': coherent.KVO.adaptTree({
                                 title: "Foo",
                                 options: [
-                                    {
-                                        name: "Abc"
-                                    },
-                                    {
-                                        name: "Def"
-                                    },
-                                    {
-                                        name: "Ghi"
-                                    },
-                                    {
-                                        name: "Jkl"
-                                    },
-                                    {
-                                        name: "Mno"
-                                    },
-                                    {
-                                        name: "Pqr"
-                                    },
-                                    {
-                                        name: "Stu"
-                                    },
-                                    {
-                                        name: "Vwx"
-                                    },
-                                    {
-                                        name: "Yz"
-                                    }
+                                    { name: "Abc" },
+                                    { name: "Def" },
+                                    { name: "Ghi" },
+                                    { name: "Jkl" },
+                                    { name: "Mno" },
+                                    { name: "Pqr" },
+                                    { name: "Stu" },
+                                    { name: "Vwx" },
+                                    { name: "Yz" }
                                 ]
-                            });
+                            }),
 
-                var TestView= Class.create(coherent.View, {
-            
-                    __structure__: {
-                
-                        'ul': coherent.CollectionView({
-                                    animate: {
-                                        selection: true
-                                    },
-                                    contentBinding: 'data.options',
-                                    // allowsEmptySelection: false,
-                                    // multiple: true,
-                                    viewTemplate: VIEW({
-                                        ':root': coherent.View({
-                                                    textBinding: 'representedObject.name',
-                                                    animate: {
-                                                        text: true
-                                                    }
-                                                })
-                                    })
+                  'selectionIndexes': [],
+                  
+                  'view': VIEW(document.getElementById('demo'), {
+                      'ul': coherent.CollectionView({
+                                animate: {
+                                    selection: true
+                                },
+                                selectionIndexesBinding: 'selectionIndexes',
+                                contentBinding: 'data.options',
+                                // allowsEmptySelection: false,
+                                // multiple: true,
+                                viewTemplate: VIEW_TEMPLATE({
+                                    'input': coherent.ToggleButton({
+                                                checkedBinding: 'selected'
+                                            }),
+                                    'span': coherent.View({
+                                                textBinding: 'representedObject.name',
+                                                animate: {
+                                                    text: true
+                                                }
+                                            })
                                 })
-                    }
-                
-                });
-                var testview= new TestView('demo');
-                testview.setValueForKey(data, 'data');
+                            })
+                    }),
+                    
+                  'owner': {
+                    view: REF('view')
+                  }
             });
+            
+            var controller= new coherent.ViewController({ nibName: 'Demo' });
+            controller.view();
+          });
         </script>
         
     </body>

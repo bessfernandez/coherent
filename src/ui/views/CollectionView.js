@@ -21,6 +21,7 @@
     
     @property {Element} node - The DOM element associated with this item.
   
+    @property {boolean} selected - Whether this item is selected or not.
 */
 
 /** Collection view...
@@ -180,6 +181,8 @@ coherent.CollectionView= Class.create(coherent.View, {
     item.setValueForKey(representedObject, 'representedObject');
     item.setValueForKey(this.__viewTemplate(node, null), 'view');
     item.setValueForKey(node||item.view.node, 'node');
+    item.setValueForKey(false, 'selected');
+    item.addObserverForKeyPath(this, 'observeItemSelectedChange', 'selected');
     
     coherent.dataModel= oldDataModel;
     
@@ -499,18 +502,86 @@ coherent.CollectionView= Class.create(coherent.View, {
     //  create a copy
     selection= this.__selectionIndexes.copy();
     nextSelected= selection.shift();
+    var selected;
+
+    this.__updatingSelection= true;
     
     for (index=0; index<len; ++index)
     {
       item= items[index];
       
-      if ((item.selected= (index===nextSelected)))
+      //  Make lint happy with the extra parens
+      if ((selected= (index===nextSelected)))
         nextSelected= selection.shift();
-        
-      item.view.animateClassName(animationOptions, !item.selected);
+      
+      item.setValueForKey(selected, 'selected');
+      item.view.animateClassName(animationOptions, !selected);
     }
+
+    this.__updatingSelection= false;
   },
 
+  /** Handle changes to the selected state of an item.
+      @param {coherent.ChangeNotification} change - The change notification
+   */
+  observeItemSelectedChange: function(change)
+  {
+    //  If we're updating selections, ignore the change notification; or if the
+    //  change isn't an setting change, ignore it.
+    if (this.__updatingSelection || coherent.ChangeType.setting!==change.changeType)
+      return;
+    
+    var item= change.object;  
+    var index= this.__items.indexOf(item);
+    //  Shouldn't ever happen, but...
+    if (-1===index)
+      return;
+      
+    var selectionIndexes= this.__selectionIndexes;
+    var selectedIndex= selectionIndexes.indexOf(index);
+
+    //  If the new value of the selected flag is the same as whether the item
+    //  appears in the selected list, return.
+    if (change.newValue===(-1!==selectedIndex))
+      return;
+
+    var animationOptions= this.__animationOptionsForProperty('selection');
+
+    this.willChangeValueForKey('selectionIndexes');
+
+    if (change.newValue)
+    {
+      if (this.multiple)
+      {
+        selectionIndexes.push(index);
+        this.__selectionIndexes= selectionIndexes.sort(coherent.compareNumbers);
+      }
+      else
+      {
+        if (selectionIndexes.length)
+        {
+          var oldItem= this.__items[this.__selectionIndexes[0]];
+          this.__updatingSelection=true;
+          oldItem.view.animateClassName(animationOptions, true);
+          oldItem.setValueForKey(false, 'selected');
+          this.__updatingSelection=false;
+        }
+        this.__selectionIndexes= [index];
+      }
+        
+      item.view.animateClassName(animationOptions);
+    }
+    else
+    {
+      //  Don't have to sort, because the selection indexes should still be in
+      //  sorted order after removing the index...
+      selectionIndexes.splice(selectedIndex, 1);
+      item.view.animateClassName(animationOptions, true);
+    }
+    
+    this.didChangeValueForKey('selectionIndexes');
+  },
+  
   /** Observe changes to the bound array of selected indexes.
       @param {coherent.ChangeNotification} change - The change notification.
    */
@@ -530,34 +601,40 @@ coherent.CollectionView= Class.create(coherent.View, {
     {
       case coherent.ChangeType.insertion:
         this.__selectionIndexes.insertObjectsAtIndexes(change.newValue, change.indexes);
+        this.__updatingSelection= true;
         change.newValue.forEach(function(i) {
                   item= items[i];
-                  item.selected= true;
+                  item.setValueForKey(true, 'selected');
                   item.view.animateClassName(animationOptions);
                 });
+        this.__updatingSelection= false;
         break;
 
       case coherent.ChangeType.deletion:
         this.__selectionIndexes.removeObjectsAtIndexes(change.indexes);
+        this.__updatingSelection= true;
         change.oldValue.forEach(function(i) {
                   item= items[i];
-                  item.selected= false;
+                  item.setValueForKey(false, 'selected');
                   item.view.animateClassName(animationOptions, true);
                 });
+        this.__updatingSelection= false;
         break;
 
       case coherent.ChangeType.replacement:
         this.__selectionIndexes.replaceObjectsAtIndexesWithObjects(change.indexes, change.newValue);
+        this.__updatingSelection= true;
         change.oldValue.forEach(function(i) {
                   item= items[i];
-                  item.selected= false;
+                  item.setValueForKey(false, 'selected');
                   item.view.animateClassName(animationOptions, true);
                 });
         change.newValue.forEach(function(i) {
                   item= items[i];
-                  item.selected= true;
+                  item.setValueForKey(true, 'selected');
                   item.view.animateClassName(animationOptions);
                 });
+        this.__updatingSelection= false;
         break;
 
       case coherent.ChangeType.validationError:
