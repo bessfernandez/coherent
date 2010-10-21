@@ -35,7 +35,7 @@ coherent.REF.resolve= function(context)
 {
   var object= context.valueForKey(this.reference);
   if (object && this.childReference)
-    object= (object.__resolveChildReference||object.valueForKeyPath)(this.childReference);
+    object= (object.__resolveChildReference||object.valueForKeyPath).call(object, this.childReference);
 
   if (!object)
     throw new Error("Unable to resolve NIB reference: "+ [this.reference, this.childReference].join(' '));

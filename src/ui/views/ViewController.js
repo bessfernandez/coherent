@@ -78,6 +78,17 @@ coherent.ViewController= Class.create(coherent.Responder, {
   {
   },
   
+  parentViewController: function()
+  {
+    var responder= this;
+    
+    while ((responder= responder.nextResponder()))
+      if (responder instanceof coherent.ViewController)
+        return responder;
+    
+    return null;
+  },
+  
   /** If the next responder has been set explicitly via a call to
       {@link #setNextResponder}, return that value. Otherwise, return the
       superview of the view associated with this ViewController.

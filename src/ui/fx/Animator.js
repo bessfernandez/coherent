@@ -189,6 +189,10 @@ coherent.Animator= {
         callbacks.push(actor.callback);
       delete(actors[actor.id]);
       actorCount--;
+      
+      var view= coherent.View.fromNode(actor.node);
+      if (view)
+        Function.delay(view.animationDidComplete, 10, view);
     }
     
     if (!actorCount)

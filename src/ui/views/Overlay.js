@@ -25,6 +25,12 @@ coherent.Overlay= Class.create(coherent.View, {
       @default false
    */
   clickOutsideToDismiss: false,
+
+  /** Should clicks inside the overlay dismiss it? 
+      @type boolean
+      @default false
+   */
+  clickInsideToDismiss: false,
   
   /** The classname to use when creating the modal backdrop DIV. The backdrop is
       used to obscure the content of the page and can be styled however you wish.
@@ -117,7 +123,7 @@ coherent.Overlay= Class.create(coherent.View, {
   onmouseup: function(event)
   {
     var target= event.target||event.srcElement;
-    if (this.node.contains(target))
+    if (this.node.contains(target) && !this.clickInsideToDismiss)
       return;
     if (this.clickOutsideToDismiss)
       this.setVisible(false);
@@ -149,6 +155,11 @@ coherent.Overlay= Class.create(coherent.View, {
     if (isVisible===this.visible())
       return;
 
+    if (isVisible)
+      this.callDelegate('willShowOverlay', [this]);
+    else
+      this.callDelegate('willHideOverlay', [this]);
+      
     if (!this.modal)
     {
       this.base(isVisible);

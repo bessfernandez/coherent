@@ -121,6 +121,9 @@ coherent.View= Class.create(coherent.Responder, {
    */
   animationOptions: {
     'class': {},
+    active: {
+      classname: coherent.Style.kActiveClass
+    },
     visible: {
       classname: coherent.Style.kFadingClass,
       reverse: true
@@ -451,6 +454,11 @@ coherent.View= Class.create(coherent.Responder, {
     return coherent.View.fromNode(node);
   },
   
+  __resolveChildReference: function(reference)
+  {
+    return this.viewWithSelector(reference);
+  },
+  
   /** The default value for nextResponder for a View is the super view.
       @type coherent.View
    */
@@ -509,6 +517,15 @@ coherent.View= Class.create(coherent.Responder, {
         delete this.delegate;
       return this.__delegate;
     }
+  },
+  
+  callDelegate: function(method, args)
+  {
+    var delegate= this.delegate();
+    if (delegate && method in delegate)
+      return delegate[method].apply(delegate, args);
+    else
+      return null;
   },
   
   /** Set the focus to the view.
@@ -608,6 +625,13 @@ coherent.View= Class.create(coherent.Responder, {
   animateClassName: function(animationOptions, reverse)
   {
     coherent.Animator.animateClassName(this.node, animationOptions, reverse);
+  },
+
+  /** Method called by the Animator when all the animations have completed. This
+      gives the view a chance to measure itself and child nodes, if necessary.
+   */
+  animationDidComplete: function()
+  {
   },
   
   /** Send the action message to the target.
@@ -783,6 +807,18 @@ coherent.View= Class.create(coherent.Responder, {
       go.delay(0);
   },
 
+  active: function()
+  {
+    return Element.hasClassName(this.node, coherent.Style.kActiveClass);
+  },
+  
+  setActive: function(active)
+  {
+    this.__animatePropertyChange('active', {
+        reverse: !active
+      });
+  },
+  
   visible: function()
   {
     return 'none'!==Element.getStyle(this.node, 'display');

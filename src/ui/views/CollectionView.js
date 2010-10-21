@@ -98,17 +98,16 @@ coherent.CollectionView= Class.create(coherent.View, {
     this.__selectionIndexes= [];
   
     var node= this.node;
-    var container;
+    var container= this.container();
     var templateNode;
     
-    if ('TABLE'===node.tagName)
+    if ('TABLE'===container.tagName)
     {
       container= this.setContainer(node.tBodies[0]);
       templateNode= container.rows.length && container.rows[0];
     }
     else
     {
-      container= this.container();
       templateNode= container.children[0];
     }
 
@@ -252,6 +251,9 @@ coherent.CollectionView= Class.create(coherent.View, {
       //  trim content array
       items.length= newContentLength;
     }
+
+    if (!this.__selectionIndexes.length && !this.allowsEmptySelection && newContent.length)
+      this.setSelectionIndexes([0]);
   },
 
   /** Set the content for the collection view. This computes the minimal number
@@ -369,6 +371,9 @@ coherent.CollectionView= Class.create(coherent.View, {
       newIndex++;
     }
     
+    if (!newSelectionIndexes.length && !this.allowsEmptySelection && newContent.length)
+      newSelectionIndexes= [0];
+      
     //  All done updating the dom
     this.willChangeValueForKey('selectionIndexes');
     this.__content= newContent;

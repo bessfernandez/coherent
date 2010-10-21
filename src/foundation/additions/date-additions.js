@@ -32,7 +32,7 @@ if (isNaN(Date.parse('2010-03-08T17:08:39Z')))
   Date._parse= Date.parse;
   Date.parse= function(string)
   {
-    var m= /^(\d{4})(-(\d{2})(-(\d{2})(T(\d{2}):(\d{2})(:(\d{2})(\.(\d+))?)?(Z|((\+|-)(\d{2}):(\d{2}))))?)?)?$/.exec(string);
+    var m= /^(\d{4})(-(\d{2})(-(\d{2})(T(\d{2}):(\d{2})(:(\d{2})(\.(\d+))?)?(Z|((\+|-)(\d{2}):?(\d{2}))))?)?)?$/.exec(string);
     if (null===m)
       return Date._parse.apply(this, arguments);
     var d= new Date();

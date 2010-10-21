@@ -569,8 +569,8 @@ Object.extend(Element, {
       box.top-= docElement.clientTop;
       box.bottom-= docElement.clientTop;
       
-      box.width= box.right-box.left+1;
-      box.height= box.bottom-box.top+1;
+      box.width= box.right-box.left;
+      box.height= box.bottom-box.top;
       return box;
     }
     

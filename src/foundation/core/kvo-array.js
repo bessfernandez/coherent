@@ -366,7 +366,9 @@ Class.extend(Array, {
         location= location.location;
       }
     }
-    
+    else if (location+length > this.length)
+      length= this.length-location;
+      
     var end= location+length;
     var indexes= [];
     for (var index=location; index<end; ++index)

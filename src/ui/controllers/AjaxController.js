@@ -33,6 +33,8 @@
  */
 coherent.AjaxController= Class.create(coherent.ObjectController, {
 
+  exposedBindings: ['url'],
+  
   flushContentBeforeQuery: false,
   fetchesInitially: true,
   
