@@ -821,7 +821,7 @@ coherent.View= Class.create(coherent.Responder, {
   
   visible: function()
   {
-    return 'none'!==Element.getStyle(this.node, 'display');
+    return 0!==this.node.offsetWidth || 0!==this.node.offsetHeight;
   },
   
   setVisible: function(visible)

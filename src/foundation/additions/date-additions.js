@@ -48,8 +48,8 @@ if (isNaN(Date.parse('2010-03-08T17:08:39Z')))
       var h = m[16] >> 0;
       var i = m[17] >> 0;
       var s = m[15] === "+";
-      d.setUTCHours((m[7] >> 0) + s ? -h : h);
-      d.setUTCMinutes((m[8] >> 0) + s ? -i : i);
+      d.setUTCHours((m[7] >> 0) + (s ? -h : h));
+      d.setUTCMinutes((m[8] >> 0) + (s ? -i : i));
     }
     return d.valueOf();
   }
