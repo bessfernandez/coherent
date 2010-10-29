@@ -50,6 +50,9 @@ if (!coherent.Support.Opacity)
       var extra;
     
       if ('string'===typeof(propsToGet))
+      {
+        if (!currentStyle)
+          return null;
         switch (propsToGet)
         {
           case 'opacity':
@@ -73,7 +76,11 @@ if (!coherent.Support.Opacity)
           default:
             return currentStyle[propsToGet];
         }
-    
+      }
+      
+      if (!currentStyle)
+        return styles;
+        
       propsToGet= propsToGet||Element.PROPERTIES;
 
       var p;
