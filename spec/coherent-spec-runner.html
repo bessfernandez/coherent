@@ -1,0 +1,41 @@
+<!DOCTYPE HTML html>
+<html>
+<head>
+  <title>Jasmine-Dom Test Runner</title>
+  <link href="jasmine-1.0.1/jasmine.css" rel="stylesheet"/>
+
+  <script type="text/javascript" src="jasmine-1.0.1/jasmine.js"></script>  
+  <script type="text/javascript" src="jasmine-1.0.1/jasmine-html.js"></script>
+
+  <script type="text/javascript" src="jasmine-dom/jasmine-dom-fixtures.js"></script>
+  <script type="text/javascript" src="jasmine-dom/jasmine-dom-matchers.js"></script>
+
+  <script src="../build/debug/distil-sync.js" type="text/javascript" charset="utf-8"></script>
+  <script src="../build/debug/coherent-debug.js" type="text/javascript" charset="utf-8"></script>
+
+  <script src="oop-spec.js" type="text/javascript" charset="utf-8"></script>
+  <script src="views/basic-view-spec.js" type="text/javascript" charset="utf-8"></script>
+  
+  <script type="text/javascript">
+    (function() {
+      var jasmineEnv = jasmine.getEnv();
+      jasmineEnv.updateInterval = 1000;
+
+      var trivialReporter = new jasmine.TrivialReporter();
+
+      jasmineEnv.addReporter(trivialReporter);
+
+      jasmineEnv.specFilter = function(spec) {
+        return trivialReporter.specFilter(spec);
+      };
+
+      window.onload = function() {
+        jasmineEnv.execute();
+      };
+    })();
+  </script>
+</head>
+
+<body>
+</body>
+</html>
