@@ -8,6 +8,9 @@
  */
 (function(){
 
+  function noop()
+  {}
+
   /** Retrieve an XMLHttpRequest object for each browser.
       @name getTransport
       @function
@@ -68,8 +71,15 @@
   {
     var timeout;
     
-    function noop()
-    {}
+    function timeoutExpired()
+    {
+      cancel();
+      var err= new Error('XHR request timed out');
+      err.url= url;
+      err.method= method;
+      deferred.failure(err);
+      deferred= null;
+    }
     
     function cancel()
     {
@@ -221,6 +231,7 @@
       
       xhr.onreadystatechange= noop;
       xhr= null;
+      deferred= null;
       XHR.numberOfActiveRequests--;
     }
     
@@ -266,7 +277,7 @@
       xhr.overrideMimeType(options.responseContentType);
 
     if (async)
-      timeout= cancel.delay(options.timeout||30000);
+      timeout= timeoutExpired.delay(options.timeout||30000);
       
     if (options.user)
       xhr.open(method, url, async, options.user, options.password||"");
