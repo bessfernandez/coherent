@@ -78,7 +78,6 @@
       err.url= url;
       err.method= method;
       deferred.failure(err);
-      deferred= null;
     }
     
     function cancel()
@@ -231,7 +230,6 @@
       
       xhr.onreadystatechange= noop;
       xhr= null;
-      deferred= null;
       XHR.numberOfActiveRequests--;
     }
     
