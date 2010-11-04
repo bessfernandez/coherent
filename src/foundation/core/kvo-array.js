@@ -534,7 +534,9 @@ Class.extend(Array, {
 });
 
 //  Add all KVO methods to Arrays
-coherent.KVO.adapt(Array.prototype);
+Object.extend(Array.prototype, coherent.KVO.prototype);
+//  Don't add the toJSON implementation from KVO, because it's unnecessary for arrays
+delete Array.prototype.toJSON;
 
 /** Find the index at which an object appears. Returns -1 if the object does
     not appear in the array.

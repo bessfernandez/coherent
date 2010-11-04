@@ -722,6 +722,31 @@ coherent.KVO= Class.create({
         o.callback.call(o.observer, subkeyChange, observerKeyPath, o.context);
       }
     }
+  },
+  
+  /** Special handling for JSON stringify, because standard JSON implementation
+      will ignore prototype properties which is problematic because getters and
+      setters are installed on the prototype rather than the instance.
+   **/
+  toJSON: function()
+  {
+    var value;
+    var ignore= coherent.KVO.keysToIgnore;
+    var result= {};
+    
+    for (var p in this)
+    {
+      if (p in ignore)
+        continue;
+        
+      value= this[p];
+      if ('function'===typeof(value))
+        continue;
+    
+      result[p]= value;
+    }
+    
+    return result;
   }
 });
 
@@ -772,6 +797,9 @@ coherent.KVO.adapt= function(obj)
   if (!obj)
     throw new InvalidArgumentError( "Can't adapt a null object" );
 
+  if (p instanceof Array)
+    return obj;
+    
   var p;
 
   for (p in coherent.KVO.prototype)
