@@ -797,7 +797,7 @@ coherent.KVO.adapt= function(obj)
   if (!obj)
     throw new InvalidArgumentError( "Can't adapt a null object" );
 
-  if (p instanceof Array)
+  if (obj instanceof Array)
     return obj;
     
   var p;
