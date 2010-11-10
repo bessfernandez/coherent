@@ -49,12 +49,15 @@ coherent.Application= Class.create(coherent.Responder, {
     var views= context.__views;
     var numberOfViews= views.length;
     var view;
-    
+
     for (var i=0; i<numberOfViews; ++i)
     {
       view= views[i];
       if (!view.node.parentNode || view.node.parentNode===coherent.View.__holdingArea)
+      {
         body.appendChild(view.node);
+        view.setVisible(true);
+      }
     }
   }
   

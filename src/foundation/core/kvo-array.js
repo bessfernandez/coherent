@@ -2,6 +2,11 @@
 /*jsl:import ../additions/array-additions.js*/
 /*jsl:import array-interface.js*/
 
+//  Add all KVO methods to Arrays
+Class.extend(Array, coherent.KVO.prototype);
+//  Don't add the toJSON implementation from KVO, because it's unnecessary for arrays
+delete Array.prototype.toJSON;
+
 /** Add some methods to the Array prototype to support Key Value functionality.
     @implements coherent.Array
  */
@@ -532,11 +537,6 @@ Class.extend(Array, {
   }
   
 });
-
-//  Add all KVO methods to Arrays
-Object.extend(Array.prototype, coherent.KVO.prototype);
-//  Don't add the toJSON implementation from KVO, because it's unnecessary for arrays
-delete Array.prototype.toJSON;
 
 /** Find the index at which an object appears. Returns -1 if the object does
     not appear in the array.
