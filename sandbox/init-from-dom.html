@@ -65,6 +65,15 @@
       
       <input type="file" accept="image/png,image/jpg,image/gif" name="foo">
     </form>
+
+    <div class="collection">
+      <div>
+        <em>Em1</em><b>Bold1</b>
+      </div>
+      <div>
+        <b>Bold2</b><em>Em2</em>
+      </div>
+    </div>
     
     <code><pre id="results"></pre></code>
   </body>
@@ -83,6 +92,19 @@
     
         'options': coherent.ArrayController({
             contentBinding: 'model.select_options'
+          }),
+        
+        'collection': coherent.ArrayController({
+            contentBinding: 'model.collection_values'
+          }),
+          
+        'item-view': VIEW_TEMPLATE({
+            'em': coherent.View({
+                    textBinding: 'representedObject.zebra'
+                }),
+            'b': coherent.View({
+                    textBinding: 'representedObject.tiger'
+                })
           }),
           
         'view': VIEW(document.body, {
@@ -140,6 +162,11 @@
             '.html-view': coherent.View({
                     htmlBinding: 'model.view_html',
                     toolTipBinding: 'model.view_toolTip'
+                }),
+              
+             '.collection': coherent.CollectionView({
+                    contentBinding: 'collection.arrangedObjects',
+                    viewTemplate: REF('item-view')
                 })
           }),
           

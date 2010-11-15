@@ -121,6 +121,90 @@ coherent.CollectionView= Class.create(coherent.View, {
         container.removeChild(container.firstChild);
   },
 
+  /** Find the array controller associated with this CollectionView. This is
+      exactly the same code as from PopupList; it would be nice to share it.
+   */
+  __findContentArrayController: function()
+  {
+    var binding= this.bindings.content;
+    var parts= binding.keypath.split('.');
+    var object= binding.object;
+    var controller= object;
+    
+    var i, len= parts.length;
+    
+    for (i=0; i<len; ++i)
+    {
+      controller= controller.valueForKey(parts[i]);
+      if (controller.newObject)
+      {
+        return this.__contentArrayController= controller;
+      }
+    }
+
+    return null;
+  },
+
+  initialValueForContentBinding: function()
+  {
+    var controller= this.__findContentArrayController();
+    
+    if (!controller)
+      return content;
+    
+    var bindings= this.bindings;
+    
+    var content= [];
+    var items= [];
+    
+    var node= this.node;
+    var children= node.children;
+    var len= children.length;
+    var i;
+    var c;
+    var obj;
+    var item;
+    
+    for (i=0; i<len; ++i)
+    {
+      c= children[i];
+      obj= controller.newObject();
+      item= this.newItemForRepresentedObject(obj, c);
+      content.push(obj);
+      items.push(item);
+    }
+
+    this.__content= content;
+    this.__items= items;
+
+    controller.addObjects(content);
+    
+    //  deliberately return null, because adding the individual object has
+    //  already updated the array controller associated with this view.
+    return null;
+  },
+
+  /** Get the initial value for bindings. Handle content binding by creating
+      a new object for each node.
+      
+      @type Any
+      @param {String} name - The name of the binding
+   */
+  initialValueForBinding: function(name)
+  {
+    switch (name)
+    {
+      case 'content':
+        return this.initialValueForContentBinding();
+      // case 'contentValues':
+      // case 'contentObjects':
+      //   //  return null to prevent updateBindings from actually setting the value
+      //   return null;
+      default:
+        return this.valueForKey(name);
+    }
+  },
+
   /** Should the view accept being the first responder?
       @type Boolean
    */
@@ -168,15 +252,14 @@ coherent.CollectionView= Class.create(coherent.View, {
       
       @type coherent.CollectionViewItem
    */
-  newItemForRepresentedObject: function(representedObject)
+  newItemForRepresentedObject: function(representedObject, node)
   {
     var oldDataModel= coherent.dataModel;
     var item= new coherent.KVO.Proxy(this.__context);
     
     coherent.dataModel= item;
     
-    var node;
-    if (this.templateNode)
+    if (!node && this.templateNode)
       node= Element.clone(this.templateNode);
 
     item.setValueForKey(representedObject, 'representedObject');

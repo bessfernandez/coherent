@@ -405,6 +405,9 @@ coherent.Page= Class.create(coherent.Responder, {
   
   _ontouchstart: function(event)
   {
+    if (this._touchstartView)
+      return;
+      
     var view= this.targetViewForEvent(event);
     if (view)
     {
@@ -479,7 +482,6 @@ coherent.Page= Class.create(coherent.Responder, {
       return;
       
     this._touchstartView.ontouchend(event);
-    this._gesturing= false;
 
     if (this._touchstartMouseDownDelay)
     {
@@ -504,6 +506,9 @@ coherent.Page= Class.create(coherent.Responder, {
       if (!this._touchmovedX && !this._touchmovedY)
         this._touchstartView.onclick(event);
     }
+    
+    this._gesturing= false;
+    this._touchstartView= null;
   },
   
   _ontouchcancel: function(event)
@@ -523,6 +528,7 @@ coherent.Page= Class.create(coherent.Responder, {
       this._touchstartView.onmouseup(event);
     }
     this._gesturing= false;
+    this._touchstartView= null;
   },
   
   _ongesturestart: function(event)
