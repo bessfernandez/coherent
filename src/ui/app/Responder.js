@@ -237,6 +237,27 @@ coherent.Responder= Class.create(coherent.Bindable, {
       target.ontouchend(event);
   },
   
+  ongesturestart: function(event)
+  {
+    var target= this.nextResponder();
+    if (target)
+      target.ongesturestart(event);
+  },
+  
+  ongesturechange: function(event)
+  {
+    var target= this.nextResponder();
+    if (target)
+      target.ongesturechange(event);
+  },
+  
+  ongestureend: function(event)
+  {
+    var target= this.nextResponder();
+    if (target)
+      target.ongestureend(event);
+  },
+  
   onswipe: function(event)
   {
     var target= this.nextResponder();

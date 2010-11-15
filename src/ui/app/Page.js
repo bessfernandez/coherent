@@ -13,6 +13,7 @@ coherent.Page= Class.create(coherent.Responder, {
     this.firstResponder= null;
     this.__mouseEventListeners=[];
     this.__hoverTrackingIds={};
+    this.__pageLocks= 0;
   },
   
   targetViewForEvent: function(event)
@@ -392,6 +393,16 @@ coherent.Page= Class.create(coherent.Responder, {
       view.onreset(event);
   },
   
+  lockPage: function()
+  {
+    this.__pageLocks++;
+  },
+  
+  unlockPage: function()
+  {
+    this.__pageLocks--;
+  },
+  
   _ontouchstart: function(event)
   {
     var view= this.targetViewForEvent(event);
@@ -416,6 +427,9 @@ coherent.Page= Class.create(coherent.Responder, {
   
   _ontouchmove: function(event)
   {
+    if (1!=event.touches.length || this._gesturing)
+      return;
+      
     var x = event.targetTouches[0].clientX;
     var y = event.targetTouches[0].clientY;
     var xJustMoved = false;
@@ -427,72 +441,115 @@ coherent.Page= Class.create(coherent.Responder, {
     if (!this._touchmovedY && Math.abs(this._touchstartY-y) > 5)
       yJustMoved= this._touchmovedY = true;
     
-    if (this._touchstartView) {
+    if (this._touchstartView)
+    {
       this._touchstartView.ontouchmove(event);
       
-      if (this._touchstartMouseDownDelay) {
+      if (this._touchstartMouseDownDelay)
+      {
         window.clearTimeout(this._touchstartMouseDownDelay);
         delete this._touchstartMouseDownDelay;
       }
 
-      if (xJustMoved || yJustMoved) { 
-        if (this._touchsentMD) {
+      if (xJustMoved || yJustMoved)
+      { 
+        if (this._touchsentMD)
+        {
           this._touchstartView.onmouseup(event);
           this._touchsentMD = false;
         }
         
-        if (!this._touchmovedY && xJustMoved) {
+        if (!this._touchmovedY && xJustMoved)
+        {
           this._touchstartView.onswipe(event);
+          this._gesturing= true;
         }
       } 
+    }
+    else if (this.__pageLocks)
+    {
+      Event.preventDefault(event);
     }
     
   },
   
   _ontouchend: function(event)
   {
-    if (this._touchstartView)
+    if (!this._touchstartView)
+      return;
+      
+    this._touchstartView.ontouchend(event);
+    this._gesturing= false;
+
+    if (this._touchstartMouseDownDelay)
     {
-      this._touchstartView.ontouchend(event);
+      var startView = this._touchstartView;
+      
+      window.clearTimeout(this._touchstartMouseDownDelay);          
+      delete this._touchstartMouseDownDelay;
 
-      if (this._touchstartMouseDownDelay) {
-        var startView = this._touchstartView;
-        
-        window.clearTimeout(this._touchstartMouseDownDelay);          
-        delete this._touchstartMouseDownDelay;
-
-        this._touchstartView.onmousedown(event);
-        this._touchsentMD = true;
-        
-        window.setTimeout(function(){
-          startView.onmouseup(event);
-          startView.onclick(event);
-        },0);
-      } else if (this._touchsentMD) {
-        this._touchstartView.onmouseup(event);
-        
-        if (!this._touchmovedX && !this._touchmovedY) {
-          this._touchstartView.onclick(event);
-      }
+      this._touchstartView.onmousedown(event);
+      this._touchsentMD = true;
+      
+      window.setTimeout(function()
+      {
+        startView.onmouseup(event);
+        startView.onclick(event);
+      } ,0);
     }
+    else if (this._touchsentMD)
+    {
+      this._touchstartView.onmouseup(event);
+      
+      if (!this._touchmovedX && !this._touchmovedY)
+        this._touchstartView.onclick(event);
     }
   },
   
   _ontouchcancel: function(event)
   {
-    if (this._touchstartView)
-    {
-      this._touchstartView.ontouchend(event);
+    if (!this._touchstartView)
+      return;
 
-      if (this._touchstartMouseDownDelay) {
-        window.clearTimeout(this._touchstartMouseDownDelay);
-        delete this._touchstartMouseDownDelay;
-      } else if (this._touchsentMD) {
+    this._touchstartView.ontouchend(event);
+
+    if (this._touchstartMouseDownDelay)
+    {
+      window.clearTimeout(this._touchstartMouseDownDelay);
+      delete this._touchstartMouseDownDelay;
+    }
+    else if (this._touchsentMD)
+    {
       this._touchstartView.onmouseup(event);
     }
-    }
+    this._gesturing= false;
   },
   
+  _ongesturestart: function(event)
+  {
+    if (!this._touchstartView)
+      return;
+    this._gesturing= true;
+    this._touchstartView.ongesturestart(event);
+  },
+
+  _ongesturechange: function(event)
+  {
+    if (!this._touchstartView)
+      return;
+    
+    this._touchstartView.ongesturechange(event);
+  },
+  
+  _ongestureend: function(event)
+  {
+    if (!this._touchstartView)
+      return;
+
+    this._touchstartView.ongestureend(event);
+    this._gesturing= false;
+  },
+
   _onunload: function()
   {
     var nodes= document.getElementsByTagName("*");
@@ -948,6 +1005,9 @@ coherent.Page= Class.create(coherent.Responder, {
       document.addEventListener('touchmove', wrapEventHandler("_ontouchmove"), true);
       document.addEventListener('touchend', wrapEventHandler("_ontouchend"), true);
       document.addEventListener('touchcancel', wrapEventHandler("_ontouchcancel"), true);
+      document.addEventListener('gesturestart', wrapEventHandler("_ongesturestart"), true);
+      document.addEventListener('gesturechange', wrapEventHandler("_ongesturechange"), true);
+      document.addEventListener('gestureend', wrapEventHandler("_ongestureend"), true);
     }
     
     if (coherent.Support.DragAndDrop)

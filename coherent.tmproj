@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>src/foundation/core/kvo.js</string>
+	<string>src/ui/app/Application.js</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -21,20 +21,6 @@
 	<integer>270</integer>
 	<key>metaData</key>
 	<dict>
-		<key>coherent.jsproj</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>0</integer>
-				<key>line</key>
-				<integer>12</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>0</integer>
-		</dict>
 		<key>sandbox/slideshow.html</key>
 		<dict>
 			<key>caret</key>
@@ -64,108 +50,6 @@
 				<key>line</key>
 				<integer>102</integer>
 			</dict>
-		</dict>
-		<key>spec/coherent-spec-runner.html</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>23</integer>
-				<key>line</key>
-				<integer>16</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>0</integer>
-		</dict>
-		<key>spec/jasmine-dom/jasmine-dom-matchers.js</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>0</integer>
-				<key>line</key>
-				<integer>0</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>135</integer>
-		</dict>
-		<key>spec/kvo-json-spec.js</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>0</integer>
-				<key>line</key>
-				<integer>43</integer>
-			</dict>
-			<key>columnSelection</key>
-			<false/>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>12</integer>
-			<key>selectFrom</key>
-			<dict>
-				<key>column</key>
-				<integer>0</integer>
-				<key>line</key>
-				<integer>42</integer>
-			</dict>
-			<key>selectTo</key>
-			<dict>
-				<key>column</key>
-				<integer>0</integer>
-				<key>line</key>
-				<integer>43</integer>
-			</dict>
-		</dict>
-		<key>spec/oop-spec.js</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>0</integer>
-				<key>line</key>
-				<integer>0</integer>
-			</dict>
-			<key>columnSelection</key>
-			<false/>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>0</integer>
-			<key>selectFrom</key>
-			<dict>
-				<key>column</key>
-				<integer>0</integer>
-				<key>line</key>
-				<integer>0</integer>
-			</dict>
-			<key>selectTo</key>
-			<dict>
-				<key>column</key>
-				<integer>0</integer>
-				<key>line</key>
-				<integer>121</integer>
-			</dict>
-		</dict>
-		<key>spec/views/basic-view-spec.js</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>0</integer>
-				<key>line</key>
-				<integer>0</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>4</integer>
 		</dict>
 		<key>src/controls/PagingView.js</key>
 		<dict>
@@ -223,19 +107,33 @@
 			<key>firstVisibleLine</key>
 			<integer>26</integer>
 		</dict>
+		<key>src/foundation/core/Bindable.js</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>50</integer>
+				<key>line</key>
+				<integer>178</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>156</integer>
+		</dict>
 		<key>src/foundation/core/Binding.js</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>49</integer>
+				<integer>0</integer>
 				<key>line</key>
-				<integer>130</integer>
+				<integer>0</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>94</integer>
+			<integer>28</integer>
 		</dict>
 		<key>src/foundation/core/KeyPathTrie.js</key>
 		<dict>
@@ -265,20 +163,6 @@
 			<key>firstVisibleLine</key>
 			<integer>0</integer>
 		</dict>
-		<key>src/foundation/core/kvo-array.js</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>85</integer>
-				<key>line</key>
-				<integer>537</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>506</integer>
-		</dict>
 		<key>src/foundation/core/kvo.js</key>
 		<dict>
 			<key>caret</key>
@@ -291,7 +175,7 @@
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>783</integer>
+			<integer>6</integer>
 		</dict>
 		<key>src/foundation/core/local.js</key>
 		<dict>
@@ -337,37 +221,21 @@
 			<key>firstVisibleLine</key>
 			<integer>0</integer>
 		</dict>
-		<key>src/foundation/net/Deferred.js</key>
+		<key>src/legacy/ModeledXMLProxy.js</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>39</integer>
+				<integer>0</integer>
 				<key>line</key>
-				<integer>57</integer>
+				<integer>0</integer>
 			</dict>
-			<key>columnSelection</key>
-			<false/>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>35</integer>
-			<key>selectFrom</key>
-			<dict>
-				<key>column</key>
-				<integer>30</integer>
-				<key>line</key>
-				<integer>57</integer>
-			</dict>
-			<key>selectTo</key>
-			<dict>
-				<key>column</key>
-				<integer>39</integer>
-				<key>line</key>
-				<integer>57</integer>
-			</dict>
+			<integer>58</integer>
 		</dict>
-		<key>src/foundation/net/URL.js</key>
+		<key>src/ui/app/Application.js</key>
 		<dict>
 			<key>caret</key>
 			<dict>
@@ -379,21 +247,21 @@
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>43</integer>
+			<integer>0</integer>
 		</dict>
-		<key>src/foundation/net/XHR.js</key>
+		<key>src/ui/app/Page.js</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
 				<integer>0</integer>
 				<key>line</key>
-				<integer>232</integer>
+				<integer>0</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>201</integer>
+			<integer>464</integer>
 		</dict>
 		<key>src/ui/app/Responder.js</key>
 		<dict>
@@ -403,20 +271,6 @@
 				<integer>14</integer>
 				<key>line</key>
 				<integer>148</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>171</integer>
-		</dict>
-		<key>src/ui/controllers/ArrayController.js</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>0</integer>
-				<key>line</key>
-				<integer>0</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
@@ -466,20 +320,6 @@
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
 			<integer>0</integer>
-		</dict>
-		<key>src/ui/views/SegmentedControl.js</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>0</integer>
-				<key>line</key>
-				<integer>0</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>19</integer>
 		</dict>
 		<key>src/ui/views/ToggleButton.js</key>
 		<dict>
@@ -540,24 +380,11 @@
 	</dict>
 	<key>openDocuments</key>
 	<array>
-		<string>spec/views/basic-view-spec.js</string>
-		<string>src/ui/views/SegmentedControl.js</string>
-		<string>src/foundation/net/XHR.js</string>
-		<string>src/foundation/core/Binding.js</string>
-		<string>src/foundation/core/kvo.js</string>
-		<string>coherent.jsproj</string>
-		<string>spec/oop-spec.js</string>
-		<string>spec/kvo-json-spec.js</string>
-		<string>spec/coherent-spec-runner.html</string>
-		<string>spec/jasmine-dom/jasmine-dom-matchers.js</string>
-		<string>src/ui/controllers/ArrayController.js</string>
-		<string>src/foundation/core/kvo-array.js</string>
-		<string>src/foundation/net/Deferred.js</string>
-		<string>src/foundation/net/URL.js</string>
+		<string>src/ui/app/Application.js</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
 	<false/>
 	<key>windowFrame</key>
-	<string>{{235, 0}, {1205, 878}}</string>
+	<string>{{718, 57}, {1196, 1121}}</string>
 </dict>
 </plist>

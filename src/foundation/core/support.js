@@ -1,4 +1,5 @@
 /*jsl:import ../../foundation.js*/
+/*jsl:declare WebKitCSSMatrix*/
 
 (function(){
 
@@ -54,9 +55,16 @@
     StandardEventModel: !!window.addEventListener,
     
     /** Does the browser support the hash change event? Currently IE8 in
-      IE8 standards mode and FF 3.6. */
+        IE8 standards mode and FF 3.6. */
     HashChangeEvent: ("onhashchange" in window) && document.querySelector,
 
+    /** Does the browser support the orientation change event? Likely a mobile
+        browser. */
+    OrientationChangeEvent: ("onorientationchange" in window),
+    
+    /** Does the browser support the CSS matrix? */
+    CssMatrix: ('WebKitCSSMatrix' in window && 'm11' in new WebKitCSSMatrix()),
+    
     /** Does the browser correctly handle element.cloneNode(true)? */
     CloneNode: true,
     
