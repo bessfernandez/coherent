@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>src/ui/app/Application.js</string>
+	<string>demos/multi-nib/multi-nib.jsproj</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -21,6 +21,36 @@
 	<integer>270</integer>
 	<key>metaData</key>
 	<dict>
+		<key>demos/multi-nib/multi-nib.jsproj</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>7</integer>
+			</dict>
+			<key>columnSelection</key>
+			<false/>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>0</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>25</integer>
+			</dict>
+		</dict>
 		<key>sandbox/slideshow.html</key>
 		<dict>
 			<key>caret</key>
@@ -65,6 +95,20 @@
 			<key>firstVisibleLine</key>
 			<integer>22</integer>
 		</dict>
+		<key>src/controls/Toolbar.js</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>13</integer>
+				<key>line</key>
+				<integer>20</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
+		</dict>
 		<key>src/data/AttributeDescription.js</key>
 		<dict>
 			<key>caret</key>
@@ -106,34 +150,6 @@
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
 			<integer>26</integer>
-		</dict>
-		<key>src/foundation/core/Bindable.js</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>50</integer>
-				<key>line</key>
-				<integer>178</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>156</integer>
-		</dict>
-		<key>src/foundation/core/Binding.js</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>0</integer>
-				<key>line</key>
-				<integer>0</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>28</integer>
 		</dict>
 		<key>src/foundation/core/KeyPathTrie.js</key>
 		<dict>
@@ -234,48 +250,6 @@
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
 			<integer>58</integer>
-		</dict>
-		<key>src/ui/app/Application.js</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>0</integer>
-				<key>line</key>
-				<integer>0</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>0</integer>
-		</dict>
-		<key>src/ui/app/Page.js</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>0</integer>
-				<key>line</key>
-				<integer>0</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>464</integer>
-		</dict>
-		<key>src/ui/app/Responder.js</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>14</integer>
-				<key>line</key>
-				<integer>148</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>0</integer>
 		</dict>
 		<key>src/ui/formatters/NumberFormatter.js</key>
 		<dict>
@@ -380,11 +354,12 @@
 	</dict>
 	<key>openDocuments</key>
 	<array>
-		<string>src/ui/app/Application.js</string>
+		<string>src/controls/Toolbar.js</string>
+		<string>demos/multi-nib/multi-nib.jsproj</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
 	<false/>
 	<key>windowFrame</key>
-	<string>{{718, 57}, {1196, 1121}}</string>
+	<string>{{181, 0}, {1196, 878}}</string>
 </dict>
 </plist>

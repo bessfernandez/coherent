@@ -13,11 +13,40 @@ var HAS_3D= coherent.Support.CssMatrix,
 
 var scrollbarID= 0;
 
+
+var ScrollItem= Class._create({
+
+  constructor: function(node, params)
+  {
+    Object.extend(this, params);
+    this.node= node;
+    this.node.firstChild.src= this.src;
+    this.x= this.x || 0;
+    this.y= this.y || 0;
+  },
+
+  setTransitionTime: function(duration)
+  {
+    duration= duration ? (duration + "ms") : '0';
+    this.node.style.webkitTransitionDuration= duration;
+  },
+  
+  setOffsetPosition: function(x, y)
+  {
+    this.node.style.webkitTransform = TRANSLATE_OPEN + (this.x + x) + "px," + (this.y + y) + "px" + TRANSLATE_CLOSE;
+  }
+  
+});
+
+
+
+
 coherent.ScrollView= Class.create(coherent.View, {
 
   pagingEnabled: false,
   bounces: HAS_3D,
   bouncesWhenContentFits: false,
+  directionalLockEnabled: false,
   hasMomentum: HAS_3D,
   updateOnDOMChanges: true,
   scrollsToTopOnDOMChanges: false,
@@ -30,11 +59,13 @@ coherent.ScrollView= Class.create(coherent.View, {
   
   constructor: function(node, parameters)
   {
+    this.x= 0;
+    this.y= 0;
+    this.__items= [];
+
     this.base(node, parameters);
     this.wrapper = this.node.parentNode;
 
-    this.x= 0;
-    this.y= 0;
     
     //  Prevent bouncing when scrolling the page
     coherent.page.lockPage();
@@ -47,7 +78,7 @@ coherent.ScrollView= Class.create(coherent.View, {
 
     this.indicatorStyle= this.indicatorStyle || coherent.ScrollView.IndicatorStyleDefault;
 
-    this.wrapper.style.overflow = HAS_TOUCH ? 'hidden' : 'auto';
+    this.wrapper.style.overflow = (HAS_TOUCH||this.desktopCompatibility) ? 'hidden' : 'auto';
   
     this.refresh();
 
@@ -77,12 +108,15 @@ coherent.ScrollView= Class.create(coherent.View, {
         resetY = this.y,
         snap;
     
-    this.scrollWidth = this.wrapper.clientWidth;
-    this.scrollHeight = this.wrapper.clientHeight;
-    this.scrollerWidth = this.node.offsetWidth;
-    this.scrollerHeight = this.node.offsetHeight;
-    this.maxScrollX = this.scrollWidth - this.scrollerWidth;
-    this.maxScrollY = this.scrollHeight - this.scrollerHeight;
+    if (!this.wrapper || !this.node)
+      return;
+      
+    this.viewportWidth = this.wrapper.clientWidth;
+    this.viewportHeight = this.wrapper.clientHeight;
+    this.contentWidth = this.node.offsetWidth;
+    this.contentHeight = this.node.offsetHeight;
+    this.maxScrollX = this.viewportWidth - this.contentWidth;
+    this.maxScrollY = this.viewportHeight - this.contentHeight;
     this.directionX = 0;
     this.directionY = 0;
 
@@ -105,8 +139,8 @@ coherent.ScrollView= Class.create(coherent.View, {
     // Snap
     if (this.pagingEnabled)
     {
-      this.maxPageX = -Math.floor(this.maxScrollX/this.scrollWidth);
-      this.maxPageY = -Math.floor(this.maxScrollY/this.scrollHeight);
+      this.maxPageX = -Math.floor(this.maxScrollX/this.viewportWidth);
+      this.maxPageY = -Math.floor(this.maxScrollY/this.viewportHeight);
 
       snap = this.calculatePagingSnap(resetX, resetY);
       resetX = snap.x;
@@ -119,14 +153,14 @@ coherent.ScrollView= Class.create(coherent.View, {
       this.setPosition(resetX, resetY, true);
     }
     
-    this.scrollX = this.scrollerWidth > this.scrollWidth;
-    this.scrollY = !this.bouncesWhenContentFits && !this.scrollX || this.scrollerHeight > this.scrollHeight;
+    this.scrollX = this.contentWidth > this.viewportWidth;
+    this.scrollY = !this.bouncesWhenContentFits && !this.scrollX || this.contentHeight > this.viewportHeight;
 
     // Update horizontal scrollbar
     if (this.hScrollbar && this.scrollX)
     {
       this.scrollBarX = this.scrollBarX || new Scrollbar('horizontal', this.wrapper, this.fadeScrollbar, this.shrinkScrollbar, this.indicatorStyle);
-      this.scrollBarX.init(this.scrollWidth, this.scrollerWidth);
+      this.scrollBarX.init(this.viewportWidth, this.contentWidth);
     }
     else if (this.scrollBarX)
     {
@@ -134,10 +168,10 @@ coherent.ScrollView= Class.create(coherent.View, {
     }
 
     // Update vertical scrollbar
-    if (this.vScrollbar && this.scrollY && this.scrollerHeight > this.scrollHeight)
+    if (this.vScrollbar && this.scrollY && this.contentHeight > this.viewportHeight)
     {
       this.scrollBarY = this.scrollBarY || new Scrollbar('vertical', this.wrapper, this.fadeScrollbar, this.shrinkScrollbar, this.indicatorStyle);
-      this.scrollBarY.init(this.scrollHeight, this.scrollerHeight);
+      this.scrollBarY.init(this.viewportHeight, this.contentHeight);
     }
     else if (this.scrollBarY)
     {
@@ -164,24 +198,41 @@ coherent.ScrollView= Class.create(coherent.View, {
         
   setTransitionTime: function(time)
   {
-    time= time ? (time+'ms') : '0';
+    var scrollBarTime= time ? (time+'ms') : '0';
+    var wrapperTime= HAS_3D && this.fadeScrollbar ? (SCROLLBAR_FADE_DURATION+'ms') : '0';
     
-    this.node.style.webkitTransitionDuration = time;
-    
-    var scrollBarTime= HAS_3D && this.fadeScrollbar ? (SCROLLBAR_FADE_DURATION+'ms') : '0';
+  	this.node.style.webkitTransitionDuration = scrollBarTime;
     
     if (this.scrollBarX)
     {
-      this.scrollBarX.bar.style.webkitTransitionDuration = time;
-      this.scrollBarX.wrapper.style.webkitTransitionDuration = scrollBarTime;
+      this.scrollBarX.bar.style.webkitTransitionDuration = scrollBarTime;
+      this.scrollBarX.wrapper.style.webkitTransitionDuration = wrapperTime;
     }
     if (this.scrollBarY)
     {
-      this.scrollBarY.bar.style.webkitTransitionDuration = time;
-      this.scrollBarY.wrapper.style.webkitTransitionDuration = scrollBarTime;
+      this.scrollBarY.bar.style.webkitTransitionDuration = scrollBarTime;
+      this.scrollBarY.wrapper.style.webkitTransitionDuration = wrapperTime;
     }
   },
                 
+  onmousedown: function(e)
+  {
+    if (this.desktopCompatibility && !HAS_TOUCH)
+      this.ontouchstart(e);
+  },
+  
+  onmousedrag: function(e)
+  {
+    if (this.desktopCompatibility && !HAS_TOUCH)
+      this.ontouchmove(e);
+  },
+  
+  onmouseup: function(e)
+  {
+    if (this.desktopCompatibility && !HAS_TOUCH)
+      this.ontouchend(e);
+  },
+  
   ontouchstart: function(e)
   {
     var matrix;
@@ -223,7 +274,7 @@ coherent.ScrollView= Class.create(coherent.View, {
     this.directionX = 0;
     this.directionY = 0;
   },
-        
+
   ontouchmove: function(e)
   {
     if (!this.dragging)
@@ -252,22 +303,28 @@ coherent.ScrollView= Class.create(coherent.View, {
     // 5 pixels threshold
     if (this.distX + this.distY > 5)
     {
-      // Lock scroll direction
-      if (this.distX-3 > this.distY)
-      {
-        newY = this.y;
-        topDelta = 0;
-      }
-      else if (this.distY-3 > this.distX)
-      {
-        newX = this.x;
-        leftDelta = 0;
-      }
+      if (!this.moved)
+        this.callDelegate('scrollViewWillBeginDragging');
 
+      // Lock scroll direction
+      if (this.directionalLockEnabled)
+      {
+        if (this.distX-3 > this.distY)
+        {
+          newY = this.y;
+          topDelta = 0;
+        }
+        else if (this.distY-3 > this.distX)
+        {
+          newX = this.x;
+          leftDelta = 0;
+        }
+      }
       this.setPosition(newX, newY);
       this.moved = true;
       this.directionX = leftDelta > 0 ? -1 : 1;
       this.directionY = topDelta > 0 ? -1 : 1;
+      this.callDelegate('scrollViewDidScroll');
     }
     else
     {
@@ -328,13 +385,13 @@ coherent.ScrollView= Class.create(coherent.View, {
     {
       if (this.scrollX)
         momentumX= this.calculateMomentum(this.x - this.scrollStartX, time,
-                                          this.bounces ? -this.x + this.scrollWidth/5 : -this.x,
-                                          this.bounces ? this.x + this.scrollerWidth - this.scrollWidth + this.scrollWidth/5 : this.x + this.scrollerWidth - this.scrollWidth);
+                                          this.bounces ? -this.x + this.viewportWidth/5 : -this.x,
+                                          this.bounces ? this.x + this.contentWidth - this.viewportWidth + this.viewportWidth/5 : this.x + this.contentWidth - this.viewportWidth);
 
       if (this.scrollY)
         momentumY= this.calculateMomentum(this.y - this.scrollStartY, time,
-                                          this.bounces ? -this.y + this.scrollHeight/5 : -this.y,
-                                          this.bounces ? (this.maxScrollY < 0 ? this.y + this.scrollerHeight - this.scrollHeight : 0) + this.scrollHeight/5 : this.y + this.scrollerHeight - this.scrollHeight);
+                                          this.bounces ? -this.y + this.viewportHeight/5 : -this.y,
+                                          this.bounces ? (this.maxScrollY < 0 ? this.y + this.contentHeight - this.viewportHeight : 0) + this.viewportHeight/5 : this.y + this.contentHeight - this.viewportHeight);
 
       // The minimum animation length must be 1ms
       newDuration = Math.max(Math.max(momentumX.time, momentumY.time), 1);
@@ -350,6 +407,9 @@ coherent.ScrollView= Class.create(coherent.View, {
       newDuration = Math.max(snap.time, newDuration);
     }
 
+    //  Call the delegate method scrollViewDidEndDragging with a flag indicating
+    //  whether the scroll will decelerate
+    this.callDelegate('scrollViewDidEndDragging', [newDuration>0]);
     this.scrollTo(newPositionX, newPositionY, newDuration);
   },
 
@@ -397,14 +457,14 @@ coherent.ScrollView= Class.create(coherent.View, {
     var  time;
 
     if (this.directionX > 0)
-      x = Math.floor(x/this.scrollWidth);
+      x = Math.floor(x/this.viewportWidth);
     else if (this.directionX < 0)
-      x = Math.ceil(x/this.scrollWidth);
+      x = Math.ceil(x/this.viewportWidth);
     else
-      x = Math.round(x/this.scrollWidth);
+      x = Math.round(x/this.viewportWidth);
 
     this.pageX = -x;
-    x = x * this.scrollWidth;
+    x = x * this.viewportWidth;
 
     if (x > 0)
       x = this.pageX = 0;
@@ -415,14 +475,14 @@ coherent.ScrollView= Class.create(coherent.View, {
     }
 
     if (this.directionY > 0)
-      y = Math.floor(y/this.scrollHeight);
+      y = Math.floor(y/this.viewportHeight);
     else if (this.directionY < 0)
-      y = Math.ceil(y/this.scrollHeight);
+      y = Math.ceil(y/this.viewportHeight);
     else
-      y = Math.round(y/this.scrollHeight);
+      y = Math.round(y/this.viewportHeight);
 
     this.pageY = -y;
-    y = y * this.scrollHeight;
+    y = y * this.viewportHeight;
 
     if (y > 0)
       y = this.pageY = 0;
@@ -433,8 +493,8 @@ coherent.ScrollView= Class.create(coherent.View, {
     }
 
     // Snap with constant speed (proportional duration)
-    time = Math.round(Math.max(Math.abs(this.x - x) / this.scrollWidth * 500,
-                               Math.abs(this.y - y) / this.scrollHeight * 500));
+    time = Math.round(Math.max(Math.abs(this.x - x) / this.viewportWidth * 500,
+                               Math.abs(this.y - y) / this.viewportHeight * 500));
 
     return { x: x, y: y, time: time };
   },
@@ -464,8 +524,8 @@ coherent.ScrollView= Class.create(coherent.View, {
 
     if (!this.pagingEnabled)
     {
-      this.pageX = -Math.round(this.x / this.scrollWidth);
-      this.pageY = -Math.round(this.y / this.scrollHeight);
+      this.pageX = -Math.round(this.x / this.viewportWidth);
+      this.pageY = -Math.round(this.y / this.viewportHeight);
     }
 
     if (pageX == 'next')
@@ -478,8 +538,8 @@ coherent.ScrollView= Class.create(coherent.View, {
     else if (pageY == 'prev')
       pageY = --this.pageY;
 
-    pageX = -pageX*this.scrollWidth;
-    pageY = -pageY*this.scrollHeight;
+    pageX = -pageX*this.viewportWidth;
+    pageY = -pageY*this.viewportHeight;
 
     snap = this.calculatePagingSnap(pageX, pageY);
     pageX = snap.x;
@@ -560,6 +620,7 @@ coherent.ScrollView= Class.create(coherent.View, {
   }
   
 });
+
 
 
 

@@ -443,7 +443,7 @@ coherent.Page= Class.create(coherent.Responder, {
 
     if (!this._touchmovedY && Math.abs(this._touchstartY-y) > 5)
       yJustMoved= this._touchmovedY = true;
-    
+
     if (this._touchstartView)
     {
       this._touchstartView.ontouchmove(event);
@@ -465,7 +465,7 @@ coherent.Page= Class.create(coherent.Responder, {
         if (!this._touchmovedY && xJustMoved)
         {
           this._touchstartView.onswipe(event);
-          this._gesturing= true;
+          // this._gesturing= true;
         }
       } 
     }
@@ -479,7 +479,10 @@ coherent.Page= Class.create(coherent.Responder, {
   _ontouchend: function(event)
   {
     if (!this._touchstartView)
+    {
+      console.log('no start view');
       return;
+    }
       
     this._touchstartView.ontouchend(event);
 

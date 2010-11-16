@@ -561,7 +561,10 @@ coherent.View= Class.create(coherent.Responder, {
   {
     var delegate= this.delegate();
     if (delegate && method in delegate)
+    {
+      args= [this].concat(args);
       return delegate[method].apply(delegate, args);
+    }
     else
       return null;
   },

@@ -160,9 +160,9 @@ coherent.Overlay= Class.create(coherent.View, {
       return;
 
     if (isVisible)
-      this.callDelegate('willShowOverlay', [this]);
+      this.callDelegate('willShowOverlay');
     else
-      this.callDelegate('willHideOverlay', [this]);
+      this.callDelegate('willHideOverlay');
       
     if (!this.modal)
     {
