@@ -91,6 +91,59 @@ coherent.ScrollView= Class.create(coherent.View, {
                                          this.onDOMModified.bind(this));
   },
         
+  items: function()
+  {
+    return this.__items;
+  },
+  
+  setItems: function(newItems)
+  {
+    this.removeAllItems();
+    
+    var len= newItems.length;
+    var template= document.createElement('div');
+    template.className= 'ui-scrollview-item';
+    var img= document.createElement('img');
+    template.appendChild(img);
+    var style= template.style;
+    style.webkitTransitionProperty = '-webkit-transform';
+    style.webkitTransitionTimingFunction = 'cubic-bezier(0,0,0.25,1)';
+    style.webkitTransitionDuration = '0';
+    style.webkitTransform = TRANSLATE_OPEN + '0,0' + TRANSLATE_CLOSE;
+
+    var item;
+    var width=0;
+    var height= 0;
+    
+    while (len--)
+    {
+      item= new ScrollItem(template.cloneNode(true), newItems[len]);
+      width= Math.max(width, item.x+item.w);
+      height= Math.max(height, item.y+item.h);
+      this.node.appendChild(item.node);
+      item.setOffsetPosition(0, 0);
+      this.__items[len]= item;
+    }
+    
+    this.node.style.width= width + "px";
+    this.node.style.height= height + "px";
+    this.refresh();
+  },
+
+  removeAllItems: function()
+  {
+    var len= this.__items.length;
+    var item;
+    
+    while (len--)
+    {
+      item= this.__items[len];
+      this.removeChild(item.node);
+    }
+    
+    this.__items= [];
+  },
+  
   onDOMModified: function(e)
   {
     if (e.target.parentNode != this.node)
@@ -184,7 +237,9 @@ coherent.ScrollView= Class.create(coherent.View, {
     this.x = x;
     this.y = y;
 
-    this.node.style.webkitTransform = TRANSLATE_OPEN + this.x + 'px,' + this.y + 'px' + TRANSLATE_CLOSE;
+    var len= this.__items.length;
+    while (len--)
+      this.__items[len].setOffsetPosition(x, y);
 
     // Move the scrollbars
     if (!hideScrollBars)
@@ -198,10 +253,12 @@ coherent.ScrollView= Class.create(coherent.View, {
         
   setTransitionTime: function(time)
   {
+    var len= this.__items.length;
+    while (len--)
+      this.__items[len].setTransitionTime(time);
+
     var scrollBarTime= time ? (time+'ms') : '0';
     var wrapperTime= HAS_3D && this.fadeScrollbar ? (SCROLLBAR_FADE_DURATION+'ms') : '0';
-    
-  	this.node.style.webkitTransitionDuration = scrollBarTime;
     
     if (this.scrollBarX)
     {
@@ -254,12 +311,19 @@ coherent.ScrollView= Class.create(coherent.View, {
     // Check if the scroller is really where it should be
     if (this.hasMomentum || this.pagingEnabled)
     {
-      matrix = new WebKitCSSMatrix(window.getComputedStyle(this.node).webkitTransform);
-      if (matrix.e != this.x || matrix.f != this.y)
+      var len= this.__items.length;
+      var item;
+      while (len--)
       {
-        Event.stopObserving(document, TRANSITION_END_EVENT, this._transitionHandler);
-        this.setPosition(matrix.e, matrix.f);
-        this.moved = true;
+        item= this.__items[len];
+        matrix = new WebKitCSSMatrix(window.getComputedStyle(item.node).webkitTransform);
+        if (matrix.e != (this.x + item.x) || matrix.f != (this.y+item.y))
+        {
+          Event.stopObserving(document, TRANSITION_END_EVENT, this._transitionHandler);
+          this.setPosition(matrix.e - item.x, matrix.f - item.y);
+          this.moved = true;
+          break;
+        }
       }
     }
 
