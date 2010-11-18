@@ -58,6 +58,10 @@
         IE8 standards mode and FF 3.6. */
     HashChangeEvent: ("onhashchange" in window) && document.querySelector,
 
+    /** Does the browser support the History pushState method? This is a new
+        feature of modern browsers... */
+    HistoryPushState: ('pushState' in window.history) && window.history['pushState'] !== null,
+    
     /** Does the browser support the orientation change event? Likely a mobile
         browser. */
     OrientationChangeEvent: ("onorientationchange" in window),

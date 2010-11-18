@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>demos/multi-nib/multi-nib.jsproj</string>
+	<string>sandbox/infinite-scrollview.html</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -21,35 +21,19 @@
 	<integer>270</integer>
 	<key>metaData</key>
 	<dict>
-		<key>demos/multi-nib/multi-nib.jsproj</key>
+		<key>sandbox/infinite-scrollview.html</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>0</integer>
+				<integer>55</integer>
 				<key>line</key>
-				<integer>7</integer>
+				<integer>50</integer>
 			</dict>
-			<key>columnSelection</key>
-			<false/>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>0</integer>
-			<key>selectFrom</key>
-			<dict>
-				<key>column</key>
-				<integer>0</integer>
-				<key>line</key>
-				<integer>0</integer>
-			</dict>
-			<key>selectTo</key>
-			<dict>
-				<key>column</key>
-				<integer>0</integer>
-				<key>line</key>
-				<integer>25</integer>
-			</dict>
+			<integer>146</integer>
 		</dict>
 		<key>sandbox/slideshow.html</key>
 		<dict>
@@ -95,19 +79,19 @@
 			<key>firstVisibleLine</key>
 			<integer>22</integer>
 		</dict>
-		<key>src/controls/Toolbar.js</key>
+		<key>src/controls/ScrollView.js</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>13</integer>
+				<integer>0</integer>
 				<key>line</key>
-				<integer>20</integer>
+				<integer>0</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>0</integer>
+			<integer>42</integer>
 		</dict>
 		<key>src/data/AttributeDescription.js</key>
 		<dict>
@@ -354,12 +338,12 @@
 	</dict>
 	<key>openDocuments</key>
 	<array>
-		<string>src/controls/Toolbar.js</string>
-		<string>demos/multi-nib/multi-nib.jsproj</string>
+		<string>sandbox/infinite-scrollview.html</string>
+		<string>src/controls/ScrollView.js</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
 	<false/>
 	<key>windowFrame</key>
-	<string>{{181, 0}, {1196, 878}}</string>
+	<string>{{721, 300}, {1196, 878}}</string>
 </dict>
 </plist>

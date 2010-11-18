@@ -28,13 +28,16 @@
         padding: 0px;
         position: relative;
         margin: 0;
+        width: 2688px;
+        height: 2680px;
       }
+      
       #scroller .ui-scrollview-item
       {
-        position: absolute;
-        line-height: 250px;
-        width: 256px;
+        line-height: 335px;
+        width: 384px;
         text-align: center;
+        display: inline-block;
       }
       
       #scroller .ui-scrollview-item img
@@ -43,6 +46,9 @@
         vertical-align: middle;
         -webkit-transform: translate3d(0,0,0);
         -webkit-box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        border-radius: 5px;
+        background-color: white;
+        padding: 10px;
       }
       
     </style>
@@ -60,8 +66,11 @@
     </div>
     
     <script>
-      var GRID_SIZE_H= 256;
-      var GRID_SIZE_V= 250;
+      var GRID_SIZE_H= 384;
+      var GRID_SIZE_V= 335;
+      var HAS_3D= coherent.Support.CssMatrix,
+          TRANSLATE_OPEN = 'translate' + (HAS_3D ? '3d(' : '('),
+          TRANSLATE_CLOSE = HAS_3D ? ',0)' : ')';
       
       function createPhotos(w, h, maxPhotoIndex)
       {
@@ -69,70 +78,33 @@
         var item;
         var photos= [];
         var photoIndex;
-        
-        for (y=0; y<h; y++)
-          for (x=0; x<w; x++)
-          {
-            photoIndex= y*w +x + 1;
-          
-            photos.push({
-              src: "photos/photo-" + (photoIndex<10 ? ('0'+photoIndex) : photoIndex) + ".png",
-              x: x * GRID_SIZE_H,
-              y: y * GRID_SIZE_V,
-              w: GRID_SIZE_H,
-              h: GRID_SIZE_V
-            });
-          }
-        
-        return photos;
-      }
 
-      function createPhotosAlt(count, maxPhotoIndex)
-      {
-        var x, y;
-        var divisor= Math.ceil(Math.sqrt(count));
-        var item;
-        var photos= [];
-        var photoIndex;
         var container= document.getElementById('scroller');
-        var node;
-        var HAS_3D= coherent.Support.CssMatrix,
-            TRANSLATE_OPEN = 'translate' + (HAS_3D ? '3d(' : '('),
-            TRANSLATE_CLOSE = HAS_3D ? ',0)' : ')';
 
         var template= document.createElement('div');
         template.className= 'ui-scrollview-item';
         var img= document.createElement('img');
         template.appendChild(img);
-        var style= template.style;
-        style.webkitTransitionProperty = '-webkit-transform';
-        style.webkitTransitionTimingFunction = 'cubic-bezier(0,0,0.25,1)';
-        style.webkitTransitionDuration = '0';
-        style.webkitTransform = TRANSLATE_OPEN + '0,0' + TRANSLATE_CLOSE;
+        // var style= template.style;
+        // style.webkitTransitionProperty = '-webkit-transform';
+        // style.webkitTransitionTimingFunction = 'cubic-bezier(0,0,0.25,1)';
+        // style.webkitTransitionDuration = '0';
+        // style.webkitTransform = TRANSLATE_OPEN + '0,0' + TRANSLATE_CLOSE;
+        
+        for (y=0; y<h; y++)
+          for (x=0; x<w; x++)
+          {
+            photoIndex= (y*w + x) % maxPhotoIndex + 1;
 
-        for (var i=0; i<count; ++i)
-        {
-          x= Math.floor(i/divisor) * GRID_SIZE_H;
-          y= i%divisor * GRID_SIZE_V;
-          photoIndex= (i % maxPhotoIndex) + 1;
-          
-          node= template.cloneNode(true);
-          node.firstChild.src= "photos/photo-" + (photoIndex<10 ? ('0'+photoIndex) : photoIndex) + ".png";
-          node.style.webkitTransform= TRANSLATE_OPEN + x + "px," + y + "px" + TRANSLATE_CLOSE;
-          container.appendChild(node);
-          // 
-          // photos.push({
-          //   src: "photos/photo-" + (photoIndex<10 ? ('0'+photoIndex) : photoIndex) + ".png",
-          //   x: x * GRID_SIZE_H,
-          //   y: y * GRID_SIZE_V,
-          //   w: GRID_SIZE_H,
-          //   h: GRID_SIZE_V
-          // });
-        }
+            node= template.cloneNode(true);
+            node.firstChild.src= "photos/photo-" + (photoIndex<10 ? ('0'+photoIndex) : photoIndex) + ".png";
+            // node.style.webkitTransform= TRANSLATE_OPEN + x + "px," + y + "px" + TRANSLATE_CLOSE;
+            container.appendChild(node);
+          }
         
         return photos;
       }
-      
+
       distil.onready(function(){
     
         NIB('scrollview', {
@@ -159,7 +131,6 @@
             '#scroller': coherent.ScrollView({
               // directionalLockEnabled: true,
               desktopCompatibility: true,
-              items: createPhotos(7,8, 56),
               hScrollbar: false,
               vScrollbar: false,
               delegate: REF('delegate')
@@ -178,7 +149,7 @@
         });
         
         controller.view();
-        // createPhotosAlt(81,56);
+        createPhotos(7, 8, 56);
       });
     </script>
 
