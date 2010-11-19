@@ -1,4 +1,5 @@
 /*jsl:import ../../ui.js*/
+/*jsl:declare NIB*/
 
 coherent.Nib= Class._create({
 
@@ -153,14 +154,14 @@ coherent.Nib= Class._create({
 
 /** Creator for NIBs.
  */
-function NIB(name, def)
+coherent.NIB=function(name, def)
 {
   var nib= new coherent.Nib(name, def);
   nib.bundle= coherent.Bundle.__current;
   coherent.Bundle.__current.nibs[name]= nib;
 }
 
-Object.extend(NIB, {
+Object.extend(coherent.NIB, {
 
   assetUrl: function(href)
   {
@@ -184,4 +185,4 @@ Object.extend(NIB, {
   
 });
 
-window.NIB= NIB;
+coherent.__export("NIB");

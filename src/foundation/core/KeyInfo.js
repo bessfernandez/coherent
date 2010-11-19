@@ -210,7 +210,7 @@ coherent.KeyInfo.getInfoForKeyOnObject= function(key, object)
   methods.count= object[names.count];
 
   /*  If the key is a to-many property on kvoClass, find the appropriate
-    getter/setter methods.
+      getter/setter methods.
    */
   if (methods.count)
   { 
@@ -245,8 +245,8 @@ coherent.KeyInfo.getInfoForKeyOnObject= function(key, object)
   else if ('function'!==typeof(methods.get))
   {
     /*  If the class doesn't define a countOf<Key> method, it's not a
-      to-many relation. So if the getter isn't a function, we need to
-      define property methods (if the browser supports properties).
+        to-many relation. So if the getter isn't a function, we need to
+        define property methods (if the browser supports properties).
      */
     value= methods.get;
     methods.get= methods.set= null;

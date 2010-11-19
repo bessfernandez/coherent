@@ -1,20 +1,3 @@
-beforeEach(function() {
-  var objectToString= Object.prototype.toString;
-  
-  this.addMatchers({
-    toHaveProperty: function(prop)
-    {
-      return prop in this.actual;
-    },
-    toBeOfType: function(type)
-    {
-      console.log('actual=', objectToString.call(this.actual));
-      console.log('type=', objectToString.call(type.prototype));
-      return objectToString.call(this.actual) === objectToString.call(type.prototype);
-    }
-  });
-});
-
 describe("KVO", function() {
 
   it("can serialise to JSON", function() {
@@ -25,9 +8,9 @@ describe("KVO", function() {
     
     var json= JSON.parse(JSON.stringify(kvo));
     expect(json).toHaveProperty("foo");
-    expect(json.foo).toBeOfType(String);
+    expect(json.foo).toBeInstanceOf(String);
     expect(json).toHaveProperty("items");
-    expect(json.items).toBeOfType(Array);
+    expect(json.items).toBeInstanceOf(Array);
   });
 
   describe("adapted from a regular object", function() {
@@ -40,12 +23,10 @@ describe("KVO", function() {
       });
       
       var json= JSON.parse(JSON.stringify(kvo));
-      console.log(json);
       expect(json).toHaveProperty("foo");
-      expect(json.foo).toBeOfType(String);
+      expect(json.foo).toBeInstanceOf(String);
       expect(json).toHaveProperty("items");
-      expect(json.items).toBeOfType(Array);
-      
+      expect(json.items).toBeInstanceOf(Array);
     });
     
   });
@@ -60,11 +41,10 @@ describe("KVO", function() {
       });
 
       var json= JSON.parse(JSON.stringify(kvo));
-      console.log(json);
       expect(json).toHaveProperty("foo");
-      expect(json.foo).toBeOfType(String);
+      expect(json.foo).toBeInstanceOf(String);
       expect(json).toHaveProperty("items");
-      expect(json.items).toBeOfType(Array);
+      expect(json.items).toBeInstanceOf(Array);
       
     });
     

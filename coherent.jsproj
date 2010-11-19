@@ -17,3 +17,5 @@ source:
   - src/external/sizzle.js
   - src/ui.js
   - src/ui
+  - src/model.js
+  - src/model

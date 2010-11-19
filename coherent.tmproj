@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>sandbox/infinite-scrollview.html</string>
+	<string>src/controls/ScrollView.js</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -34,6 +34,36 @@
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
 			<integer>146</integer>
+		</dict>
+		<key>sandbox/scrollview.html</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>18</integer>
+				<key>line</key>
+				<integer>135</integer>
+			</dict>
+			<key>columnSelection</key>
+			<false/>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>113</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>14</integer>
+				<key>line</key>
+				<integer>135</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>27</integer>
+				<key>line</key>
+				<integer>135</integer>
+			</dict>
 		</dict>
 		<key>sandbox/slideshow.html</key>
 		<dict>
@@ -84,14 +114,30 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>0</integer>
+				<integer>21</integer>
 				<key>line</key>
-				<integer>0</integer>
+				<integer>454</integer>
 			</dict>
+			<key>columnSelection</key>
+			<false/>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>42</integer>
+			<integer>360</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>2</integer>
+				<key>line</key>
+				<integer>454</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>21</integer>
+				<key>line</key>
+				<integer>454</integer>
+			</dict>
 		</dict>
 		<key>src/data/AttributeDescription.js</key>
 		<dict>
@@ -221,6 +267,20 @@
 			<key>firstVisibleLine</key>
 			<integer>0</integer>
 		</dict>
+		<key>src/foundation/core/support.js</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>4</integer>
+				<key>line</key>
+				<integer>63</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>47</integer>
+		</dict>
 		<key>src/legacy/ModeledXMLProxy.js</key>
 		<dict>
 			<key>caret</key>
@@ -339,6 +399,8 @@
 	<key>openDocuments</key>
 	<array>
 		<string>sandbox/infinite-scrollview.html</string>
+		<string>src/foundation/core/support.js</string>
+		<string>sandbox/scrollview.html</string>
 		<string>src/controls/ScrollView.js</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>

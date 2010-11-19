@@ -129,10 +129,11 @@
           main: VIEW('.demo', {
             
             '#scroller': coherent.ScrollView({
-              // directionalLockEnabled: true,
+              directionalLockEnabled: true,
               desktopCompatibility: true,
               hScrollbar: false,
               vScrollbar: false,
+              pagingEnabled: true,
               delegate: REF('delegate')
             })
             
