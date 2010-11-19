@@ -33,11 +33,28 @@ coherent.ModelObject= Class.create(coherent.KVO, {
     
     this.original= hash;
     this.changes= {};
+    this.changeCount=0;
   },
 
   id: function(key)
   {
     return this.original[this.constructor.uniqueId];
+  },
+  
+  isNew: function()
+  {
+    return void(0)==this.id();
+  },
+  
+  isUpdated: function()
+  {
+    return this.changeCount>0;
+  },
+  
+  reset: function()
+  {
+    this.changes= {};
+    this.changeCount= 0;
   },
   
   primitiveValueForKey: function(key)
@@ -53,9 +70,16 @@ coherent.ModelObject= Class.create(coherent.KVO, {
   setPrimitiveValueForKey: function(value, key)
   {
     if (this.original[key]===value)
+    {
       delete this.changes[key];
+      this.changeCount--;
+    }
     else
+    {
+      if (!(key in this.changes))
+        this.changeCount++;
       this.changes[key]= value;
+    }
   },
   
   infoForKey: function(key)

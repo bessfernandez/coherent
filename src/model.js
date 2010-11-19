@@ -4,4 +4,3 @@
 /*jsl:import model/ModelObject.js*/
 /*jsl:import model/Model.js*/
 /*jsl:import model/ModelClassMethods.js*/
-

@@ -51,18 +51,50 @@
     var classInfo= coherent.KVO.getClassInfoForObject(Klass.prototype);
     var value;
     var setKey;
+    var setter;
+    var wrapMethod= coherent.KeyInfo.wrapMethod;
+    var wrapGetMethod= coherent.KeyInfo.wrapGetMethod;
+    var wrapSetMethod= coherent.KeyInfo.wrapSetMethod;
+    var Property= coherent.Model.Property;
     
     Klass.modelName= name;
+    Klass.__classInfo= classInfo;
+    
     decl= decl||{};
     
     for (var key in decl)
     {
+      setKey= 'set'+key.titleCase();
+        
       value= decl[key];
+      
+      if (value instanceof Property)
+      {
+        if (value.get)
+          decl[key]= wrapMethod(wrapGetMethod, value.get, key);
+        else
+          decl[key]= makeGetter(key);
+        if (value.set)
+          decl[setKey]= wrapMethod(wrapSetMethod, value.set, key);
+        else if (!value.readOnly)
+          decl[setKey]= makeSetter(key);
+          
+        classInfo.methods[key]= {
+          getter: value.get,
+          setter: value.set,
+          mutable: !value.readOnly,
+          type: value.type,
+          primitive: value.primitive,
+          relation: value.relation,
+          composite: value.composite
+        };
+        
+        continue;
+      }
+      
       if ('function'!==typeof(value))
         continue;
       
-      setKey= 'set'+key.titleCase();
-        
       if (-1!==PRIMITIVE_TYPES.indexOf(value))
       {
         decl[key]= makeGetter(key);
@@ -73,8 +105,11 @@
           type: value,
           primitive: true
         };
+        
+        continue;
       }
-      else if ('modelName' in value)
+      
+      if ('modelName' in value)
       {
         decl[key]= makeGetter(key);
         decl[setKey]= makeSetter(key);
@@ -84,8 +119,22 @@
           type: value,
           primitive: false
         };
+        
+        continue;
       }
+
+      /* TODO: How should this specify type? */
+      setter= decl[setKey];
+      if (!setter)
+        continue;
+        
+      decl[key]= wrapMethod(wrapGetMethod, value, key);
+      decl[setKey]= wrapMethod(wrapSetMethod, setter, key);
       
+      classInfo.methods[key]= {
+        setter: setter,
+        getter: value
+      };
     }
     
     Class.extend(Klass, decl);
@@ -96,6 +145,42 @@
     return Klass;
   }
 
-  coherent.__export("Model");
+  coherent.Model.Property= function(decl)
+  {
+    if (!(this instanceof coherent.Model.Property))
+      return new coherent.Model.Property(decl);
+    Object.extend(this, decl);
+    Object.applyDefaults(this, coherent.Model.Property.DEFAULTS);
+  }
+  
+  coherent.Model.Property.DEFAULTS= {
+    composite: true
+  };
 
+
+
+  coherent.Model.ToOne= function(decl)
+  {
+    decl= Object.extend(coherent.Model.ToOne.DEFAULTS, decl);
+    return new coherent.Model.Property(decl);
+  }
+  
+  coherent.Model.ToOne.DEFAULTS= {
+    relation: coherent.Model.ToOne,
+    composite: false
+  };
+
+
+
+  coherent.Model.ToMany= function(decl)
+  {
+    throw new Error("Not implemented yet");
+  }
+  
+  coherent.Model.ToMany.DEFAULTS= {
+    relation: coherent.Model.ToMany,
+    composite: false
+  };
+  
+  coherent.__export("Model");
 })();

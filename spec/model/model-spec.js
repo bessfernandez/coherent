@@ -137,6 +137,27 @@ describe("coherent.Model", function() {
       object.setValueForKey(123, 'abc');
       expect(observer.called).toBe(true);
     });
+
+    it("should fire change notifications for custom setter methods", function() {
+      var M= Model("CustomSetter", {
+        foo: function()
+        {
+          return this.primitiveValueForKey('foo');
+        },
+        
+        setFoo: function(value)
+        {
+          return this.setPrimitiveValueForKey(value, 'foo');
+        }
+      });
+      
+      var object= new M();
+      var observer= new TestObserver();
+      object.addObserverForKeyPath(observer, 'observeChange', 'foo');
+      object.setFoo('bar');
+      expect(observer.called).toBe(true);
+    });
+    
     
     it("can be added to the Model's collection", function() {
       var object= new this.model();
@@ -181,6 +202,68 @@ describe("coherent.Model", function() {
     });
   });
   
+  describe("properties", function() {
+    it("should allow declaring properties", function() {
+
+      var M= Model("HasProperty", {
+      
+        foo: Model.Property({
+              type: String,
+              set: function(value)
+              {
+                this.setPrimitiveValueForKey(String(value).toUpperCase(), 'foo');
+              },
+              get: function()
+              {
+                return this.primitiveValueForKey('foo');
+              }
+            })
+      });
+      
+      var obj= new M();
+      expect(obj).toHaveMethod('foo');
+      expect(obj).toHaveMethod('setFoo');
+      obj.setFoo('bar');
+      expect(obj.foo()).toBe('BAR');
+    });
+    
+    it("should fire change notifications when setting properties", function() {
+      var M= Model("HasProperty", {
+        foo: Model.Property({
+              type: String
+            })
+      });
+    
+      var obj= new M();
+      var observer= new TestObserver();
+      obj.addObserverForKeyPath(observer, 'observeChange', 'foo');
+      obj.setFoo('zebra');
+      expect(observer.called).toBe(true);
+    });
+    
+    it("should fire change notifications when calling custom setter method", function() {
+      var M= Model("HasProperty", {
+      
+        foo: Model.Property({
+              type: String,
+              get: function()
+              {
+                return this.primitiveValueForKey('foo');
+              },
+              set: function(value)
+              {
+                this.setPrimitiveValueForKey(value, 'foo');
+              }
+            })
+      });
+      
+      var obj= new M();
+      var observer= new TestObserver();
+      obj.addObserverForKeyPath(observer, 'observeChange', 'foo');
+      obj.setFoo('zebra');
+      expect(observer.called).toBe(true);
+    });
+  });
   
   describe("uid collection", function() {
     it("should start empty", function() {
