@@ -73,12 +73,6 @@ coherent.ModelKeyInfo= Class._create({
    */
   set: function(obj, newValue)
   {
-    if (this.type && ((this.primitive && newValue.constructor!==this.type) ||
-                      (!this.primitive && newValue instanceof this.type)))
-    {
-      throw new Error("Invalid type for " + this.key);
-    }
-
     obj.willChangeValueForKey(this.key, this);
     this.setter ? this.setter.call(obj, newValue, this.key) : obj.setPrimitiveValueForKey(newValue, this.key);
     obj.didChangeValueForKey(this.key, this);

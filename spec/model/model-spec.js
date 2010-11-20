@@ -1,6 +1,7 @@
 describe("coherent.Model", function() {
 
   beforeEach(function(){
+    coherent.Model._resetModels();
     this.model= Model("foo", {});
   });
   

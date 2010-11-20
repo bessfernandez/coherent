@@ -59,6 +59,7 @@
     
     Klass.modelName= name;
     Klass.__classInfo= classInfo;
+    models[name]= Klass;
     
     decl= decl||{};
     
@@ -86,7 +87,8 @@
           type: value.type,
           primitive: value.primitive,
           relation: value.relation,
-          composite: value.composite
+          composite: value.composite,
+          inverse: value.inverse
         };
         
         continue;
@@ -145,12 +147,26 @@
     return Klass;
   }
 
+  coherent.Model._resetModels= function()
+  {
+    models= {};
+  }
+  
+  coherent.Model.modelWithName= function(name)
+  {
+    var model= models[name];
+    if (!model)
+      throw new Error("No model with name: "+name);
+    return model;
+  }
+  
   coherent.Model.Property= function(decl)
   {
     if (!(this instanceof coherent.Model.Property))
       return new coherent.Model.Property(decl);
     Object.extend(this, decl);
     Object.applyDefaults(this, coherent.Model.Property.DEFAULTS);
+    this.primitive= (-1!==PRIMITIVE_TYPES.indexOf(this.type));
     return void(0);
   }
   
@@ -183,5 +199,6 @@
     composite: false
   };
   
+  Object.markMethods(coherent.Model);
   coherent.__export("Model");
 })();
