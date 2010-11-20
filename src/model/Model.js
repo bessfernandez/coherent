@@ -178,7 +178,7 @@
 
   coherent.Model.ToOne= function(decl)
   {
-    decl= Object.extend(coherent.Model.ToOne.DEFAULTS, decl);
+    decl= Object.applyDefaults(decl, coherent.Model.ToOne.DEFAULTS);
     return new coherent.Model.Property(decl);
   }
   

@@ -85,7 +85,7 @@
       var methodInfo= this.constructor.__classInfo.methods[key];
       var previous;
 
-      if (methodInfo && methodInfo.type &&
+      if (void(0)!=value && methodInfo && methodInfo.type &&
           ((methodInfo.primitive && value.constructor!==methodInfo.type) ||
            (!methodInfo.primitive && !(value instanceof methodInfo.type))))
       {
@@ -118,9 +118,9 @@
       
       if (inverse.relation===coherent.Model.ToOne)
       {
-        if (this===previousInverse)
+        if (previous && this===previousInverse)
           previous.setValueForKey(null, methodInfo.inverse);
-        if (this!==valueInverse)
+        if (value && this!==valueInverse)
           value.setValueForKey(this, methodInfo.inverse);
       }
       else if (inverse.relation===coherent.Model.ToMany)
@@ -128,9 +128,9 @@
         var previousIndexOfThis= previousInverse ? previousInverse.indexOfObject(this) : -1;
         var valueIndexOfThis= value ? value.indexOfObject(this) : -1;
         
-        if (-1!==previousIndexOfThis)
+        if (previousInverse && -1!==previousIndexOfThis)
           previousInverse.removeObjectAtIndex(previousIndexOfThis);
-        if (-1===valueIndexOfThis)
+        if (value && -1===valueIndexOfThis)
           value.addObject(this);
       }
     },

@@ -60,6 +60,12 @@ describe("coherent.Model", function() {
         object.setValueForKey(123, 'zebra');
       }
       expect(testInvalidType).toThrow("Invalid type for zebra");
+      
+      function testInvalidTypeSetter()
+      {
+        object.setZebra(123);
+      }
+      expect(testInvalidTypeSetter).toThrow("Invalid type for zebra");
     });
     
     it("should convert date from strings", function() {
