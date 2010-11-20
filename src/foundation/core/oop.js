@@ -3,6 +3,26 @@
 
 (function(){
 
+  var SUPPORT_DEFINE_PROPERTY= coherent.Support.DefineProperty;
+
+  var defineNonEnumerableProperty;
+  if (coherent.Support.DefineProperty)
+    defineNonEnumerableProperty= function(obj, name, value)
+    {
+      Object.defineProperty(obj, name, {
+                              value: value,
+                              configurable: true,
+                              writable: true,
+                              enumerable: false
+                            });
+      return value;
+    }
+  else
+    defineNonEnumerableProperty= function(obj, name, value)
+    {
+      return obj[name]= value;
+    }
+    
   /** Wrap a constructor function so that it may invoke the base constructor.
       @param {Function} construct - the original constructor function
       @param {Function} [superclass] - the superclass' constructor function
@@ -399,16 +419,15 @@
       }
       
       construct= makeConstructor(construct, superclass);
+      construct.__methods= superclass ? Object.clone(superclass.__methods) : {};
       
       construct.prototype= proto;
-      construct.prototype.constructor= construct;
+      defineNonEnumerableProperty(proto, 'constructor', construct);
       construct.superclass= superclass;
       
       //  Prepare for factory functions in class decl.
-      if (superclass)
-        proto.__factories__= Object.clone(superclass.prototype.__factories__);
-      else
-        proto.__factories__= {};
+      defineNonEnumerableProperty(proto, '__factories__',
+                                  superclass ? Object.clone(superclass.prototype.__factories__) : {});
       
       //  Create a unique ID for each class, helps the Dashcode indexer
       construct.__class_id__= coherent.generateUid();
@@ -452,6 +471,7 @@
       }
 
       constructor.prototype= proto;
+      constructor.__methods= superclass ? Object.clone(superclass.__methods) : {};
       constructor.prototype.constructor= constructor;
       constructor.superclass= superclass;
 
@@ -461,6 +481,8 @@
       Class.extend(constructor, decl);
       return constructor;
     },
+    
+    defineNonEnumerableProperty: defineNonEnumerableProperty,
     
     emptyFn: emptyFn,
 
@@ -482,7 +504,7 @@
     addMember: function(proto, name, value, superproto)
     {
       var isFunction= (value instanceof Function);
-
+      
       if (isFunction)
       {
         value.displayName= name;
@@ -493,6 +515,20 @@
         
         if (value.__factoryFn__)
           proto.__factories__[name]= value;
+        
+        if (proto.constructor.__methods)
+          proto.constructor.__methods[name]= value;
+        
+        if (SUPPORT_DEFINE_PROPERTY)
+        {
+          Object.defineProperty(proto, name, {
+            value: value,
+            configurable: true,
+            writable: true,
+            enumerable: false
+          });
+          return value;
+        }
       }
     
       proto[name]= value;

@@ -14,20 +14,24 @@ coherent.ModelObject= Class.create(coherent.KVO, {
     for (var key in classInfo.methods)
     {
       info= classInfo.methods[key];
-      if (!(key in hash) || !info.type)
+      if (!(key in hash))
         continue;
 
       value= hash[key];
       
-      if (null===value)
-        value= new (info.type)();
-      else if (Date===info.type)
-        value= new Date(Date.parse(value));
-      else
-        value= new (info.type)(value);
+      if (info.type)
+      {
+        if (null===value)
+          value= new (info.type)();
+        else if (Date===info.type)
+          value= new Date(Date.parse(value));
+        else
+          value= new (info.type)(value);
           
-      if (info.primitive && Date!==info.type)
-          value=value.valueOf();
+        if (info.primitive && Date!==info.type)
+            value=value.valueOf();
+      }
+      
       hash[key]= value;
     }
     

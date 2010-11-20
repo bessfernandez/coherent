@@ -797,16 +797,17 @@ coherent.KVO.adapt= function(obj)
   if (!obj)
     throw new InvalidArgumentError( "Can't adapt a null object" );
 
-  if (obj instanceof Array)
+  var type= coherent.typeOf(obj);
+  if ('array'==type || (type in coherent.KVO.typesOfKeyValuesToIgnore))
     return obj;
-    
+  
   var p;
-
-  for (p in coherent.KVO.prototype)
+  
+  for (p in coherent.KVO.__methods)
   {
     if (p in obj)
       continue;
-    obj[p]= coherent.KVO.prototype[p];
+    obj[p]= coherent.KVO.__methods[p];
   }
 
   //  perform magic for key dependencies
@@ -963,7 +964,8 @@ coherent.KVO.createInstanceDataForObject= function(kvo)
   var classInfo= coherent.KVO.getClassInfoForObject(kvo);
   if (kvo.constructor.prototype===kvo)
     throw new Error('creating instance data for a prototype');
-  var info= kvo.__kvo= Object.clone(classInfo);
+    
+  var info= Class.defineNonEnumerableProperty(kvo, '__kvo', Object.clone(classInfo));
   
   info.observers= {};
   info.keys= {};

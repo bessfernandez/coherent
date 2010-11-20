@@ -151,6 +151,7 @@
       return new coherent.Model.Property(decl);
     Object.extend(this, decl);
     Object.applyDefaults(this, coherent.Model.Property.DEFAULTS);
+    return void(0);
   }
   
   coherent.Model.Property.DEFAULTS= {

@@ -44,7 +44,10 @@
 
     /** Does the browser support JavaScript getters & setters? */
     Properties: ('__defineGetter__' in Object.prototype),
-
+    
+    /** Does the browser support the Object.defineProperty method? */
+    DefineProperty: ('defineProperty' in Object),
+    
     /** Does the browser support native query selector? */
     QuerySelector: ('querySelector' in document),
 
