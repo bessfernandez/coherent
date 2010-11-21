@@ -1,4 +1,4 @@
-/*jsl:import ../foundation.js*/
+/*jsl:import ../ui.js*/
 
 (function(){
 

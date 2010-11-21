@@ -41,7 +41,6 @@ describe("Model ToOne relations", function() {
     var m2= new this.M2();
     var m2a= new this.M2();
     
-    debugger;
     m1.setM2(m2);
     expect(m2.m1()).toBe(m1);
     

@@ -1,4 +1,5 @@
 /*jsl:import ../model.js*/
+/*jsl:declare Model*/
 
 (function(){
 
@@ -56,9 +57,11 @@
     var wrapGetMethod= coherent.KeyInfo.wrapGetMethod;
     var wrapSetMethod= coherent.KeyInfo.wrapSetMethod;
     var Property= coherent.Model.Property;
+    var schema= {};
+    var primitive;
     
     Klass.modelName= name;
-    Klass.__classInfo= classInfo;
+    Klass.schema= schema;
     models[name]= Klass;
     
     decl= decl||{};
@@ -71,6 +74,8 @@
       
       if (value instanceof Property)
       {
+        value.key= key;
+        
         if (value.get)
           decl[key]= wrapMethod(wrapGetMethod, value.get, key);
         else
@@ -82,49 +87,38 @@
           
         classInfo.methods[key]= {
           getter: value.get,
-          setter: value.set,
-          mutable: !value.readOnly,
-          type: value.type,
-          primitive: value.primitive,
-          relation: value.relation,
-          composite: value.composite,
-          inverse: value.inverse
+          setter: value.set
         };
         
+        schema[key]= value;
         continue;
       }
       
       if ('function'!==typeof(value))
         continue;
       
-      if (-1!==PRIMITIVE_TYPES.indexOf(value))
+      //  Because of short-circuiting, it's important to put the primitive
+      //  check first, otherwise, if value is a Model primitive will have the
+      //  same value as the previous pass through the loop
+      if (primitive=(-1!==PRIMITIVE_TYPES.indexOf(value)) ||
+          'modelName' in value)
       {
         decl[key]= makeGetter(key);
         decl[setKey]= makeSetter(key);
+        schema[key]= new Property({
+          key: key,
+          get: decl[key],
+          set: decl[setKey],
+          type: value,
+          primitive: primitive
+        });
         classInfo.methods[key]= {
           getter: decl[key],
-          setter: decl[setKey],
-          type: value,
-          primitive: true
+          setter: decl[setKey]
         };
-        
         continue;
       }
       
-      if ('modelName' in value)
-      {
-        decl[key]= makeGetter(key);
-        decl[setKey]= makeSetter(key);
-        classInfo.methods[key]= {
-          getter: decl[key],
-          setter: decl[setKey],
-          type: value,
-          primitive: false
-        };
-        
-        continue;
-      }
-
       /* TODO: How should this specify type? */
       setter= decl[setKey];
       if (!setter)
@@ -132,11 +126,18 @@
         
       decl[key]= wrapMethod(wrapGetMethod, value, key);
       decl[setKey]= wrapMethod(wrapSetMethod, setter, key);
+  
+      schema[key]= new Property({
+        key: key,
+        set: setter,
+        get: value
+      });
       
       classInfo.methods[key]= {
         setter: setter,
         getter: value
       };
+      
     }
     
     Class.extend(Klass, decl);
@@ -170,6 +171,24 @@
     return void(0);
   }
   
+  coherent.Model.Property.prototype.fromValue= function(value)
+  {
+    if (!this.type)
+      return value;
+      
+    if (null===value)
+      value= new (this.type)();
+    else if (Date===this.type)
+      value= new Date(Date.parse(value));
+    else
+      value= new (this.type)(value);
+    
+    if (this.primitive && Date!==this.type)
+        value=value.valueOf();
+
+    return value;
+  }
+  
   coherent.Model.Property.DEFAULTS= {
     composite: true
   };
@@ -191,14 +210,18 @@
 
   coherent.Model.ToMany= function(decl)
   {
-    throw new Error("Not implemented yet");
+    decl= Object.applyDefaults(decl, coherent.Model.ToMany.DEFAULTS);
+    decl.defaultValue=[];
+    return new coherent.Model.Property(decl);
   }
   
   coherent.Model.ToMany.DEFAULTS= {
     relation: coherent.Model.ToMany,
     composite: false
   };
-  
+
+
+
   Object.markMethods(coherent.Model);
   coherent.__export("Model");
 })();

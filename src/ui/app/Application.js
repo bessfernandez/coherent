@@ -12,6 +12,13 @@ coherent.Application= Class.create(coherent.Responder, {
       return coherent.Application.shared;
     this.delegate= null;
     // coherent.hash.addObserverForKeyPath(this, 'observeHashChange', 'value');
+    
+    distil.onready(function() {
+      var app= coherent.Application.shared;
+      if (app.delegate && 'applicationDidFinishLaunching' in app.delegate)
+        app.delegate.applicationDidFinishLaunching(app);
+    });
+    
     return this;
   },
   

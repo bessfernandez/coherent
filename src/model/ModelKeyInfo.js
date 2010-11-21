@@ -37,8 +37,6 @@ coherent.ModelKeyInfo= Class._create({
 
     this.key= key;
     this.changeCount=0;
-    this.type= classKeyInfo.type;
-    this.primitive= classKeyInfo.primitive;
     this.getter= classKeyInfo.getter;
     this.setter= classKeyInfo.setter;
     

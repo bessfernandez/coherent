@@ -1,4 +1,5 @@
 /*jsl:import ../model.js*/
+
 (function(){
 
   /** Define the base class for all Model objects. */
@@ -6,42 +7,37 @@
 
     constructor: function(hash)
     {
-      var classInfo= coherent.KVO.getClassInfoForObject(this);
+      var schema= this.constructor.schema;
       var info;
       var value;
     
       hash= Object.extend({}, hash);
-    
-      for (var key in classInfo.methods)
-      {
-        info= classInfo.methods[key];
-        /*  It's possible to specify the type of a property as a string. This
-            makes it easy to avoid circular references when you're defining your
-            models. However, that's not particularly useful when actually using
-            the property, so this would be a good place to fix that up.
-         */
-        if ('string'===typeof(info.type))
-          info.type= coherent.Model.modelWithName(info.type);
-        
-        if (!(key in hash))
-          continue;
 
-        value= hash[key];
-      
-        if (info.type)
+      if (!schema.__initialised)
+      {
+        for (var p in schema)
         {
-          if (null===value)
-            value= new (info.type)();
-          else if (Date===info.type)
-            value= new Date(Date.parse(value));
-          else
-            value= new (info.type)(value);
-          
-          if (info.primitive && Date!==info.type)
-              value=value.valueOf();
+          info= schema[p];
+          /*  It's possible to specify the type of a property as a string. This
+              makes it easy to avoid circular references when you're defining your
+              models. However, that's not particularly useful when actually using
+              the property, so this would be a good place to fix that up.
+           */
+          if ('string'===typeof(info.type))
+            info.type= coherent.Model.modelWithName(info.type);
         }
+        schema.__initialised= true;
+      }
       
-        hash[key]= value;
+      for (var key in hash)
+      {
+        info= schema[key];
+        if (!info)
+        {
+          coherent.KVO.adaptTree(hash[key]);
+          continue;
+        }
+        hash[key]= coherent.KVO.adaptTree(info.fromValue(hash[key]));
       }
     
       this.original= hash;
@@ -82,7 +78,7 @@
   
     setPrimitiveValueForKey: function(value, key)
     {
-      var methodInfo= this.constructor.__classInfo.methods[key];
+      var methodInfo= this.constructor.schema[key];
       var previous;
 
       if (void(0)!=value && methodInfo && methodInfo.type &&
@@ -106,16 +102,16 @@
         this.changes[key]= value;
       }
     
-      if (!methodInfo || !methodInfo.inverse || !methodInfo.relation)
+      if (!methodInfo || !methodInfo.inverse)
         return;
       
       var TO_ONE= coherent.Model.ToOne,
           TO_MANY= coherent.Model.ToMany;
     
-      var inverse= methodInfo.type.__classInfo.methods[methodInfo.inverse];
+      var inverse= methodInfo.type.schema[methodInfo.inverse];
       var previousInverse= previous ? previous.primitiveValueForKey(methodInfo.inverse) : null;
       var valueInverse= value ? value.primitiveValueForKey(methodInfo.inverse) : null;
-      
+
       if (inverse.relation===coherent.Model.ToOne)
       {
         if (previous && this===previousInverse)
@@ -134,7 +130,8 @@
           value.addObject(this);
       }
     },
-  
+
+    // observeChildObjectChangeForKeyPath: function
     infoForKey: function(key)
     {
       if (coherent.KVO.kAllPropertiesKey==key)

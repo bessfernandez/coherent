@@ -795,7 +795,7 @@ coherent.KVO.adapt= function(obj)
 {
   //  either there's no object or the object already has the methods
   if (!obj)
-    throw new InvalidArgumentError( "Can't adapt a null object" );
+    return obj;
 
   var type= coherent.typeOf(obj);
   if ('array'==type || (type in coherent.KVO.typesOfKeyValuesToIgnore))
@@ -832,6 +832,9 @@ coherent.KVO.adapt= function(obj)
  */
 coherent.KVO.adaptTree= function(obj)
 {
+  if (!obj)
+    return obj;
+
   coherent.KVO.adapt(obj);
 
   var p;

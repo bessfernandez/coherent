@@ -43,8 +43,6 @@ describe("coherent.Model", function() {
       expect(object).toHaveMethod('zebra');
       expect(object).toHaveMethod('setZebra');
       var info= object.infoForKey('zebra');
-      expect(info).toHaveProperty('type');
-      expect(info.type).toBe(String);
     });
   
     it("should check type when setting typed property", function() {

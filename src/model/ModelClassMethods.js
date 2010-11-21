@@ -1,3 +1,5 @@
+/*jsl:import ../model.js*/
+
 coherent.Model.ClassMethods= {
 
   uniqueId: 'id',
