@@ -144,6 +144,12 @@
       if (key in keys)
         return keys[key];
       return keys[key]= new coherent.ModelKeyInfo(key, this);
+    },
+    
+    toJSON: function()
+    {
+      var json= Object.extend({}, this.original);
+      return Object.extend(json, this.changes);
     }
 
   });
