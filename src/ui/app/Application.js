@@ -10,16 +10,14 @@ coherent.Application= Class.create(coherent.Responder, {
   {
     if (coherent.Application.shared)
       return coherent.Application.shared;
-    this.delegate= null;
+      
     // coherent.hash.addObserverForKeyPath(this, 'observeHashChange', 'value');
     
     distil.onready(function() {
-      var app= coherent.Application.shared;
-      if (app.delegate && 'applicationDidFinishLaunching' in app.delegate)
-        app.delegate.applicationDidFinishLaunching(app);
+      coherent.Application.shared.callDelegate('applicationDidFinishLaunching');
     });
     
-    return this;
+    return void(0);
   },
   
   /** Handle changes to the URL hash. If a {@link #delegate} has been set, this
@@ -30,9 +28,7 @@ coherent.Application= Class.create(coherent.Responder, {
    */
   observeHashChange: function(change)
   {
-    var newValue= change.newValue;
-    if (this.delegate && 'hashDidChange' in this.delegate)
-      this.delegate.hashDidChange(newValue);
+    this.callDelegate('hashDidChange', change.newValue);
   },
     
   mainNib: function()

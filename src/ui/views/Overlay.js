@@ -37,14 +37,14 @@ coherent.Overlay= Class.create(coherent.View, {
       @type String
       @default "modal-overlay-backdrop"
    */
-  backdropClassName: "modal-overlay-backdrop",
+  backdropClassName: "ui-modal-overlay-backdrop",
   /** The classname to use when creating the modal guard DIV. The guard DIV prevents
       clicks from interacting with other modal overlays or the page. This DIV
       will always appear just below the current modal overlay in z-index.
       @type String
       @default "modal-overlay-guard"
    */
-  guardClassName: "modal-overlay-guard",
+  guardClassName: "ui-modal-overlay-guard",
   
   init: function()
   {

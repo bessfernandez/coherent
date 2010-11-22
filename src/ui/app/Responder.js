@@ -71,6 +71,68 @@ coherent.Responder= Class.create(coherent.Bindable, {
     this.__nextResponder= newNextResponder;
   },
 
+  /** Return the delegate associated with this view. Rather than subclass a
+      view, it is often more appropriate to respond to the view's delegate
+      methods.
+      @see #setDelegate for a discussion of how this method __really__ works.
+      @type Object
+   */
+  delegate: function()
+  {
+    return this.__delegate;
+  },
+  
+  /** Set the delegate for this view. This method is a bit tricky, because the
+      value for the delegate might be a string representing the name of the
+      delegate in the view's context. However, there might not be a value for
+      that key when this method is called. In that case, a temporary method
+      will be installed to override {@link #delegate}. This temporary method
+      will look up the name of the delegate and return that value. Once a
+      delegate is found, the temporary method is removed and the value found
+      will be returned immediately when calling {@link #delegate}.
+    
+      @param {Object|String} newDelegate - The value to use for the delegate.
+   */
+  setDelegate: function(newDelegate)
+  {
+    if ('string'!==typeof(newDelegate))
+    {
+      this.__delegate= newDelegate;
+      return;
+    }
+    
+    //  Need some extra trickery for string delegates...
+    var delegate= this.__context && this.__context.valueForKey(newDelegate);
+    if (delegate)
+    {
+      this.__delegate= delegate;
+      return;
+    }
+    
+    /*  The delegate wasn't found in the context yet... so create a
+        temporary function which will look it up later. Note, the temporary
+        function will delete itself and return the object to using the
+        prototype delegate method.
+     */
+    this.delegate= function()
+    {
+      this.__delegate= (this.__context && this.__context.valueForKey(newDelegate));
+      if (this.__delegate)
+        delete this.delegate;
+      return this.__delegate;
+    }
+  },
+  
+  callDelegate: function(method, args)
+  {
+    var delegate= this.delegate();
+    if (!delegate || !delegate[method])
+      return null;
+      
+    args= [this].concat(args);
+    return delegate[method].apply(delegate, args);
+  },
+
   /** Present a non-modal error notification.
     
       @param error  an instance of coherent.Error containing information
