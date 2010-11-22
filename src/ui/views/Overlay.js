@@ -123,10 +123,14 @@ coherent.Overlay= Class.create(coherent.View, {
   onmouseup: function(event)
   {
     var target= event.target||event.srcElement;
-    if (this.node.contains(target) && !this.clickInsideToDismiss)
-      return;
-    if (this.clickOutsideToDismiss)
-      this.setVisible(false);
+    var contains= this.node.contains(target);
+    if ((contains && this.clickInsideToDismiss) ||
+        (!contains && this.clickOutsideToDismiss))
+    {
+      //  Delay hiding the overlay, because on IE, this will cause the click
+      //  event to get lost. Which is rather undesirable.
+      Function.delay(this.setVisible, 100, this, [false]);
+    }
   },
   
   setVisible: function(isVisible)
