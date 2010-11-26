@@ -20,7 +20,7 @@ Class.extend(coherent.Page, {
     
     this.onclick= this._fireDelegates;
   
-    //  e.g. coherent.page.delegate('div a', 'click', function(event) {});
+    //  e.g. coherent.Page.shared.delegate('div a', 'click', function(event) {});
     if ('string'===typeof(event))
     {
       delegates= this.__delegatesForEventType(event);
@@ -31,7 +31,7 @@ Class.extend(coherent.Page, {
     }
     else
     {
-      //  e.g. coherent.page.delegate('div a', {
+      //  e.g. coherent.Page.shared.delegate('div a', {
       //                  click: function(event) {}
       //                });
       for (var p in event)

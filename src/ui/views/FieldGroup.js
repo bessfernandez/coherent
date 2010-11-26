@@ -35,7 +35,7 @@ coherent.FieldGroup= Class.create(coherent.View, {
     this.__fieldErrors= {};
     if (!this.__bubble)
       coherent.FieldGroup.prototype.__bubble= new coherent.ErrorBubble();
-    coherent.page.addObserverForKeyPath(this, 'observeFirstResponderChange',
+    coherent.Page.shared.addObserverForKeyPath(this, 'observeFirstResponderChange',
                       'firstResponder');
   },
   
@@ -44,7 +44,7 @@ coherent.FieldGroup= Class.create(coherent.View, {
    */
   teardown: function()
   {
-    coherent.page.removeObserverForKeyPath(this, 'firstResponder');
+    coherent.Page.shared.removeObserverForKeyPath(this, 'firstResponder');
     this.base();
   },
 

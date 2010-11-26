@@ -139,7 +139,7 @@ coherent.Overlay= Class.create(coherent.View, {
     
     isVisible= !!isVisible;
 
-    var listeners= coherent.page.__mouseEventListeners;
+    var listeners= coherent.Page.shared.__mouseEventListeners;
     var index= listeners.indexOf(this);
     
     if (isVisible)
@@ -148,11 +148,11 @@ coherent.Overlay= Class.create(coherent.View, {
       this.updatePosition();
       
       if (this.clickOutsideToDismiss && -1===index)
-        coherent.page.__mouseEventListeners.push(this);
+        coherent.Page.shared.__mouseEventListeners.push(this);
     }
     else if (-1!==index)
     {
-      coherent.page.__mouseEventListeners.removeObjectAtIndex(index);
+      coherent.Page.shared.__mouseEventListeners.removeObjectAtIndex(index);
     }
     
     //  If the overlay is already visible, there's nothing more to do

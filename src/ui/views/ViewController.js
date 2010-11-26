@@ -151,31 +151,106 @@ coherent.ViewController= Class.create(coherent.Responder, {
   {
     return this.__nextResponder||this.__view.superview();
   },
+
+  __presentModally: function(callback)
+  {
+    var node= this.view().node;
+    var modalNode= this.__modalNode || (this.__modalNode=document.createElement('div'));
+    modalNode.className='ui-modal-view-wrapper';
+    modalNode.appendChild(node);
+    document.body.appendChild(modalNode);
+    
+    var presentationStyle= this.modalPresentationStyle ||
+                           this.parentViewController().modalPresentationStyle;
+    var transitionStyle= this.modalTransitionStyle ||
+                         coherent.ModalTransitionStyle.CoverVertical;
+    
+    function ontransitionend(event)
+    {
+      if (event.target!==modalNode)
+        return;
+      console.log("present transition end:", event);
+      Event.stopObserving(modalNode, "webkitAnimationEnd", transitionHandler);
+      if (callback)
+        callback(this);
+    }
+    var transitionHandler= Event.observe(modalNode, "webkitAnimationEnd",
+                                         ontransitionend.bind(this));
+
+    Element.addClassName(modalNode, [transitionStyle, 'in'].join(" "));
+    Element.addClassName(node, presentationStyle);
+    modalNode.style.display='';
+  },
   
   presentModalViewController: function(viewController)
   {
     var node;
     
+    //  If there's already a view controller being displayed modally, I need to
+    //  handle that first.
     if (this.modalViewController)
     {
-      node= this.modalViewController.view().node;
-      Element.updateClass(node, 'out', 'in');
-    }
+      //  Ask the delegate (if any) whether it's OK to dismiss the current view controller
+      if (false===this.callDelegate("willDismissModalViewController", [this.modalViewController]))
+        return;
 
+      function presentAgain()
+      {
+        this.modalViewController= null;
+        this.presentModalViewController(viewController);
+      }
+      this.modalViewController.__dismissModalViewController(presentAgain.bind(this));
+      return;
+    }
+    
     viewController.setNextResponder(this);
     this.modalViewController= viewController;
-    node= viewController.view().node;
+    viewController.__presentModally();
+  },
+  
+  __dismissModalViewController: function(callback)
+  {
+    //  Walk up the chain of modal view controllers. Only the last one is animated
+    if (this.modalViewController)
+    {
+      function dismissed()
+      {
+        this.modalViewController= null;
+        this.view().node.style.display='none';
+        if (callback)
+          callback(this);
+      }
+      this.modalViewController.__dismissModalViewController(dismissed.bind(this));
+      return;
+    }
     
-    var presentationStyle= viewController.modalPresentationStyle ||
-                           this.modalPresentationStyle;
-    var transitionStyle= viewController.modalTransitionStyle ||
-                         coherent.ModalTransitionStyle.CoverVertical;
-                         
-    Element.addClassName(node, presentationStyle);
+    function ontransitionend(event)
+    {
+      if (event.target!=modalNode)
+        return;
+      console.log("dismiss transition end:", event);
+      Event.stopObserving(modalNode, "webkitAnimationEnd", transitionHandler);
+      modalNode.style.display='none';
+      var transitionStyle= this.modalTransitionStyle ||
+                           coherent.ModalTransitionStyle.CoverVertical;
+      Element.updateClass(modalNode, [], [transitionStyle, "reverse", "in"]);
+      if (callback)
+        callback(this);
+    }
+    
+    var modalNode= this.__modalNode;
+    var transitionHandler= Event.observe(modalNode, "webkitAnimationEnd",
+                                         ontransitionend.bind(this));
+    Element.addClassName(modalNode, "reverse");
   },
   
   dismissModalViewController: function(animated)
   {
+    if (this.modalViewController)
+    {
+      this.modalViewController.__dismissModalViewController();
+      this.modalViewController= null;
+    }
   }
  
 });

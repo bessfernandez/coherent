@@ -16,6 +16,27 @@ coherent.Page= Class.create(coherent.Responder, {
     this.__pageLocks= 0;
   },
   
+  rootViewController: function()
+  {
+    return this.__rootViewController;
+  },
+  
+  setRootViewController: function(viewController)
+  {
+    var node;
+    
+    if (this.__rootViewController)
+    {
+      node= this.__rootViewController.view().node;
+      node.parentNode.removeChild(node);
+    }
+    
+    this.__rootViewController= viewController;
+    node= viewController && viewController.view().node;
+    if (node)
+      document.body.appendChild(node);
+  },
+  
   targetViewForEvent: function(event)
   {
     var element= event.target||event.srcElement;
@@ -83,7 +104,7 @@ coherent.Page= Class.create(coherent.Responder, {
         description+= '\n' + error.recoverySuggestion;
       
       window.alert(description);
-      coherent.page.makeFirstResponder(error.field);
+      coherent.Page.shared.makeFirstResponder(error.field);
     }
     doit.delay(0);
   },
@@ -414,11 +435,12 @@ coherent.Page= Class.create(coherent.Responder, {
       var self = this;
       
       view.ontouchstart(event);
-      this._touchstartMouseDownDelay = window.setTimeout(function(){
-        view.onmousedown(event);
-        self._touchsentMD = true;
-        delete self._touchstartMouseDownDelay;
-      },100);
+
+      // this._touchstartMouseDownDelay = window.setTimeout(function(){
+      //   view.onmousedown(event);
+      //   self._touchsentMD = true;
+      //   delete self._touchstartMouseDownDelay;
+      // },100);
     }
     this._touchstartView= view;
     this._touchmovedX = false;
@@ -426,6 +448,15 @@ coherent.Page= Class.create(coherent.Responder, {
     this._touchsentMD = false;
     this._touchstartX = event.targetTouches[0].clientX;
     this._touchstartY = event.targetTouches[0].clientY;
+  },
+  
+  ontouchmove: function(event)
+  {
+    //  No other responder handled the touch move...
+    if (this.__pageLocks)
+    {
+      Event.preventDefault(event);
+    }
   },
   
   _ontouchmove: function(event)
@@ -469,11 +500,6 @@ coherent.Page= Class.create(coherent.Responder, {
         }
       } 
     }
-    else if (this.__pageLocks)
-    {
-      Event.preventDefault(event);
-    }
-    
   },
   
   _ontouchend: function(event)
@@ -874,7 +900,7 @@ coherent.Page= Class.create(coherent.Responder, {
       @type coherent.Page
       @public
    */
-  coherent.page= new coherent.Page();
+  coherent.Page.shared= new coherent.Page();
   
   window._setTimeout= window.setTimeout;
   /** @ignore */
@@ -932,7 +958,7 @@ coherent.Page= Class.create(coherent.Responder, {
     return window._setInterval(intervalWrapper, delay);
   }
   
-  var p= coherent.page;
+  var p= coherent.Page.shared;
   var wrapEventHandler;
   
   if (!coherent.Support.StandardEventModel)

@@ -14,30 +14,6 @@ var HAS_3D= coherent.Support.CssMatrix,
 var scrollbarID= 0;
 
 
-var ScrollItem= Class._create({
-
-  constructor: function(node, params)
-  {
-    Object.extend(this, params);
-    this.node= node;
-    this.node.firstChild.src= this.src;
-    this.x= this.x || 0;
-    this.y= this.y || 0;
-  },
-
-  setTransitionTime: function(duration)
-  {
-    duration= duration ? (duration + "ms") : '0';
-    this.node.style.webkitTransitionDuration= duration;
-  },
-  
-  setOffsetPosition: function(x, y)
-  {
-    this.node.style.webkitTransform = TRANSLATE_OPEN + (this.x + x) + "px," + (this.y + y) + "px" + TRANSLATE_CLOSE;
-  }
-  
-});
-
 
 
 
@@ -68,7 +44,7 @@ coherent.ScrollView= Class.create(coherent.View, {
 
     
     //  Prevent bouncing when scrolling the page
-    coherent.page.lockPage();
+    coherent.Page.shared.lockPage();
     
     var style= this.node.style;
     style.webkitTransitionProperty = '-webkit-transform';
@@ -83,8 +59,7 @@ coherent.ScrollView= Class.create(coherent.View, {
     this.refresh();
 
     var eventName= coherent.Support.OrientationChangeEvent ? 'orientationchange' : 'resize';
-    this._refreshHandler= Event.observe(window, eventName,
-                                        this.refresh.bind(this));
+    this._refreshHandler= Event.observe(window, eventName, this.refresh.bind(this));
 
     if (this.updateOnDOMChanges)
       this._updateHandler= Event.observe(this.node, 'DOMSubtreeModified',
@@ -257,6 +232,7 @@ coherent.ScrollView= Class.create(coherent.View, {
       matrix = new WebKitCSSMatrix(window.getComputedStyle(this.node).webkitTransform);
       if (matrix.e != this.x || matrix.f != this.y)
       {
+        //  TODO: Don't handle this on the document, it should be on the node itself
         Event.stopObserving(document, TRANSITION_END_EVENT, this._transitionHandler);
         this.setPosition(matrix.e, matrix.f);
         this.moved = true;
@@ -415,6 +391,7 @@ coherent.ScrollView= Class.create(coherent.View, {
 
   ontransitionend: function()
   {
+    //  TODO: This should be on the node, not the document
     Event.stopObserving(document, TRANSITION_END_EVENT, this._transitionHandler);
     this.resetPosition();
   },
@@ -514,7 +491,8 @@ coherent.ScrollView= Class.create(coherent.View, {
     if (!runtime)
       this.resetPosition();
     else
-      // At the end of the transition check if we are still inside of the boundaries
+      //  At the end of the transition check if we are still inside of the boundaries
+      //  TODO: This should probably get attached to the node not the document
       this._transitionHandler= Event.observe(document, TRANSITION_END_EVENT, this.ontransitionend.bind(this));
   },
         
@@ -601,10 +579,11 @@ coherent.ScrollView= Class.create(coherent.View, {
   {
     this.base();
     
-    coherent.page.unlockPage();
+    coherent.Page.shared.unlockPage();
     
     var eventName= coherent.Support.OrientationChangeEvent ? 'orientationchange' : 'resize';
     Event.stopObserving(window, eventName, this._refreshHandler);
+    //  TODO: This should be attached the the node not the document
     Event.stopObserving(document, TRANSITION_END_EVENT, this._transitionHandler);
 
     if (this.updateOnDOMChanges)

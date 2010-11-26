@@ -447,7 +447,7 @@ coherent.View= Class.create(coherent.Responder, {
       if (!node)
         return null;
       if (document==node)
-        return coherent.page;
+        return coherent.Page.shared;
       view= coherent.View.fromNode(node);
     }
     
@@ -625,7 +625,7 @@ coherent.View= Class.create(coherent.Responder, {
         either the target or the current view if no target has been set.
      */
     if (FIRST_RESPONDER===responder)
-      responder= coherent.page.firstResponder;
+      responder= coherent.Page.shared.firstResponder;
     else if ('string'===typeof(responder))
       responder= this.__context.valueForKeyPath(responder);
 
@@ -654,9 +654,17 @@ coherent.View= Class.create(coherent.Responder, {
         return;
       }
       
+      var delegate= responder.delegate && responder.delegate();
+      if (delegate && action in delegate)
+      {
+        delegate[action](this, argument);
+        return;
+      }
+      
       responder= responder.nextResponder();
     }
     
+    console.log('No responder found for action: '+action);
   },
   
   /** Default handler for the click event. If the view has been disabled, the
@@ -707,7 +715,7 @@ coherent.View= Class.create(coherent.Responder, {
   addTrackingInfo: function(trackingInfo)
   {
     trackingInfo.selector= ['#', this.id, ' ', trackingInfo.selector].join('');
-    coherent.page.addTrackingInfo(trackingInfo);
+    coherent.Page.shared.addTrackingInfo(trackingInfo);
   },
 
   __animationOptionsForProperty: function(property)
@@ -1031,12 +1039,12 @@ coherent.View= Class.create(coherent.Responder, {
   {
     var helper;
     var event= coherent.EventLoop.currentEvent;
-    if (!coherent.page._mousedownView)
+    if (!coherent.Page.shared._mousedownView)
       throw new Error("Can't initiate a drag & drop operation except during dragstart event.");
     
     //  Remember who initiated the drag...    
-    coherent.page._draggingSourceView= this;
-    coherent.page._draggingData= data;
+    coherent.Page.shared._draggingSourceView= this;
+    coherent.Page.shared._draggingData= data;
     
     if (coherent.Support.DragAndDrop)
     {
@@ -1047,7 +1055,7 @@ coherent.View= Class.create(coherent.Responder, {
       {
         if (e)
         {
-          helper= coherent.page._dragging= new coherent.DragAndDropHelper();
+          helper= coherent.Page.shared._dragging= new coherent.DragAndDropHelper();
           helper.initFakeDragAndDrop(e, event);
         }
         
@@ -1069,7 +1077,7 @@ coherent.View= Class.create(coherent.Responder, {
     }
     else
     {
-      helper= coherent.page._dragging= new coherent.DragAndDropHelper();
+      helper= coherent.Page.shared._dragging= new coherent.DragAndDropHelper();
       helper.initFakeDragAndDrop(e, event);
       Event.preventDefault(event);
     }

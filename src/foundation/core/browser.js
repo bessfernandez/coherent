@@ -28,6 +28,9 @@ coherent.Browser= {
   /** Is the browser some variant of Mozilla? */
   Mozilla:  navigator.userAgent.indexOf('Gecko') > -1 &&
         navigator.userAgent.indexOf('KHTML') == -1,
-  /** Is the browser Mobile Safari (iPhone or iPod Touch) */
-  MobileSafari: !!navigator.userAgent.match(/Apple.*Mobile.*Safari/)
+  /** Is the browser Mobile Safari (iPhone, iPod Touch, or iPad) */
+  MobileSafari: !!navigator.userAgent.match(/Apple.*Mobile.*Safari/),
+  /** Is the browser Mobile Safari on the iPad? */
+  iPad: -1!=navigator.userAgent.indexOf('iPad')
+
 };

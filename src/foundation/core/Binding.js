@@ -27,7 +27,7 @@ coherent.Binding= Class._create({
       @type Boolean
       @default true
    */
-  initFromDOM: true,
+  initFromDOM: false,
   
   /** Create a new Binding and associate it with a keypath on a specific
       object.

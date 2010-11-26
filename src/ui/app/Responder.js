@@ -18,9 +18,9 @@ coherent.Responder= Class.create(coherent.Bindable, {
   sendActionToView: function(action, view)
   {
     if (FIRST_RESPONDER===view)
-      view= coherent.page.firstResponder;
+      view= coherent.Page.shared.firstResponder;
       
-    var target= view||coherent.page.firstResponder||this;
+    var target= view||coherent.Page.shared.firstResponder||this;
     
     while (target)
     {

@@ -108,15 +108,15 @@
       };
       if (overNode!==this.overNode)
       {
-        coherent.page._ondragenter(fakeEvent);
+        coherent.Page.shared._ondragenter(fakeEvent);
         this.overNode= overNode;
       }
       else
-        coherent.page._ondragover(fakeEvent);
+        coherent.Page.shared._ondragover(fakeEvent);
         
       var classname= null;
       
-      switch (coherent.page._draggingLastDropEffect)
+      switch (coherent.Page.shared._draggingLastDropEffect)
       {
         case 'copy':
           classname= coherent.Style.kDragAndDropCopy;
@@ -159,8 +159,8 @@
         dataTransfer: {},
         preventDefault: this.emptyFn
       };
-      coherent.page._ondrop(fakeEvent);
-      coherent.page._ondragend(fakeEvent);
+      coherent.Page.shared._ondrop(fakeEvent);
+      coherent.Page.shared._ondragend(fakeEvent);
     }
     
   };

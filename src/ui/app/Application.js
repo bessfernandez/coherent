@@ -14,12 +14,15 @@ coherent.Application= Class.create(coherent.Responder, {
     // coherent.hash.addObserverForKeyPath(this, 'observeHashChange', 'value');
     
     distil.onready(function() {
-      coherent.Application.shared.callDelegate('applicationDidFinishLaunching');
+      var app= coherent.Application.shared;
+      app.loaded= true;
+      app.__loadMainNib();
+      app.callDelegate('applicationDidFinishLaunching');
     });
     
     return void(0);
   },
-  
+
   /** Handle changes to the URL hash. If a {@link #delegate} has been set, this
       method calls the delegate's `hashDidChange` method.
     
@@ -39,10 +42,15 @@ coherent.Application= Class.create(coherent.Responder, {
   setMainNib: function(newMainNib)
   {
     this.__mainNib= newMainNib;
-    
-    var nib= NIB.withName(newMainNib);
+    if (this.loaded)
+      this.__loadMainNib();
+  },
+  
+  __loadMainNib: function()
+  {
+    var nib= NIB.withName(this.__mainNib);
     if (!nib)
-      throw new Error("Could not find NIB with name \""+newMainNib +"\"");
+      throw new Error("Could not find NIB with name \""+this.__mainNib +"\"");
       
     nib.instantiateNibWithOwner(this);
 

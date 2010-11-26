@@ -419,7 +419,7 @@ coherent.TextField= Class.create(coherent.FormControl, {
     var text= content.objectAtIndex(selection[0]);
     this.setValue(text);
     this.accessoryView.setVisible(false);
-    coherent.page.makeFirstResponder(this);
+    coherent.Page.shared.makeFirstResponder(this);
   },
   
   showAccessoryViewForCompletions: function(completions)
@@ -435,7 +435,7 @@ coherent.TextField= Class.create(coherent.FormControl, {
       view.constrainToView(this);
       view.setNextResponder(this);
       view.acceptsFirstResponder= function() { console.log('view first?'); return true; }
-      view.becomeFirstResponder= function() { console.log('become...'); Function.delay(function(){coherent.page.makeFirstResponder(this.nextResponder()); return true;}, 0, this); }
+      view.becomeFirstResponder= function() { console.log('become...'); Function.delay(function(){coherent.Page.shared.makeFirstResponder(this.nextResponder()); return true;}, 0, this); }
       var listNode= document.createElement('ul');
       listNode.innerHTML= '<li></li>';
       var list= new coherent.CollectionView(listNode, {

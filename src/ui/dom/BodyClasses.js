@@ -13,7 +13,9 @@
     bodyclass+= ' mozilla';
   if (coherent.Browser.IE)
     bodyclass+= ' msie msie' + coherent.Browser.IE;
-
+  if (coherent.Browser.iPad)
+    bodyclass+= ' ipad';
+    
   var ua= window.navigator.userAgent;
   if (/Windows/.test(ua))
     bodyclass+= ' windows';
