@@ -50,6 +50,7 @@
     else
     {
       var callsBase= /this\.base/.test(construct);
+      construct.displayName='Original Constructor';
 
       if (!callsBase && !superclass)
         return construct;
@@ -178,7 +179,6 @@
     
     if (construct)
     {
-      construct.displayName='Constructor';
       wrapped= function()
       {
         if (!(this instanceof wrapped))
@@ -396,7 +396,7 @@
       
         case 1:
           decl= superclass;
-          superclass= undefined;
+          superclass= void(0);
           break;
         
         default:
@@ -415,6 +415,7 @@
       if (decl.hasOwnProperty('constructor'))
       {
         construct= decl['constructor'];
+        construct.displayName="Original Constructor";
         delete decl['constructor'];
       }
       
@@ -455,7 +456,7 @@
       
         case 1:
           decl= superclass;
-          superclass= undefined;
+          superclass= void(0);
           break;
         
         default:

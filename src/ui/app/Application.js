@@ -18,6 +18,10 @@ coherent.Application= Class.create(coherent.Responder, {
       app.loaded= true;
       app.__loadMainNib();
       app.callDelegate('applicationDidFinishLaunching');
+      //  Remove a startup notice
+      var startup= Element.query('.ui-startup');
+      if (startup)
+        startup.parentNode.removeChild(startup);
     });
     
     return void(0);

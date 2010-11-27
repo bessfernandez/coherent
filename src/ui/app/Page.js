@@ -428,14 +428,13 @@ coherent.Page= Class.create(coherent.Responder, {
   {
     if (this._touchstartView)
       return;
-      
+
     var view= this.targetViewForEvent(event);
     if (view)
     {
-      var self = this;
-      
       view.ontouchstart(event);
 
+      // var self = this;
       // this._touchstartMouseDownDelay = window.setTimeout(function(){
       //   view.onmousedown(event);
       //   self._touchsentMD = true;

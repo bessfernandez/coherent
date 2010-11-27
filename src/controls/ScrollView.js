@@ -25,7 +25,7 @@ coherent.ScrollView= Class.create(coherent.View, {
   directionalLockEnabled: false,
   hasMomentum: HAS_3D,
   updateOnDOMChanges: true,
-  scrollsToTopOnDOMChanges: false,
+  scrollsToTopOnDOMChanges: true,
   hScrollbar: HAS_3D,
   vScrollbar: HAS_3D,
   fadeScrollbar: MOBILE_SAFARI || !HAS_TOUCH,
@@ -38,29 +38,25 @@ coherent.ScrollView= Class.create(coherent.View, {
     this.x= 0;
     this.y= 0;
     this.__items= [];
-
     this.base(node, parameters);
     this.wrapper = this.node.parentNode;
-
     
     //  Prevent bouncing when scrolling the page
     coherent.Page.shared.lockPage();
-    
     var style= this.node.style;
     style.webkitTransitionProperty = '-webkit-transform';
     style.webkitTransitionTimingFunction = 'cubic-bezier(0,0,0.25,1)';
     style.webkitTransitionDuration = '0';
     style.webkitTransform = TRANSLATE_OPEN + '0,0' + TRANSLATE_CLOSE;
-
+    
     this.indicatorStyle= this.indicatorStyle || coherent.ScrollView.IndicatorStyleDefault;
 
     this.wrapper.style.overflow = (HAS_TOUCH||this.desktopCompatibility) ? 'hidden' : 'auto';
-  
     this.refresh();
 
     var eventName= coherent.Support.OrientationChangeEvent ? 'orientationchange' : 'resize';
     this._refreshHandler= Event.observe(window, eventName, this.refresh.bind(this));
-
+    
     if (this.updateOnDOMChanges)
       this._updateHandler= Event.observe(this.node, 'DOMSubtreeModified',
                                          this.onDOMModified.bind(this));
@@ -70,8 +66,11 @@ coherent.ScrollView= Class.create(coherent.View, {
   {
     if (e.target.parentNode != this.node)
       return;
-
-    Function.delay(this.refresh, 0, this);
+    
+    if (this.__refreshTimer)
+      this.__refreshTimer.cancel();
+      
+    this.__refreshTimer= Function.delay(this.refresh, 100, this);
 
     if (this.scrollsToTopOnDOMChanges && (this.x!==0 || this.y!==0))
       this.scrollTo(0,0,'0');
@@ -82,10 +81,12 @@ coherent.ScrollView= Class.create(coherent.View, {
     var resetX = this.x,
         resetY = this.y,
         snap;
-    
+
     if (!this.wrapper || !this.node)
       return;
-      
+
+    this.__refreshTimer=null;
+    
     this.viewportWidth = this.wrapper.clientWidth;
     this.viewportHeight = this.wrapper.clientHeight;
     this.contentWidth = this.node.offsetWidth;
@@ -253,6 +254,8 @@ coherent.ScrollView= Class.create(coherent.View, {
 
   ontouchmove: function(e)
   {
+    e.preventDefault();
+
     if (!this.dragging)
       return;
 
@@ -262,10 +265,6 @@ coherent.ScrollView= Class.create(coherent.View, {
         topDelta = this.scrollY ? pageY - this.touchStartY : 0,
         newX = this.x + leftDelta,
         newY = this.y + topDelta;
-
-    //e.preventDefault();
-    // Stopping propagation just saves some cpu cycles (I presume)
-    e.stopPropagation();
 
     this.touchStartX = pageX;
     this.touchStartY = pageY;
