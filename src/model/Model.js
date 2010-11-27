@@ -161,33 +161,38 @@
     return model;
   }
   
-  coherent.Model.Property= function(decl)
-  {
-    if (!(this instanceof coherent.Model.Property))
-      return new coherent.Model.Property(decl);
-    Object.extend(this, decl);
-    Object.applyDefaults(this, coherent.Model.Property.DEFAULTS);
-    this.primitive= (-1!==PRIMITIVE_TYPES.indexOf(this.type));
-    return void(0);
-  }
+  coherent.Model.Property= Class._create({
   
-  coherent.Model.Property.prototype.fromValue= function(value)
-  {
-    if (!this.type)
-      return value;
-      
-    if (null===value)
-      value= new (this.type)();
-    else if (Date===this.type)
-      value= new Date(Date.parse(value));
-    else
-      value= new (this.type)(value);
-    
-    if (this.primitive && Date!==this.type)
-        value=value.valueOf();
+    constructor: function(decl)
+    {
+      if (!(this instanceof coherent.Model.Property))
+        return new coherent.Model.Property(decl);
 
-    return value;
-  }
+      Object.extend(this, decl);
+      Object.applyDefaults(this, coherent.Model.Property.DEFAULTS);
+      this.primitive= (-1!==PRIMITIVE_TYPES.indexOf(this.type));
+      return void(0);
+    },
+  
+    fromValue: function(value)
+    {
+      if (!this.type)
+        return value;
+      
+      if (null===value)
+        value= new (this.type)();
+      else if (Date===this.type)
+        value= new Date(Date.parse(value));
+      else
+        value= new (this.type)(value);
+    
+      if (this.primitive && Date!==this.type)
+          value=value.valueOf();
+
+      return value;
+    }
+    
+  });
   
   coherent.Model.Property.DEFAULTS= {
     composite: true
@@ -195,11 +200,18 @@
 
 
 
-  coherent.Model.ToOne= function(decl)
-  {
-    decl= Object.applyDefaults(decl, coherent.Model.ToOne.DEFAULTS);
-    return new coherent.Model.Property(decl);
-  }
+  coherent.Model.ToOne= Class._create(coherent.Model.Property, {
+  
+    constructor: function(decl)
+    {
+      if (!(this instanceof coherent.Model.ToOne))
+        return new coherent.Model.ToOne(decl);
+
+      decl= Object.applyDefaults(decl, coherent.Model.ToOne.DEFAULTS);
+      coherent.Model.Property.call(this, decl);
+    }
+  
+  });
   
   coherent.Model.ToOne.DEFAULTS= {
     relation: coherent.Model.ToOne,
@@ -208,15 +220,22 @@
 
 
 
-  coherent.Model.ToMany= function(decl)
-  {
-    decl= Object.applyDefaults(decl, coherent.Model.ToMany.DEFAULTS);
-    decl.defaultValue=[];
-    return new coherent.Model.Property(decl);
-  }
+  coherent.Model.ToMany= Class._create(coherent.Model.Property, {
+
+    constructor: function(decl)
+    {
+      if (!(this instanceof coherent.Model.ToMany))
+        return new coherent.Model.ToMany(decl);
+
+      decl= Object.applyDefaults(decl, coherent.Model.ToMany.DEFAULTS);
+      coherent.Model.Property.call(this, decl);
+    }
+    
+  });
   
   coherent.Model.ToMany.DEFAULTS= {
     relation: coherent.Model.ToMany,
+    defaultValue: [],
     composite: false
   };
 
