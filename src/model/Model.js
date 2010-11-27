@@ -140,6 +140,15 @@
       
     }
     
+    if ('keyDependencies' in decl)
+    {
+      var dependencies= decl.keyDependencies;
+      var proto= Klass.prototype;
+      delete decl.keyDependencies;
+      for (var p in dependencies)
+        proto.setKeysTriggerChangeNotificationsForDependentKey(dependencies[p], p);
+    }
+    
     Class.extend(Klass, decl);
     Object.applyDefaults(Klass, coherent.Model.ClassMethods);
     
