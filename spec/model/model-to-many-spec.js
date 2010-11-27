@@ -20,5 +20,12 @@ describe("Model ToMany relations", function() {
             })
     });
     
+    var P= new Person();
+    var C1= new Car();
+    var C2= new Car();
+    
+    C1.setOwner(P);
+    expect(P.cars()).toContain(C1);
+    
   });
 });

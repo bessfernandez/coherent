@@ -3,7 +3,7 @@
 /*jsl:import array-interface.js*/
 
 //  Add all KVO methods to Arrays
-Class.extend(Array, coherent.KVO.prototype);
+Class.extend(Array, coherent.KVO.__methods);
 //  Don't add the toJSON implementation from KVO, because it's unnecessary for arrays
 delete Array.prototype.toJSON;
 

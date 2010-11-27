@@ -52,6 +52,9 @@ coherent.Application= Class.create(coherent.Responder, {
   
   __loadMainNib: function()
   {
+    if (!this.__mainNib)
+      return;
+
     var nib= NIB.withName(this.__mainNib);
     if (!nib)
       throw new Error("Could not find NIB with name \""+this.__mainNib +"\"");

@@ -45,6 +45,12 @@
       this.changeCount=0;
     },
 
+    observeChildObjectChangeForKeyPath: function(change, keypath, context)
+    {
+      //  Faster than calling base.
+      coherent.KVO.prototype.observeChildObjectChangeForKeyPath.call(this, change, keypath, context);
+    },
+    
     id: function(key)
     {
       return this.original[this.constructor.uniqueId];
@@ -73,6 +79,10 @@
       else if (key in this.original)
         return this.original[key];
     
+      var info= this.constructor.schema[key];
+      if (info instanceof coherent.Model.ToMany)
+        return this.changes[key]= [];
+        
       return null;
     },
   
@@ -122,12 +132,12 @@
       else if (inverse.relation===coherent.Model.ToMany)
       {
         var previousIndexOfThis= previousInverse ? previousInverse.indexOfObject(this) : -1;
-        var valueIndexOfThis= value ? value.indexOfObject(this) : -1;
+        var valueIndexOfThis= valueInverse ? valueInverse.indexOfObject(this) : -1;
         
         if (previousInverse && -1!==previousIndexOfThis)
           previousInverse.removeObjectAtIndex(previousIndexOfThis);
         if (value && -1===valueIndexOfThis)
-          value.addObject(this);
+          valueInverse.addObject(this);
       }
     },
 

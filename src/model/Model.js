@@ -218,6 +218,7 @@
 
       decl= Object.applyDefaults(decl, coherent.Model.ToOne.DEFAULTS);
       coherent.Model.Property.call(this, decl);
+      return void(0);
     }
   
   });
@@ -238,6 +239,37 @@
 
       decl= Object.applyDefaults(decl, coherent.Model.ToMany.DEFAULTS);
       coherent.Model.Property.call(this, decl);
+      return void(0);
+    },
+    
+    fromValue: function(array)
+    {
+      if (!this.type)
+        return array;
+      
+      if (null===array)
+        return [];
+      
+      var len= array.length;
+      var value;
+      
+      while (len--)
+      {
+        value= array[len];
+        if (void(0)==value)
+          value= new this.type();
+        else if (Date===this.type)
+          value= new Date(Date.parse(value));
+        else
+          value= new this.type(value);
+          
+        if (this.primitive && Date!=this.type)
+          value= value.valueOf();
+          
+        array[len]= value;
+      }
+      
+      return array;
     }
     
   });
