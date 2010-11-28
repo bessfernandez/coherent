@@ -1,0 +1,18 @@
+destination: _site
+category_dir: /
+
+auto: false
+lsi: false
+server_port: 4000
+pygments: true
+maruku:
+  use_tex:    false
+  use_divs:   false
+  png_dir:    images/latex
+  png_url:    /images/latex
+permalink: /:year/:month/:title.html
+# page:
+#   layout: page
+# post:
+#   layout: post
+  

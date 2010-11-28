@@ -1,0 +1,196 @@
+body
+{
+	font-family: helvetica, verdana, arial, sans-serif;
+	font-size: 14px;
+	width: 650px;
+	margin: 60px auto;
+	padding: 0;
+	color: #222;
+	background: #fff;
+	line-height: 20px;
+}
+
+li li, li p, li dd, li dt,
+td p,
+blockquote p, blockquote li,
+dd li, dd p, dd dd, dd dt
+{
+}
+
+small
+{
+    font-size: 0.9em;
+}
+
+pre
+{
+	font-family: menlo, monaco, "lucida sans typewriter";
+}
+
+code
+{
+	font-family: menlo, monaco, "lucida sans typewriter";
+}
+
+h1, h2, h3, h4
+{
+	font-weight: normal;
+	font-family: "Century Gothic","Trebuchet MS",Helvetica,Arial,Geneva,sans-serif;
+}
+
+h1
+{
+    font-size: 24px;
+}
+
+h2
+{
+    font-size: 20px;
+    margin-top: 60px;
+    margin-bottom: 20px;
+}
+
+h1 + h2
+{
+  margin-top: 20px;
+}
+
+h3
+{
+    font-size: 18px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+h4
+{
+    font-size: 16px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+p code, h1 code, h2 code, h3 code, h4 code, li code, dd code, dt code
+{
+}
+
+pre code
+{
+  font-size: 12px;
+}
+
+/*  
+Theme Name: Nerd
+Theme URI: http://newburyportion.com/theme/
+Description: 
+Version: 3.0
+Author: Jeff Watkins
+Author URI: http://newburyportion.com
+
+Foo
+*/
+
+a
+{
+  text-decoration: none;
+  color: #6f7dc1;
+}
+
+b, strong
+{
+  font-weight: bold;
+}
+
+i, em
+{
+  font-style: italic;
+}
+
+blockquote
+{
+  margin-left: 2em;
+  font-style: italic;
+}
+
+p
+{
+  margin-bottom: 20px;
+}
+
+ol,
+ul
+{
+  margin-bottom: 20px;
+  margin-left: 1.5em;
+}
+
+ol
+{
+  list-style: decimal;
+}
+
+ul
+{
+  list-style: disc;
+}
+
+li
+{
+  margin: 10px 0;
+}
+
+ul ul
+{
+  margin-top: 10px;
+}
+
+ul ul li
+{
+  margin: 0;
+}
+
+/*  Correct for nested font-size increases.
+ */
+ol p,
+ul p
+{
+  margin-bottom: 0;
+}
+
+ol ol, ol ul, ul ol, ul ul
+{
+  margin-left: 2em;
+  list-style: none;
+}
+
+pre
+{
+  margin: 20px 0 20px 20px;
+}
+
+/*  Presumably, these three styles are used somewhere...
+ */
+.figure
+{
+  text-align: center;
+  margin: 20px 0;
+}
+
+img.photo
+{
+  border: 1px solid #444;
+  padding: 3px;
+}
+
+.figure p
+{
+  width: 50%;
+  margin: auto;
+  font-size: 12px
+}
+
+
+h3 + p > code
+{
+  font-weight: bold;
+  text-decoration: underline;
+}
