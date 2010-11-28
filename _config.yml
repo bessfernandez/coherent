@@ -1,10 +1,12 @@
 destination: _site
 category_dir: /
+baseurl: /coherent
 
 auto: false
 lsi: false
 server_port: 4000
 pygments: true
+
 maruku:
   use_tex:    false
   use_divs:   false

@@ -11,4 +11,4 @@ Unfortunately, I didn't succeed in my goal of getting Apple to release Coherent 
 
 I’m delighted to announce a beta version of the Coherent library version 3.0 is now available via [GitHub](http://github.com/jeffwatkins/coherent/). I anticipate a final release of version 3.0 around January 2011.
 
-You can [get started now](/get-started.html). If you have any questions, please feel free to contact me.
+You can [get started now](/coherent/get-started.html). If you have any questions, please feel free to contact me.

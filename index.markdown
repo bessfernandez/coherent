@@ -5,4 +5,4 @@ layout: default
 
 Some How-To articles:
 
-[Creating a Flickr Photo Browser](/howto/flickr-browser)
+[Creating a Flickr Photo Browser](/coherent/howto/flickr-browser)
