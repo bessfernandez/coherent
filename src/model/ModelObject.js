@@ -49,6 +49,45 @@
     {
       //  Faster than calling base.
       coherent.KVO.prototype.observeChildObjectChangeForKeyPath.call(this, change, keypath, context);
+
+      //  Ignore notifications from deeper in the object graph
+      if ('*'!==keypath)
+        return;
+      
+      //  Handle insertion & deletion from to-many relations
+      //  The context holds the key name of the child that's changing.
+      var info= this.constructor.schema[context];
+      if (!info || !info.inverse)
+        return;
+
+      var inverse= info.type.schema[info.inverse];
+      var len, i;
+      
+      switch (change.changeType)
+      {
+        case coherent.ChangeType.insertion:
+          //  relate each of the new items to this object
+          for (i=0, len= change.newValue.length; i<len; ++i)
+            inverse.relateObjects(change.newValue[i], this);
+          break;
+          
+        case coherent.ChangeType.deletion:
+          for (i=0, len= change.oldValue.length; i<len; ++i)
+            inverse.unrelateObjects(change.oldValue[i], this);
+          break;
+          
+        case coherent.ChangeType.replacement:
+          for (i=0, len= change.oldValue.length; i<len; ++i)
+          {
+            inverse.unrelateObjects(change.oldValue[i], this);
+            inverse.relateObjects(change.newValue[i], this);
+          }
+          break;
+        
+        default:
+          //  I don't think there's anything I should do here...
+          break;
+      }
     },
     
     id: function(key)
@@ -115,30 +154,11 @@
       if (!methodInfo || !methodInfo.inverse)
         return;
       
-      var TO_ONE= coherent.Model.ToOne,
-          TO_MANY= coherent.Model.ToMany;
-    
       var inverse= methodInfo.type.schema[methodInfo.inverse];
-      var previousInverse= previous ? previous.primitiveValueForKey(methodInfo.inverse) : null;
-      var valueInverse= value ? value.primitiveValueForKey(methodInfo.inverse) : null;
-
-      if (inverse.relation===coherent.Model.ToOne)
-      {
-        if (previous && this===previousInverse)
-          previous.setValueForKey(null, methodInfo.inverse);
-        if (value && this!==valueInverse)
-          value.setValueForKey(this, methodInfo.inverse);
-      }
-      else if (inverse.relation===coherent.Model.ToMany)
-      {
-        var previousIndexOfThis= previousInverse ? previousInverse.indexOfObject(this) : -1;
-        var valueIndexOfThis= valueInverse ? valueInverse.indexOfObject(this) : -1;
-        
-        if (previousInverse && -1!==previousIndexOfThis)
-          previousInverse.removeObjectAtIndex(previousIndexOfThis);
-        if (value && -1===valueIndexOfThis)
-          valueInverse.addObject(this);
-      }
+      if (previous)
+        inverse.unrelateObjects(previous, this);
+      if (value)
+        inverse.relateObjects(value, this);
     },
 
     // observeChildObjectChangeForKeyPath: function
