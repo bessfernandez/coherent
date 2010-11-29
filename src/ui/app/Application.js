@@ -22,6 +22,12 @@ coherent.Application= Class.create(coherent.Responder, {
       var startup= Element.query('.ui-startup');
       if (startup)
         startup.parentNode.removeChild(startup);
+        
+      function removeLoading()
+      {
+        Element.removeClassName(document.documentElement, 'ui-loading');
+      }
+      Function.delay(removeLoading,0);
     });
     
     return void(0);

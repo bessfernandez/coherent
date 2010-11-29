@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>src/controls/ScrollView.js</string>
+	<string>src/foundation/core/Binding.js</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -79,20 +79,6 @@
 			<key>firstVisibleLine</key>
 			<integer>22</integer>
 		</dict>
-		<key>src/controls/ScrollView.js</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>2</integer>
-				<key>line</key>
-				<integer>66</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>32</integer>
-		</dict>
 		<key>src/foundation/additions/function-additions.js</key>
 		<dict>
 			<key>caret</key>
@@ -106,6 +92,36 @@
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
 			<integer>0</integer>
+		</dict>
+		<key>src/foundation/core/Binding.js</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>27</integer>
+				<key>line</key>
+				<integer>40</integer>
+			</dict>
+			<key>columnSelection</key>
+			<false/>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>14</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>22</integer>
+				<key>line</key>
+				<integer>40</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>42</integer>
+				<key>line</key>
+				<integer>40</integer>
+			</dict>
 		</dict>
 		<key>src/foundation/core/KeyPathTrie.js</key>
 		<dict>
@@ -165,20 +181,6 @@
 			<key>firstVisibleLine</key>
 			<integer>0</integer>
 		</dict>
-		<key>src/foundation/core/oop.js</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>53</integer>
-				<key>line</key>
-				<integer>417</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>389</integer>
-		</dict>
 		<key>src/legacy/ModeledXMLProxy.js</key>
 		<dict>
 			<key>caret</key>
@@ -193,33 +195,49 @@
 			<key>firstVisibleLine</key>
 			<integer>58</integer>
 		</dict>
-		<key>src/model/Model.js</key>
+		<key>src/ui/app/Application.js</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>0</integer>
+				<integer>38</integer>
 				<key>line</key>
-				<integer>0</integer>
+				<integer>29</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
 			<integer>0</integer>
 		</dict>
-		<key>src/model/ModelObject.js</key>
+		<key>src/ui/dom/BodyClasses.js</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>0</integer>
+				<integer>2</integer>
 				<key>line</key>
-				<integer>156</integer>
+				<integer>25</integer>
 			</dict>
+			<key>columnSelection</key>
+			<false/>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
 			<integer>0</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>26</integer>
+				<key>line</key>
+				<integer>25</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>2</integer>
+				<key>line</key>
+				<integer>25</integer>
+			</dict>
 		</dict>
 		<key>src/ui/dom/event.js</key>
 		<dict>
@@ -338,10 +356,9 @@
 	</dict>
 	<key>openDocuments</key>
 	<array>
-		<string>src/controls/ScrollView.js</string>
-		<string>src/ui/dom/event.js</string>
-		<string>src/foundation/core/oop.js</string>
-		<string>src/foundation/additions/function-additions.js</string>
+		<string>src/ui/app/Application.js</string>
+		<string>src/foundation/core/Binding.js</string>
+		<string>src/ui/dom/BodyClasses.js</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
 	<false/>

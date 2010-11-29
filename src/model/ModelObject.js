@@ -179,7 +179,26 @@
     toJSON: function()
     {
       var json= Object.extend({}, this.original);
-      return Object.extend(json, this.changes);
+      Object.extend(json, this.changes);
+      
+      var schema= this.constructor.schema;
+      var info, value;
+      
+      for (var p in schema)
+      {
+        info= schema[p];
+        if (info.composite || !(info.type && info.type.prototype instanceof coherent.ModelObject))
+          continue;
+        value= json[p];
+        if (!value)
+          continue;
+          
+        if (info instanceof coherent.Model.ToOne)
+          json[p]= value.id();
+        else if (info instanceof coherent.Model.ToMany)
+          json[p]= value.map(function(obj){ return obj.id(); });
+      }
+      return json;
     }
 
   });

@@ -15,17 +15,30 @@ Object.clone= function(obj)
   return new fn();
 }
 
-/** Simple way to find an object using its property path.
+/** 
+  Object.get([context,] path) -> Any
+  
+  * context (Object): If specified, this is the object from which the value
+    should be extracted. If not specified, the value is extracted relative to
+    the global object.
+  * path (String): A key path with property names separated by dots.
+  
+  Simple way to find an object using its property path.
  */
-Object.get= function(path, context)
+Object.get= function(context, path)
 {
-  var obj= context||coherent.global;
+  if ('string'===typeof(context) && void(0)==path)
+  {
+    path= context;
+    context= coherent.global;
+  }
+  
   var parts= path.split('.');
   var p;
   
-  for (var i=0; obj && (p=parts[i]); ++i)
-    obj= obj[p];
-  return obj;
+  for (var i=0; context && (p=parts[i]); ++i)
+    context= context[p];
+  return context;
 }
 
 /** Apply default values to an object.

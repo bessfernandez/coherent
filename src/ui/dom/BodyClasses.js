@@ -21,6 +21,7 @@
     bodyclass+= ' windows';
   if (/Macintosh/.test(ua))
     bodyclass+= ' mac';
-    
+
+  bodyclass+= ' ui-loading';
   document.documentElement.className= bodyclass.trim();
 })();
