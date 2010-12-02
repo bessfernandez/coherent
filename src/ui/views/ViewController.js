@@ -169,7 +169,6 @@ coherent.ViewController= Class.create(coherent.Responder, {
     {
       if (event.target!==modalNode)
         return;
-      console.log("present transition end:", event);
       Event.stopObserving(modalNode, "webkitAnimationEnd", transitionHandler);
       if (callback)
         callback(this);
@@ -226,9 +225,8 @@ coherent.ViewController= Class.create(coherent.Responder, {
     
     function ontransitionend(event)
     {
-      if (event.target!=modalNode)
+      if (event && event.target!=modalNode)
         return;
-      console.log("dismiss transition end:", event);
       Event.stopObserving(modalNode, "webkitAnimationEnd", transitionHandler);
       modalNode.style.display='none';
       var transitionStyle= this.modalTransitionStyle ||

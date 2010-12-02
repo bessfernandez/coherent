@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>src/foundation/core/Binding.js</string>
+	<string>src/ui/views/ViewController.js</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -93,36 +93,6 @@
 			<key>firstVisibleLine</key>
 			<integer>0</integer>
 		</dict>
-		<key>src/foundation/core/Binding.js</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>27</integer>
-				<key>line</key>
-				<integer>40</integer>
-			</dict>
-			<key>columnSelection</key>
-			<false/>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>14</integer>
-			<key>selectFrom</key>
-			<dict>
-				<key>column</key>
-				<integer>22</integer>
-				<key>line</key>
-				<integer>40</integer>
-			</dict>
-			<key>selectTo</key>
-			<dict>
-				<key>column</key>
-				<integer>42</integer>
-				<key>line</key>
-				<integer>40</integer>
-			</dict>
-		</dict>
 		<key>src/foundation/core/KeyPathTrie.js</key>
 		<dict>
 			<key>caret</key>
@@ -195,49 +165,19 @@
 			<key>firstVisibleLine</key>
 			<integer>58</integer>
 		</dict>
-		<key>src/ui/app/Application.js</key>
+		<key>src/model/ModelObject.js</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>38</integer>
+				<integer>0</integer>
 				<key>line</key>
-				<integer>29</integer>
+				<integer>0</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>0</integer>
-		</dict>
-		<key>src/ui/dom/BodyClasses.js</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>2</integer>
-				<key>line</key>
-				<integer>25</integer>
-			</dict>
-			<key>columnSelection</key>
-			<false/>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>0</integer>
-			<key>selectFrom</key>
-			<dict>
-				<key>column</key>
-				<integer>26</integer>
-				<key>line</key>
-				<integer>25</integer>
-			</dict>
-			<key>selectTo</key>
-			<dict>
-				<key>column</key>
-				<integer>2</integer>
-				<key>line</key>
-				<integer>25</integer>
-			</dict>
+			<integer>61</integer>
 		</dict>
 		<key>src/ui/dom/event.js</key>
 		<dict>
@@ -325,6 +265,20 @@
 			<key>firstVisibleLine</key>
 			<integer>2</integer>
 		</dict>
+		<key>src/ui/views/ViewController.js</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>16</integer>
+				<key>line</key>
+				<integer>55</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>38</integer>
+		</dict>
 		<key>tests/oop-test.js</key>
 		<dict>
 			<key>caret</key>
@@ -356,13 +310,12 @@
 	</dict>
 	<key>openDocuments</key>
 	<array>
-		<string>src/ui/app/Application.js</string>
-		<string>src/foundation/core/Binding.js</string>
-		<string>src/ui/dom/BodyClasses.js</string>
+		<string>src/ui/views/ViewController.js</string>
+		<string>src/model/ModelObject.js</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
 	<false/>
 	<key>windowFrame</key>
-	<string>{{238, 0}, {1202, 878}}</string>
+	<string>{{420, 132}, {1020, 746}}</string>
 </dict>
 </plist>

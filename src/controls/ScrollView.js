@@ -356,7 +356,14 @@ coherent.ScrollView= Class.create(coherent.View, {
       return;
     }
 
-    if (this.hasMomentum)
+    if (this.pagingEnabled)
+    {
+      snap = this.calculatePagingSnap(newPositionX, newPositionY);
+      newPositionX = snap.x;
+      newPositionY = snap.y;
+      newDuration = Math.max(snap.time, 250);
+    }
+    else if (this.hasMomentum)
     {
       if (this.scrollX)
         momentumX= this.calculateMomentum(this.x - this.scrollStartX, time,
@@ -374,13 +381,6 @@ coherent.ScrollView= Class.create(coherent.View, {
       newPositionY = this.y + momentumY.dist;
     }
 
-    if (this.pagingEnabled)
-    {
-      snap = this.calculatePagingSnap(newPositionX, newPositionY);
-      newPositionX = snap.x;
-      newPositionY = snap.y;
-      newDuration = Math.max(snap.time, newDuration);
-    }
 
     //  Call the delegate method scrollViewDidEndDragging with a flag indicating
     //  whether the scroll will decelerate

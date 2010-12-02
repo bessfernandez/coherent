@@ -48,6 +48,8 @@ coherent.Style= {
   kPrevious: 'ui-previous',
   
   NavigationView: 'ui-navigation-view',
-  NavigationSubview: 'ui-navigation-subview'
+  NavigationSubview: 'ui-navigation-subview',
+  
+  ToolbarItem: 'ui-toolbar-item'
   
 };
